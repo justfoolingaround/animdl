@@ -1,5 +1,4 @@
 import functools
-from tqdm import tqdm
 
 from .animefillerlist import *
 from .animixplay.stream_url import *
@@ -10,9 +9,6 @@ class AnimDL:
     """
     
 class Anime(AnimDL):
-    """
-    The ultimate king of 
-    """
     def __init__(self, animix_uri, afl_uri=None):
         
         self.url = animix_uri
@@ -94,24 +90,6 @@ class Episode(AnimDL):
         for urls in self.urls:
             if urls.endswith(ext):
                 return urls
-            
-    def download(self):
-        
-        url = self.get_url()
-        
-        if not url:
-            return
-        
-        r = int(requests.head(url).headers.get('content-length', 0))
-        progress = tqdm(desc='Episode %02d, %s' % (self.number, self.name), total=r, unit='B', unit_scale=True)
-        
-        c = b''
-        
-        for chunks in requests.get(url, stream=True).iter_content(0x4000):
-            progress.update(len(chunks))
-            c += chunks
-        
-        return c
         
     def __repr__(self):
         return "< Episode %02d - '%s' [%s], %s >" % (self.number, self.name, self.filler, self.date_aired)
