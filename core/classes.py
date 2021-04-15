@@ -29,7 +29,7 @@ class Anime(AnimDL):
         initial_xpath = ""
         
         if canon:
-            initial_xpath += "//tr[@class='manga_canon even'] | //tr[@class='manga_canon odd']"
+            initial_xpath += "//tr[@class='manga_canon even'] | //tr[@class='manga_canon odd'] | //tr[@class='anime_canon even'] | //tr[@class='anime_canon odd']"
             
         if mixed_canon:
             
