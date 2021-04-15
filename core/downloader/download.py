@@ -31,8 +31,14 @@ def internal_download(base_folder, episodes):
         
         progress.update(offset)
         
+        if offset == r:
+            progress.close()
+            continue
+        
         with open(path_to_file, 'wb') as sw:
             sw.seek(offset)
             for chunks in requests.get(url, stream=True, headers={'Range': 'bytes=%d-' % offset}).iter_content(0x4000):
                 progress.update(len(chunks))
                 sw.write(chunks)
+                
+        progress.close()
