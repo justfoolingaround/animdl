@@ -26,22 +26,16 @@ class Anime(AnimDL):
         if not any((canon, mixed_canon, fillers)):
             return
         
-        initial_xpath = ""
+        initial_xpath = []
         
         if canon:
-            initial_xpath += "//tr[@class='manga_canon even'] | //tr[@class='manga_canon odd'] | //tr[@class='anime_canon even'] | //tr[@class='anime_canon odd']"
+            initial_xpath.append("//tr[@class='manga_canon even'] | //tr[@class='manga_canon odd'] | //tr[@class='anime_canon even'] | //tr[@class='anime_canon odd']")
             
         if mixed_canon:
-            
-            if initial_xpath:
-                initial_xpath += " | "
-            initial_xpath += "//tr[@class='mixed_canon/filler even'] | //tr[@class='mixed_canon/filler odd']"
+            initial_xpath.append("//tr[@class='mixed_canon/filler even'] | //tr[@class='mixed_canon/filler odd']")
                 
         if fillers:
-            
-            if initial_xpath:
-                initial_xpath += " | "
-            initial_xpath += "//tr[@class='filler even'] | //tr[@class='filler odd']"
+            initial_xpath.append("//tr[@class='filler even'] | //tr[@class='filler odd']")
         
         if not end:
             end = float('inf')
@@ -59,10 +53,9 @@ class Anime(AnimDL):
                 yield Episode(i, 'Unloaded', 'Manga Canon', '1970-01-01', url)
             return
 
-        for episode_number, title, typ, date in get_using_xpath(self.filler_list, initial_xpath):
+        for episode_number, title, typ, date in get_using_xpath(self.filler_list, ' | '.join(initial_xpath)):
             if start <= (episode_number + 1 - offset) <= end:
                 yield Episode(episode_number + 1 - offset, title, typ, date, URLS[episode_number - offset - start + 1])
-        
         
 class Episode(AnimDL):
     
