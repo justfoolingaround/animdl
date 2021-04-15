@@ -60,9 +60,8 @@ class Anime(AnimDL):
             return
 
         for episode_number, title, typ, date in get_using_xpath(self.filler_list, initial_xpath):
-            print(episode_number - offset - start)
             if start <= (episode_number + 1 - offset) <= end:
-                yield Episode(episode_number - offset, title, typ, date, URLS[episode_number - offset - start])
+                yield Episode(episode_number + 1 - offset, title, typ, date, URLS[episode_number - offset - start + 1])
         
         
 class Episode(AnimDL):
