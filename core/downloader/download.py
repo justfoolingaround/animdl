@@ -10,8 +10,8 @@ def internal_download(base_folder, episodes):
     """
     Toss a list of Episodes (fetch those from the Anime class or construct it yourself.)
     """
-    base = Path('./%s/' % base_folder)
-    base.mkdir()
+    base = Path('./%s/' % sanitize_filename(base_folder))
+    base.mkdir(exist_ok=True)
     
     for episode in episodes:
         url = episode.get_url()
