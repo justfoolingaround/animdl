@@ -3,6 +3,8 @@ from pathlib import Path
 import requests
 from tqdm import tqdm
 
+def sanitize_filename(f):
+    return ''.join(' - ' if _ in '<>:"/\\|?*' else _ for _ in f)
 
 def internal_download(base_folder, episodes):
     """
@@ -20,7 +22,7 @@ def internal_download(base_folder, episodes):
         r = int(requests.head(url).headers.get('content-length', 0))
         progress = tqdm(desc='Episode %02d, %s' % (episode.number, episode.name), total=r, unit='B', unit_scale=True)
         
-        path_to_file = base / Path('E%02d - %s.mp4' % (episode.number, episode.name))
+        path_to_file = base / Path('E%02d - %s.mp4' % (episode.number, sanitize_filename(episode.name)))
         offset = 0
         
         if path_to_file.exists():
