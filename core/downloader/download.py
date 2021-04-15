@@ -20,11 +20,17 @@ def internal_download(base_folder, episodes):
         r = int(requests.head(url).headers.get('content-length', 0))
         progress = tqdm(desc='Episode %02d, %s' % (episode.number, episode.name), total=r, unit='B', unit_scale=True)
         
-        c = b''
+        path_to_file = base / Path('E%02d - %s.mp4' % (episode.number, episode.name))
+        offset = 0
         
-        for chunks in requests.get(url, stream=True).iter_content(0x4000):
-            progress.update(len(chunks))
-            c += chunks
+        if path_to_file.exists():
+            with open(path_to_file, 'rb') as sr:
+                offset = sr.tell()
         
-        with open(base / Path('E%02d - %s.mp4' % (episode.number, episode.name)), 'wb') as sw:
-            sw.write(c)
+        progress.update(offset)
+        
+        with open(path_to_file, 'wb') as sw:
+            sw.seek(offset)
+            for chunks in requests.get(url, stream=True, headers={'Range': 'bytes=%d-' % offset}).iter_content(0x4000):
+                progress.update(len(chunks))
+                sw.write(chunks)
