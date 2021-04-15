@@ -17,7 +17,7 @@ Requirements
 
 **Disclaimer**
 
-Downloading copyright materials might be illegal in your country.
+Downloading copyrighted materials might be illegal in your country.
 
 This uses AnimixPlay.To as the provider of stream urls and currently, only GogoAnime streams are supported. You can't really select the quality of the anime as it is the raw quality provided; the quality will fluctuate from 480p to 1080p.
 

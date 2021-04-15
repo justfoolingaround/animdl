@@ -15,7 +15,8 @@ class Anime(AnimDL):
         self.filler_list = afl_uri
         
     @functools.lru_cache()
-    def fetch_episodes(self, start=None, end=None, *, offset=0, canon=True, mixed_canon=True, fillers=False):
+    def fetch_episodes(self, start=None, end=None, *, 
+        offset=0, canon=True, mixed_canon=True,fillers=False):
         """
         An appropriate constructor for the episodes class.
         
@@ -54,12 +55,13 @@ class Anime(AnimDL):
             return
 
         for episode_number, title, typ, date in get_using_xpath(self.filler_list, ' | '.join(initial_xpath)):
-            if start <= (episode_number + 1 - offset) <= end:
-                yield Episode(episode_number + 1 - offset, title, typ, date, URLS[episode_number - offset - start + 1])
+            if start <= (episode_number - offset) <= end:
+                yield Episode(episode_number - offset, title, typ, date, URLS.pop(0))
         
 class Episode(AnimDL):
     
-    def __init__(self, number, name, filler, date_aired, urls):
+    def __init__(self, number, name, filler,
+            date_aired, urls):
         self.number = number
         self.name = name
         self.filler = filler
