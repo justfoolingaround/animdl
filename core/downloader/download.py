@@ -22,12 +22,11 @@ def internal_download(base_folder, episodes):
         r = int(requests.head(url).headers.get('content-length', 0))
         progress = tqdm(desc='Episode %02d, %s' % (episode.number, episode.name), total=r, unit='B', unit_scale=True)
         
-        path_to_file = base / Path('E%02d - %s.mp4' % (episode.number, sanitize_filename(episode.name)))
+        path_to_file = base / (Path('E%02d - %s.mp4' % (episode.number, sanitize_filename(episode.name))))
         offset = 0
         
         if path_to_file.exists():
-            with open(path_to_file, 'rb') as sr:
-                offset = sr.tell()
+            offset = path_to_file.stat().st_size
         
         progress.update(offset)
         
