@@ -1,5 +1,3 @@
-import functools
-
 from .animefillerlist import *
 from .animixplay.stream_url import *
 
@@ -14,7 +12,6 @@ class Anime(AnimDL):
         self.url = animix_uri
         self.filler_list = afl_uri
         
-    @functools.lru_cache()
     def fetch_episodes(self, start=None, end=None, *, 
         offset=0, canon=True, mixed_canon=True,fillers=False):
         """
@@ -53,12 +50,15 @@ class Anime(AnimDL):
             for i, url in enumerate(URLS, 1):
                 yield Episode(i, 'Unloaded', 'Manga Canon', '1970-01-01', url)
             return
-
+        
         filler_list = get_using_xpath(self.filler_list, ' | '.join(initial_xpath))
         
-        for episode_number, title, typ, date in filler_list[offset:]:
+        for episode_number, title, typ, date in filter(lambda x:(offset + end + 1) > x[0] > (offset + start - 1), filler_list):
+            if not URLS:
+                print('Stream URL scraper has exhausted - cannot fetch urls from %s from "E%02d, %s".' % (self.url, episode_number - offset, title))
+                return
             yield Episode(episode_number - offset, title, typ, date, URLS.pop(0))
-        
+            
 class Episode(AnimDL):
     
     def __init__(self, number, name, filler,
