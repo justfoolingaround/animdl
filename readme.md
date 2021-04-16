@@ -7,6 +7,9 @@ Furthermore, this program contains various utilities that will be able to help y
 
 The batch downloader included in the program can be configured using the `config.env` file which also has an example `config.env.example` to help you configure your downloader.
 
+There is a `FANCY_TERMINAL` key in the configuration file that grants you the ability to get clickable download url through the data displayed in the terminal. To view the terminals that support this, head (here.)[https://gist.github.com/egmontkob/eb114294efbcd5adb1944c9f3cb5feda] 
+If you use this attribute without using a supported terminal, your terminal's stdout will look very wacky and it's also a friendly reminder to use such better/feature-rich terminals. On a quick note: cmd (Command Prompt) is not supported, don't use this attribute if you're using cmd.
+
 Requirements
 ---
 

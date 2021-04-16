@@ -10,7 +10,7 @@ def clickable_terminal_string(url, text):
     # https://stackoverflow.com/a/53658415
     return f"\u001b]8;;{url}\u001b\\{text}\u001b]8;;\u001b\\"
 
-def internal_download(base_folder, episodes):
+def internal_download(base_folder, episodes, *, fancy_terminal=False):
     """
     Toss a list of Episodes (fetch those from the Anime class or construct it yourself.)
     """
@@ -24,7 +24,12 @@ def internal_download(base_folder, episodes):
             continue
         
         r = int(requests.head(url).headers.get('content-length', 0))
-        progress = tqdm(desc=clickable_terminal_string(url, 'Episode %02d, %s' % (episode.number, episode.name)), total=r, unit='B', unit_scale=True)
+        
+        desc = 'Episode %02d, %s' % (episode.number, episode.name)
+        if fancy_terminal:
+            desc = clickable_terminal_string(url, desc)
+        
+        progress = tqdm(desc=desc, total=r, unit='B', unit_scale=True)
         
         path_to_file = base / (Path('E%02d - %s.mp4' % (episode.number, sanitize_filename(episode.name))))
         offset = 0
