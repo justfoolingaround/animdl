@@ -54,9 +54,10 @@ class Anime(AnimDL):
                 yield Episode(i, 'Unloaded', 'Manga Canon', '1970-01-01', url)
             return
 
-        for episode_number, title, typ, date in get_using_xpath(self.filler_list, ' | '.join(initial_xpath)):
-            if start <= (episode_number - offset) <= end:
-                yield Episode(episode_number - offset, title, typ, date, URLS.pop(0))
+        filler_list = get_using_xpath(self.filler_list, ' | '.join(initial_xpath))
+        
+        for episode_number, title, typ, date in filler_list[offset:]:
+            yield Episode(episode_number - offset, title, typ, date, URLS.pop(0))
         
 class Episode(AnimDL):
     
