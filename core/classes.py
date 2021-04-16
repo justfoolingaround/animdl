@@ -44,19 +44,16 @@ class Anime(AnimDL):
         if start > end:
             start, end = end, start
         
-        URLS = parse_gga_using_async(from_site_url(self.url), check=lambda v: start <= (v + 1) <= end) # type: list[tuple]
+        URLS = get_parser(self.url)(from_site_url(self.url), check=lambda v: start <= (v + 1) <= end) # type: list[tuple]
         
         if not self.filler_list:
             for i, url in enumerate(URLS, 1):
                 yield Episode(i, 'Unloaded', 'Manga Canon', '1970-01-01', url)
             return
         
-        filler_list = get_using_xpath(self.filler_list, ' | '.join(initial_xpath))
-        
-        for episode_number, title, typ, date in filter(lambda x:(offset + end + 1) > x[0] > (offset + start - 1), filler_list):
+        for episode_number, title, typ, date in filter(lambda x:(offset + end + 1) > x[0] > (offset + start - 1), get_using_xpath(self.filler_list, ' | '.join(initial_xpath))):
             if not URLS:
-                print('Stream URL scraper has exhausted - cannot fetch urls from %s from "E%02d, %s".' % (self.url, episode_number - offset, title))
-                return
+                return print('Stream URL scraper has exhausted - cannot fetch urls from %s from "E%02d, %s".' % (self.url, episode_number - offset, title))
             yield Episode(episode_number - offset, title, typ, date, URLS.pop(0))
             
 class Episode(AnimDL):
