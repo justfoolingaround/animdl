@@ -6,11 +6,7 @@ from tqdm import tqdm
 def sanitize_filename(f):
     return ''.join(' - ' if _ in '<>:"/\\|?*' else _ for _ in f)
 
-def clickable_terminal_string(url, text):
-    # https://stackoverflow.com/a/53658415
-    return f"\u001b]8;;{url}\u001b\\{text}\u001b]8;;\u001b\\"
-
-def internal_download(base_folder, episodes, *, fancy_terminal=False):
+def internal_download(base_folder, episodes):
     """
     Toss a list of Episodes (fetch those from the Anime class or construct it yourself.)
     """
@@ -23,28 +19,16 @@ def internal_download(base_folder, episodes, *, fancy_terminal=False):
         if not url:
             continue
         
-        r = int(requests.head(url).headers.get('content-length', 0))
+        r = int(requests.head(url).headers.get('content-length', 0))        
+        progress = tqdm(desc='Episode %02d, %s' % (episode.number, episode.name), total=r, unit='B', unit_scale=True)
         
-        desc = 'Episode %02d, %s' % (episode.number, episode.name)
-        if fancy_terminal:
-            desc = clickable_terminal_string(url, desc)
-        
-        progress = tqdm(desc=desc, total=r, unit='B', unit_scale=True)
-        
-        path_to_file = base / (Path('E%02d - %s.mp4' % (episode.number, sanitize_filename(episode.name))))
-        offset = 0
-        
-        if path_to_file.exists():
-            offset = path_to_file.stat().st_size
-        
-        progress.update(offset)
-        
-        if offset == r:
-            progress.close()
-            continue
-        
-        with open(path_to_file, 'wb') as sw:
-            sw.seek(offset)
+        with open(base / (Path('E%02d - %s.mp4' % (episode.number, sanitize_filename(episode.name)))), 'ab') as sw:
+            offset = sw.tell()
+            
+            if offset == r:
+                progress.close()
+                continue
+            
             for chunks in requests.get(url, stream=True, headers={'Range': 'bytes=%d-' % offset}).iter_content(0x4000):
                 progress.update(len(chunks))
                 sw.write(chunks)
