@@ -8,6 +8,7 @@ class AnimDL:
     """
     
 class Anime(AnimDL):
+    
     def __init__(self, uri, afl_uri=None):
         
         self.url = uri
@@ -71,7 +72,7 @@ class Anime(AnimDL):
         yield from self.episode_yielder(URLS, filter(lambda x:(offset + end + 1) > x[0] > (offset + start - 1),  self.get_filler_list(canon, mixed_canon, fillers)), offset)
             
     def fetch_episodes_using_twistmoe(self, start=None, end=None, *, 
-        offset=0, canon=True, mixed_canon=True,fillers=False):
+        offset=0, canon=True, mixed_canon=True, fillers=False):
         
         if not any((canon, mixed_canon, fillers)):
             return
@@ -88,6 +89,25 @@ class Anime(AnimDL):
         URLS = [a.get('stream_url') for i, a in enumerate(get_twistmoe_anime_uri(TWIST_URL_RE.match(self.url).group(1)), 1) if start <= i <= end]
         
         yield from self.episode_yielder(URLS, filter(lambda x:(offset + end + 1) > x[0] > (offset + start - 1),  self.get_filler_list(canon, mixed_canon, fillers)), offset)
+            
+    def fetch_appropriate(self, start=None, end=None, *, 
+        offset=0, canon=True, mixed_canon=True, fillers=False):
+        
+        AVAILABLE_FETCHERS = {
+            'animix': {
+                'matcher': re.compile(r'^(?:https?:\/\/)animixplay\.to\/'),
+                'fetcher': self.fetch_episodes_using_animix,
+            },
+            'twistmoe': {
+                'matcher': TWIST_URL_RE,
+                'fetcher': self.fetch_episodes_using_twistmoe,
+            }
+        }
+        
+        for fetcher, data in AVAILABLE_FETCHERS.items():
+            if data.get('matcher').match(self.url):
+                yield from data.get('fetcher')(start=None, end=None, offset=0, canon=True, mixed_canon=True, fillers=False)
+                break
             
 class Episode(AnimDL):
     
