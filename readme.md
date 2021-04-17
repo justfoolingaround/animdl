@@ -30,8 +30,8 @@ Complete support for TwistMoe (using mechanism similar to [this](https://github.
 
 Clickable terminal texts have been removed due to their false length that was expected to cause issue with tqdm.
 
-**Developer Note:** Unless you're using a internet connection >250 Mbps, TwistMoe downloads will have massive fluctuations (downloads that are expected to happen in 2-3 minutes by tqdm could be help back to 2-3 times that based on your internet speed). This is due to how the CDN processes the things; for now, there is no solution. 
-Even in an unlikely use-case, like in >250 Mbps internet, download expected to happen in 10-20 seconds extended upto a minute. 
+**Developer Note:** Unless you're using a internet connection >250 Mbps, TwistMoe downloads will have massive fluctuations (downloads that are expected to happen in 2-3 minutes by tqdm could be held back to 2-3 times based on your internet speed). This is due to how the CDN processes the things; for now, there is no solution. 
+Even in an unlikely use-case (assuming you're too rich to use these measly tools), like in >250 Mbps internet, download expected to happen in 10-20 seconds extended upto a minute. 
 A concurrent/threaded mechanism also proved useless in this case due to same errors. 
 
 If you are rate-limited during a download from twistcdn, you can simply re-run the downloader and it will try to continue from where it left.
