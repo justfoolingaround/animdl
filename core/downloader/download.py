@@ -6,16 +6,16 @@ from tqdm import tqdm
 def sanitize_filename(f):
     return ''.join(' - ' if _ in '<>:"/\\|?*' else _ for _ in f)
 
-def generate_appropriate_header(url):
+def generate_appropriate_header(url, *, headers):
     
-    c = requests.head(url)
+    c = requests.head(url, headers=headers)
     while semi_url := c.headers.get('location'):
-        c = requests.head(semi_url)
+        c = requests.head(semi_url, headers=headers)
     return c.headers, semi_url or url
 
 def _download(url, _path, tqdm_bar_init, headers):
     
-    header, url = generate_appropriate_header(url)
+    header, url = generate_appropriate_header(url, headers=headers)
     
     r = int(header.get('content-length', 0) or 0)    
     d = 0
@@ -23,15 +23,11 @@ def _download(url, _path, tqdm_bar_init, headers):
     tqdm_bar = tqdm_bar_init(r)
     
     with open(_path, 'ab') as sw:
-        while r != d:
-            d = sw.tell()
-            tqdm_bar.update(d)
-            
-            if r == d:
-                break
-            
+        d = sw.tell()
+        tqdm_bar.update(d)
+        while r > d:
             try:
-                for chunks in requests.get(url, stream=True, headers={'Range': 'bytes=%d-' % d}, headers=headers).iter_content(0x4000):
+                for chunks in requests.get(url, stream=True, headers={'Range': 'bytes=%d-' % d} | headers,).iter_content(0x4000):
                     size = len(chunks)
                     d += size
                     tqdm_bar.update(size)

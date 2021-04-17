@@ -35,6 +35,9 @@ def decipher(encoded_url: str):
     return unpad_content(AES.new((key := generate_key(s1[8:16]))[:32], AES.MODE_CBC, key[32:]).decrypt(s1[16:])).decode('utf-8', 'ignore').lstrip(' ')
 
 def __internal_get_uri(stream_url):
+    """
+    Sadly this has no need but since it references previous algorithm, this shall remain unremoved from the code itself.
+    """
     return requests.get(stream_url, headers={'referer': 'https://twist.moe'}, allow_redirects=False).headers.get('location', 'https://twist.moe/404')
     
 def get_twistmoe_anime_uri(anime_name, *, api_url='https://twist.moe/api/anime/{anime_name}/sources'):
@@ -44,4 +47,4 @@ def get_twistmoe_anime_uri(anime_name, *, api_url='https://twist.moe/api/anime/{
     if r.status_code != 200:
         return []
     
-    return [{'episode_number': anime_episode_info.get('number', 0), 'stream_url': __internal_get_uri(SOURCE_BASE % decipher(anime_episode_info.get('source', '')))} for anime_episode_info in r.json()]
+    return [{'episode_number': anime_episode_info.get('number', 0), 'stream_url': (SOURCE_BASE % decipher(anime_episode_info.get('source', '')))} for anime_episode_info in r.json()]

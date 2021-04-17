@@ -19,7 +19,7 @@ class Anime(AnimDL):
             for i, url in enumerate(urls, 1):
                 yield Episode(i, 'Unloaded', 'Manga Canon', '1970-01-01', url)
             return
-        
+
         for episode_number, title, typ, date in filler_list:
             if not urls:
                 return print('Stream URL scraper has exhausted - cannot fetch urls from %s from "E%02d, %s".' % (self.url, episode_number - offset, title))
@@ -106,7 +106,7 @@ class Anime(AnimDL):
         
         for fetcher, data in AVAILABLE_FETCHERS.items():
             if data.get('matcher').match(self.url):
-                yield from data.get('fetcher')(start=None, end=None, offset=0, canon=True, mixed_canon=True, fillers=False)
+                yield from data.get('fetcher')(start=start, end=end, offset=offset, canon=canon, mixed_canon=mixed_canon, fillers=fillers)
                 break
             
 class Episode(AnimDL):
@@ -117,7 +117,7 @@ class Episode(AnimDL):
         self.name = name
         self.filler = filler
         self.date_aired = date_aired
-        self.urls = urls
+        self.urls = urls if not isinstance(urls, str) else (urls,)
     
     @property
     def is_filler(self):
