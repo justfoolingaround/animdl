@@ -1,5 +1,6 @@
 from .animefillerlist import *
 from .animixplay.stream_url import *
+from .twistmoe.stream_url import *
 
 class AnimDL:
     """
@@ -7,22 +8,29 @@ class AnimDL:
     """
     
 class Anime(AnimDL):
-    def __init__(self, animix_uri, afl_uri=None):
+    def __init__(self, uri, afl_uri=None):
         
-        self.url = animix_uri
+        self.url = uri
         self.filler_list = afl_uri
         
-    def fetch_episodes(self, start=None, end=None, *, 
-        offset=0, canon=True, mixed_canon=True,fillers=False):
-        """
-        An appropriate constructor for the episodes class.
-        
-        The purpose of the `offset` parameter is to solve the problems in downloading multi-seasoned anime that might be listed as one in AnimeFillerList but different in the anime site.
-        
-        In the case of Fairy Tail, the url (non-anime filler list one) can reference to the second season and the offset can be 175.
-        """
-        if not any((canon, mixed_canon, fillers)):
+    def episode_yielder(self, urls, filler_list, offset):
+        if not filler_list:
+            for i, url in enumerate(urls, 1):
+                yield Episode(i, 'Unloaded', 'Manga Canon', '1970-01-01', url)
             return
+        
+        for episode_number, title, typ, date in filler_list:
+            if not urls:
+                return print('Stream URL scraper has exhausted - cannot fetch urls from %s from "E%02d, %s".' % (self.url, episode_number - offset, title))
+            yield Episode(episode_number - offset, title, typ, date, urls.pop(0))
+        
+    def get_filler_list(self, canon=True, mixed_canon=True, fillers=False):
+        
+        if not self.filler_list:
+            return []
+        
+        if not any((canon, mixed_canon, fillers)):
+            raise ValueError('All the filler settings cannot be set to False.')
         
         initial_xpath = []
         
@@ -35,6 +43,20 @@ class Anime(AnimDL):
         if fillers:
             initial_xpath.append("//tr[@class='filler even'] | //tr[@class='filler odd']")
         
+        return get_using_xpath(self.filler_list, ' | '.join(initial_xpath))
+        
+    def fetch_episodes_using_animix(self, start=None, end=None, *, 
+        offset=0, canon=True, mixed_canon=True,fillers=False):
+        """
+        An appropriate constructor for the episodes class.
+        
+        The purpose of the `offset` parameter is to solve the problems in downloading multi-seasoned anime that might be listed as one in AnimeFillerList but different in the anime site.
+        
+        In the case of Fairy Tail, the url (non-anime filler list one) can reference to the second season and the offset can be 175.
+        """
+        if not any((canon, mixed_canon, fillers)):
+            return
+        
         if not end:
             end = float('inf')
         
@@ -45,16 +67,27 @@ class Anime(AnimDL):
             start, end = end, start
         
         URLS = get_parser(self.url)(from_site_url(self.url), check=lambda v: start <= (v + 1) <= end) # type: list[tuple]
+                    
+        yield from self.episode_yielder(URLS, filter(lambda x:(offset + end + 1) > x[0] > (offset + start - 1),  self.get_filler_list(canon, mixed_canon, fillers)), offset)
+            
+    def fetch_episodes_using_twistmoe(self, start=None, end=None, *, 
+        offset=0, canon=True, mixed_canon=True,fillers=False):
         
-        if not self.filler_list:
-            for i, url in enumerate(URLS, 1):
-                yield Episode(i, 'Unloaded', 'Manga Canon', '1970-01-01', url)
+        if not any((canon, mixed_canon, fillers)):
             return
         
-        for episode_number, title, typ, date in filter(lambda x:(offset + end + 1) > x[0] > (offset + start - 1), get_using_xpath(self.filler_list, ' | '.join(initial_xpath))):
-            if not URLS:
-                return print('Stream URL scraper has exhausted - cannot fetch urls from %s from "E%02d, %s".' % (self.url, episode_number - offset, title))
-            yield Episode(episode_number - offset, title, typ, date, URLS.pop(0))
+        if not end:
+            end = float('inf')
+        
+        if not start:
+            start = 1
+        
+        if start > end:
+            start, end = end, start
+        
+        URLS = [a.get('stream_url') for i, a in enumerate(get_twistmoe_anime_uri(TWIST_URL_RE.match(self.url).group(1)), 1) if start <= i <= end]
+        
+        yield from self.episode_yielder(URLS, filter(lambda x:(offset + end + 1) > x[0] > (offset + start - 1),  self.get_filler_list(canon, mixed_canon, fillers)), offset)
             
 class Episode(AnimDL):
     
