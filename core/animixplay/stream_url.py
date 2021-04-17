@@ -1,7 +1,5 @@
 """
 Currently, only GGA streams are supported.
-
-Modified by Syl - 2021-04-16
 """
 
 import requests

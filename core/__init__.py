@@ -6,8 +6,6 @@ However, keep in mind that you wouldn't be able to select quality for your anime
 The goal of the program is to provide you ad-free stream urls with an additional reliable batch downloader.
 
 The stream urls being scraped are going to be from https://storage.googleapis.com/, so, the downloads and streams are expected to be fast.
-
-XXX: Don't add __init__ just for comments - Syl 2021-04-17
 """
 
 from .classes import *

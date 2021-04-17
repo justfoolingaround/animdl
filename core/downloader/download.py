@@ -7,15 +7,7 @@ def sanitize_filename(f):
     return ''.join(' - ' if _ in '<>:"/\\|?*' else _ for _ in f)
 
 def _download(url, _path, *, tqdm_bar=None):
-    """
-    *contextually untested code*; test once before direct implementation.
     
-    Works in mine as the try-catch is almost untestable due to high internet speed - tests in a lower internet speed is recommended.
-    
-    P.S.: Tested on: >250 Mbps with twist.moe & gga urls, Requested test on: <50 Mbps with the same urls.
-    
-    Modified & added by Syl - 2021-04-16
-    """
     r = int(requests.head(url).headers.get('content-length', 0))     
     d = 0
     
