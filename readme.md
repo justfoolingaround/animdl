@@ -1,30 +1,33 @@
-AnimDL - Batch Downloader & Stream URL Fetcher
+AnimDL - Download & stream your favorite anime
 ---
 
-AnimDL is a reliable program to download all your anime(s) from a proper server.
+AnimDL is a reliable program to download or stream all your favorite anime(s) with or without Fillers.
 
 Furthermore, this program contains various utilities that will be able to help you make a even greater client.
 
-There is a user-friendly cli tool included with the project.!
-
-The batch downloader included in the program (`cli_old.py`) can be configured using the `config.env` file which also has an example `config.env.example` to help you configure your downloader.
-
-Requirements
+Streaming with AnimDL
 ---
 
-- Python 3.8 +
-- requests
-- tqdm
-- lxml.html
+Streaming with AnimDL requires an additional dependency known as `mpv` which can be downloaded from [here](https://github.com/mpv-player/mpv/releases/). If you don't 
+have `mpv` installed onto your PATH, the streaming mechanism will automatically be disabled and the downloading mechanism will be selected.
+
+You can use AnimDL through the ['user-friendly' cli tool.](https://github.com/justfoolingaround/animdl/blob/master/cli.py)
+
+It is recommended that you setup AnimeFillerList due to it being able to fetch appropriate episode name and filter fillers on your request.
+
+The default cli does not support TwistMoe. TwistMoe can be used with the old cli tool though.
+
+`cli_old.py` can be configured using the `config.env` file which also has an example `config.env.example` as a guideline.
+
+The streaming client will be modified to an amazing AnimDL exclusive client *soon*.
 
 **Disclaimer**
 
 Downloading copyrighted materials might be illegal in your country.
 
-Additional Information
----
+**Additional Information**
 
-This uses AnimixPlay.To and/or Twist.Moe as the provider of stream urls and in case of AnimixPlay.To, currently, only GogoAnime streams are supported. You can't really select the quality of the anime as it is the raw quality provided; the quality will fluctuate from 480p to 1080p in AnimixPlay and from 720p to 1080p in Twist.Moe.
+This uses AnimixPlay and/or Twist.Moe as the provider of stream urls and in case of AnimixPlay, currently, only GogoAnime streams are supported. You can't really select the quality of the anime as it is the raw quality provided; the quality will fluctuate from 480p to 1080p in AnimixPlay and from 720p to 1080p in Twist.Moe.
 
 You may edit or modify the code based on your need. You may recieve help from the developer in any sort of modification you're performing as long as it's not some edgy stuff.
 
