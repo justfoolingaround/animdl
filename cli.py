@@ -4,16 +4,14 @@ This is an interactive cli which will allow you to download / watch your favorit
 Currently, only utilizing animixplay.to.
 """
 
-import logging
 import re
 import shutil
+import subprocess
 
 from PyInquirer import prompt
 
 from core import *
 from core.providers import animixplay
-
-streaming_feature = True
 
 ANIMIXPLAY = re.compile(r'^(?:https?://)?(?:\S+\.)?animixplay\.to/v1/([^?&/]+)')
 
@@ -57,12 +55,27 @@ def download(query, afl_config):
     return internal_download(ANIMIXPLAY.match(query).group(1), client.fetch_appropriate(**afl_config))
 
 def stream(query, afl_config):
-    print("Streaming is not available currently, streaming support with mpv will be added soon (a modified version of mpv which is exclusive to AnimDL users (with features like 'SKIP INTRO') is being developed.)\nPlease bear with us, don't worry, you're being redirected to the download.")
-    return download(query, afl_config)
     
+    client = Anime(
+        uri=query,
+        afl_uri=afl_config.pop('url', None),
+    )
+    
+    for episode in client.fetch_appropriate(**afl_config):
+        
+        replay = True
+        while replay:
+            print("Now playing: Episode %02d - '%s'" % (episode.number, episode.name))            
+            process = subprocess.Popen(['mpv', episode.get_url('m3u8') or episode.get_url(), '--http-header-fields="{}"'.format(','.join("%s: %s" % (k,v) for k,v in episode.download_headers.items())) if episode.download_headers else ''])
+            process.wait()
+        
+            choice = ask('AnimDL detected the process as ended, would you like to view the next episode in the queue or replay this one?', 'Next', 'Replay')
+            if choice == 'Next':
+                replay = False
 
 def __cli__():
     
+    streaming_feature = True
     mode = 'download'
     afl_config = {}
     

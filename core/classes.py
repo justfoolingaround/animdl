@@ -64,7 +64,7 @@ class Anime(AnimDL):
         
         AVAILABLE_FETCHERS = {
             'animix': {
-                'matcher': re.compile(r'^(?:https?:\/\/)animixplay\.to\/'),
+                'matcher': re.compile(r'^(?:https?://)?(?:\S+\.)?animixplay\.to/v1/([^?&/]+)'),
                 'fetcher': self.fetch_episodes_using_animix,
             },
             'twistmoe': {

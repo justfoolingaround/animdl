@@ -19,4 +19,4 @@ def construct_check(episode_list, offset):
         return lambda *args, **kwargs: True
     
     numeric_list = [e.number for e in episode_list]
-    return lambda n: (n + offset) in numeric_list
+    return lambda n: (n + offset + 1) in numeric_list
