@@ -46,22 +46,9 @@ def get_afl_config():
         'offset': intinput('Offset (if the Episode 1 of your anime is marked as Episode 201 in AnimeFillerList, type in 200 (the difference); if not, type in 0 or something that\'s not an integer): '),
     }
     
-def download(query, afl_config):
+def stream(url_generator):
     
-    client = Anime(
-        uri=query,
-        afl_uri=afl_config.pop('url', None),
-    )
-    return internal_download(ANIMIXPLAY.match(query).group(1), client.fetch_appropriate(**afl_config))
-
-def stream(query, afl_config):
-    
-    client = Anime(
-        uri=query,
-        afl_uri=afl_config.pop('url', None),
-    )
-    
-    for episode in client.fetch_appropriate(**afl_config):
+    for episode in url_generator:
         
         replay = True
         while replay:
@@ -69,7 +56,7 @@ def stream(query, afl_config):
             process = subprocess.Popen(['mpv', episode.get_url('m3u8') or episode.get_url(), '--http-header-fields="{}"'.format(','.join("%s: %s" % (k,v) for k,v in episode.download_headers.items())) if episode.download_headers else ''])
             process.wait()
         
-            choice = ask('AnimDL detected the process as ended, would you like to view the next episode in the queue or replay this one?', 'Next', 'Replay')
+            choice = ask('AnimDL detects that the process has ended, would you like to view the next episode in the queue or replay this one?', 'Next', 'Replay')
             if choice == 'Next':
                 replay = False
 
@@ -89,10 +76,17 @@ def __cli__():
     if not (result := process_query(input('Search query: '))):
         return print("Couldn't find anything of that query.")
     
+    client = Anime(result)
     
     if yesnoqn('Would you like to configure AnimeFillerList for filtering fillers?'):
         afl_config = get_afl_config()
-        
+    
+    client.filler_list = afl_config.pop('url', None)
+
+    if mode == 'stream':
+        start = intinput("Start streaming from (if you want to stream from Episode 12, type in 12): ") or None
+        return stream(client.fetch_appropriate(start=start, **afl_config))
+
     afl_config.update(
         {
             'start': intinput('Start from (if you want to download from Episode 12, type in 12): ') or None,
@@ -100,10 +94,7 @@ def __cli__():
          }
     )
     
-    if mode == 'download':
-        return download(result, afl_config)
-    
-    return stream(result, afl_config)
+    return internal_download(ANIMIXPLAY.match(result).group(1), client.fetch_appropriate(**afl_config))
     
 if __name__ == '__main__':
     __cli__()

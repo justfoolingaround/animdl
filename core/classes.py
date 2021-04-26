@@ -19,7 +19,7 @@ class Anime(AnimDL):
         
     def episode_yielder(self, urls, episode_list, offset, download_headers):
         
-        if not episode_list:
+        if not self.filler_list:
             for i, url in enumerate(urls, 1):
                 yield Episode(i, 'Unloaded', 'Manga Canon', '1970-01-01', url, download_headers)
             return
@@ -48,7 +48,7 @@ class Anime(AnimDL):
         
         return get_using_xpath(self.filler_list, ' | '.join(initial_xpath))
         
-    def fetch_episodes_using_animix(self, episode_list=[], *, offset=0):      
+    def fetch_episodes_using_animix(self, episode_list=[], *, offset=0):
         yield from self.episode_yielder(animixplay.get_parser(self.url)(animixplay.from_site_url(self.url), check=construct_check(episode_list, offset)), episode_list, offset, download_headers={})
             
     def fetch_episodes_using_twistmoe(self, episode_list=[], *, offset=0):
@@ -72,10 +72,10 @@ class Anime(AnimDL):
                 'fetcher': self.fetch_episodes_using_twistmoe,
             }
         }
-        
+                
         for fetcher, data in AVAILABLE_FETCHERS.items():
             if data.get('matcher').match(self.url):
-                yield from data.get('fetcher', lambda *args, **kwargs: None)(episode_list=[*filter_episodes(self.get_filler_list(canon, mixed_canon, fillers), start=start, end=end, offset=offset)], offset=offset or 0)
+                yield from data.get('fetcher', lambda *args, **kwargs: None)(episode_list=[*filter_episodes(self.get_filler_list(canon, mixed_canon, fillers), start=start, end=end, offset=offset)] if self.filler_list else start, offset=offset or 0)
                 break
             
 class Episode(AnimDL):
