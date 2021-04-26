@@ -52,7 +52,7 @@ def download(query, afl_config):
     
     client = Anime(
         uri=query,
-        afl_uri=afl_config.pop('url'),
+        afl_uri=afl_config.pop('url', None),
     )
     return internal_download(ANIMIXPLAY.match(query).group(1), client.fetch_appropriate(**afl_config))
 
