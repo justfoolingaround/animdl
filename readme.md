@@ -5,7 +5,9 @@ AnimDL is a reliable program to download all your anime(s) from a proper server.
 
 Furthermore, this program contains various utilities that will be able to help you make a even greater client.
 
-The batch downloader included in the program can be configured using the `config.env` file which also has an example `config.env.example` to help you configure your downloader.
+There is a user-friendly cli tool included with the project.!
+
+The batch downloader included in the program (`cli_old.py`) can be configured using the `config.env` file which also has an example `config.env.example` to help you configure your downloader.
 
 Requirements
 ---

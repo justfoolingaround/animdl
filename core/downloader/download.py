@@ -66,7 +66,7 @@ def internal_download_v1(base_folder, episodes):
                 
         progress.close()
         
-def internal_download(base_folder, episodes, *, headers={}):
+def internal_download(base_folder, episodes):
     """
     v2, currently being used.
     """
@@ -79,4 +79,4 @@ def internal_download(base_folder, episodes, *, headers={}):
         if not url:
             continue
         
-        _download(url, base / (Path('E%02d - %s.mp4' % (episode.number, sanitize_filename(episode.name)))), lambda r: tqdm(desc='Episode %02d, %s' % (episode.number, episode.name), total=r, unit='B', unit_scale=True), headers)
+        _download(url, base / (Path('E%02d - %s.mp4' % (episode.number, sanitize_filename(episode.name)))), lambda r: tqdm(desc='Episode %02d, %s' % (episode.number, episode.name), total=r, unit='B', unit_scale=True), episode.download_headers)

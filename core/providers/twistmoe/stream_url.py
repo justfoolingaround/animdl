@@ -7,7 +7,7 @@ import re
 
 #TWISTMOE_SECRET = b'LXgIVP&PorO68Rq7dTx8N^lP!Fa5sGJ^*XK'
 
-TWIST_URL_RE = re.compile(r"^(?:https?://)?twist\.moe/a/([^/]+)")
+TWIST_URL_RE = re.compile(r"^(?:https?://)?twist\.moe/a/([^?&/]+)")
 
 DL_HEADERS = {'referer': 'https://twist.moe'}
 
@@ -40,11 +40,13 @@ def __internal_get_uri(stream_url):
     """
     return requests.get(stream_url, headers={'referer': 'https://twist.moe'}, allow_redirects=False).headers.get('location', 'https://twist.moe/404')
     
-def get_twistmoe_anime_uri(anime_name, *, api_url='https://twist.moe/api/anime/{anime_name}/sources'):
+def get_twistmoe_anime_uri(anime_name, *, api_url='https://twist.moe/api/anime/{anime_name}'):
     
-    r = requests.get(api_url.format(anime_name=anime_name), headers={'x-access-token': '0df14814b9e590a1f26d3071a4ed7974'})
+    base_url = 'https://air-cdn.twist.moe%s' if requests.get(api_url.format(anime_name=anime_name), headers={'x-access-token': '0df14814b9e590a1f26d3071a4ed7974'}).json().get('ongoing', 0) else "https://cdn.twist.moe%s"
+     
+    r = requests.get("%s/sources" % api_url.format(anime_name=anime_name), headers={'x-access-token': '0df14814b9e590a1f26d3071a4ed7974'})
     
     if r.status_code != 200:
         return []
     
-    return [{'episode_number': anime_episode_info.get('number', 0), 'stream_url': (SOURCE_BASE % decipher(anime_episode_info.get('source', '')))} for anime_episode_info in r.json()]
+    return [{'episode_number': anime_episode_info.get('number', 0), 'stream_url': (base_url % decipher(anime_episode_info.get('source', '')))} for anime_episode_info in r.json()]

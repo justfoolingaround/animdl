@@ -42,7 +42,7 @@ def gogoanime_parser_v2(data: dict, *, check=lambda *args: True):
 AVAILABLE_PARSERS = {
     'gogo-anime': {
         'matcher': re.compile(r'^(?:https?:\/\/)animixplay\.to\/v1\/\S+'),
-        'parser': gogoanime_parser_v2
+        'parser': gogoanime_parser
     }
 }
 
