@@ -14,11 +14,8 @@ def filter_episodes(episode_list, start=None, end=None, offset=None):
             
 def construct_check(episode_list, offset):
     
-    if isinstance(episode_list, int):
-        return lambda n: (n + offset + 1) >= episode_list
-    
     if not episode_list:
         return lambda *args, **kwargs: True
     
     numeric_list = [e.number for e in episode_list]
-    return lambda n: (n + offset + 1) in numeric_list
+    return lambda n: (n + offset) in numeric_list

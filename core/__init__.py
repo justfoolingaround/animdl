@@ -11,3 +11,4 @@ The stream urls being scraped are going to be from https://storage.googleapis.co
 
 from .classes import *
 from .downloader.download import internal_download
+from .associator import Associator

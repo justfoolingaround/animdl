@@ -3,16 +3,8 @@ from hashlib import md5
 
 from base64 import b64decode
 import requests
-import re
-
-#TWISTMOE_SECRET = b'LXgIVP&PorO68Rq7dTx8N^lP!Fa5sGJ^*XK'
-
-TWIST_URL_RE = re.compile(r"^(?:https?://)?twist\.moe/a/([^?&/]+)")
-
-DL_HEADERS = {'referer': 'https://twist.moe'}
 
 TWISTMOE_SECRET = b'267041df55ca2b36f2e322d05ee2c9cf'
-SOURCE_BASE = 'https://air-cdn.twist.moe%s'
 
 def unpad_content(content):
     return content[:-(content[-1] if isinstance(content[-1], int) else ord(content[-1]))]
@@ -40,11 +32,11 @@ def __internal_get_uri(stream_url):
     """
     return requests.get(stream_url, headers={'referer': 'https://twist.moe'}, allow_redirects=False).headers.get('location', 'https://twist.moe/404')
     
-def get_twistmoe_anime_uri(anime_name, *, api_url='https://twist.moe/api/anime/{anime_name}'):
+def get_twistmoe_anime_uri(session, anime_name, *, api_url='https://twist.moe/api/anime/{anime_name}'):
     
-    base_url = 'https://air-cdn.twist.moe%s' if requests.get(api_url.format(anime_name=anime_name), headers={'x-access-token': '0df14814b9e590a1f26d3071a4ed7974'}).json().get('ongoing', 0) else "https://cdn.twist.moe%s"
+    base_url = 'https://air-cdn.twist.moe%s' if session.get(api_url.format(anime_name=anime_name), headers={'x-access-token': '0df14814b9e590a1f26d3071a4ed7974'}).json().get('ongoing', 0) else "https://cdn.twist.moe%s"
      
-    r = requests.get("%s/sources" % api_url.format(anime_name=anime_name), headers={'x-access-token': '0df14814b9e590a1f26d3071a4ed7974'})
+    r = session.get("%s/sources" % api_url.format(anime_name=anime_name), headers={'x-access-token': '0df14814b9e590a1f26d3071a4ed7974'})
     
     if r.status_code != 200:
         return []

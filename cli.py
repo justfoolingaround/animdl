@@ -76,7 +76,7 @@ def __cli__():
     if not (result := process_query(input('Search query: '))):
         return print("Couldn't find anything of that query.")
     
-    client = Anime(result)
+    client = Associator(result)
     
     if yesnoqn('Would you like to configure AnimeFillerList for filtering fillers?'):
         afl_config = get_afl_config()
