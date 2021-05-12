@@ -8,18 +8,20 @@ import re
 
 from .animixplay import fetcher as animix_fetcher
 from .twistmoe import fetcher as twist_fetcher
-
+from .animepahe import fetcher as animepahe_fetcher
 
 current_providers = {
     'animix': {
         'matcher': re.compile(r'^(?:https?://)?(?:\S+\.)?animixplay\.to/v\d+/([^?&/]+)'),
         'fetcher': animix_fetcher,
-        'download_headers': {}
     },
     'twistmoe': {
         'matcher': re.compile(r"^(?:https?://)?(?:\S+\.)?twist\.moe/a/([^?&/]+)"),
         'fetcher': twist_fetcher,
-        'download_headers': {'referer': 'https://www.twist.moe/'}
+    },
+    'animepahe': {
+        'matcher': re.compile(r"(?:https?://)?(?:\S+\.)?animepahe\.com/anime/([^?&/]+)"),
+        'fetcher': animepahe_fetcher,
     }
 }
 
@@ -31,4 +33,4 @@ def get_provider(url):
 def get_appropriate(session, url, check=lambda *args: True):
     
     provider = get_provider(url)
-    return provider.get('fetcher')(session, url, check), provider.get('download_headers')
+    return provider.get('fetcher')(session, url, check)

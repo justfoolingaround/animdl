@@ -74,9 +74,13 @@ def internal_download(base_folder, episodes):
     base.mkdir(exist_ok=True)
     
     for episode in episodes:
-        url = episode.get_url()
+        url, headers = episode.get_url()
         
+        if url.endswith('m3u8'):
+            print('Episode %02d, %s\'s download has been aborted due to the available url being an m3u8 file (the download is pointless), please try to stream the URL instead. URL: %s' % (episode.number, episode.name, url))
+            continue
+
         if not url:
             continue
         
-        _download(url, base / (Path('E%02d - %s.mp4' % (episode.number, sanitize_filename(episode.name)))), lambda r: tqdm(desc='Episode %02d, %s' % (episode.number, episode.name), total=r, unit='B', unit_scale=True), episode.download_headers)
+        _download(url, base / (Path('E%02d - %s.mp4' % (episode.number, sanitize_filename(episode.name)))), lambda r: tqdm(desc='Episode %02d, %s' % (episode.number, episode.name), total=r, unit='B', unit_scale=True), headers)

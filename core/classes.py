@@ -8,13 +8,12 @@ class AnimDLObject(object):
 class Episode(AnimDLObject):
     
     def __init__(self, number, name, filler,
-            date_aired, urls, download_headers):
+            date_aired, urls):
         self.number = number
         self.name = name
         self.filler = filler
         self.date_aired = date_aired
-        self.urls = urls if not isinstance(urls, str) else (urls,)
-        self.download_headers = download_headers
+        self.urls = urls
     
     @property
     def is_filler(self):
@@ -29,13 +28,17 @@ class Episode(AnimDLObject):
         return not (self.is_filler and self.is_canon)
     
     @classmethod
-    def unloaded(cls, episode_number, urls, download_headers):
-        return cls(episode_number, 'Unloaded', 'Manga Canon', '1970-01-01', urls, download_headers)
+    def unloaded(cls, episode_number, urls):
+        return cls(episode_number, 'Unloaded', 'Manga Canon', '1970-01-01', urls)
     
-    def get_url(self, ext='mp4'):
+    @property
+    def qualities(self):
+        return {stream.get('quality') for stream in self.urls}
+    
+    def get_url(self, quality=None):        
         for urls in self.urls:
-            if urls.endswith(ext):
-                return urls
+            if (not quality) or (urls.get('quality') == quality):
+                return urls.get('stream_url'), urls.get('headers')
         
     def __repr__(self):
         return "< Episode %02d - '%s' [%s], %s >" % (self.number, self.name, self.filler, self.date_aired)

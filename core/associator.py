@@ -29,8 +29,6 @@ class Associator(AnimDLObject):
         if self.filler_list:
             episode_list = [*filter_episodes(get_filler_list(self.session, self.filler_list, canon, mixed_canon, fillers), start, end, offset)]
             check = construct_check(episode_list, offset)
-            
-        provider, download_headers = get_appropriate(self.session, self.url, check=check)
-        
-        for i, url in enumerate(provider, 1):
-            yield Episode((e := episode_list.pop(0)).number - offset, e.title, e.content_type, e.aired_date, url, download_headers) if episode_list else Episode.unloaded(i + start - 1 - offset, url, download_headers)
+                    
+        for i, url in enumerate(get_appropriate(self.session, self.url, check=check), 1):
+            yield Episode((e := episode_list.pop(0)).number - offset, e.title, e.content_type, e.aired_date, url) if episode_list else Episode.unloaded(i + start - 1 - offset, url)

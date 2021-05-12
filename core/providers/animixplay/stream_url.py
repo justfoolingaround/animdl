@@ -18,7 +18,7 @@ def from_site_url(session, url) -> dict:
 
 def gogoanime_parser(session, data: dict, *, check=lambda *args: True):
     
-    ajax_parse = lambda dt: (dt.get('source', [{}])[0].get('file'), dt.get('source_bk', [{}])[0].get('file'))
+    ajax_parse = lambda dt: [{'quality': 'unknown', 'stream_url': dt.get('source', [{}])[0].get('file')}, {'quality': 'unknown', 'stream_url': dt.get('source_bk', [{}])[0].get('file')}]
     for value in range(data.get('eptotal')):
         if check(value + 1):
             yield ajax_parse(session.get("https:%s" % data[str(value)].replace('streaming', 'ajax')).json())

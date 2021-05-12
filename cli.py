@@ -13,6 +13,8 @@ from PyInquirer import prompt
 from core import *
 from core.providers import animixplay
 
+from core.providers import current_providers
+
 ANIMIXPLAY = re.compile(r'^(?:https?://)?(?:\S+\.)?animixplay\.to/v1/([^?&/]+)')
 
 def ask(message, *choices):
@@ -22,9 +24,10 @@ def yesnoqn(message):
     return ask(message, 'Y', 'N') == 'Y'
 
 def process_query(query):
-    
-    if ANIMIXPLAY.match(query):
-        return query
+
+    for content, data in current_providers.items():
+        if data.get('matcher').search(query):
+            return query
     
     results = animixplay.animix_search(query)
     
@@ -52,8 +55,12 @@ def stream(url_generator):
         
         replay = True
         while replay:
-            print("Now playing: Episode %02d - '%s'" % (episode.number, episode.name))            
-            process = subprocess.Popen(['mpv', episode.get_url('m3u8') or episode.get_url(), '--http-header-fields="{}"'.format(','.join("%s: %s" % (k,v) for k,v in episode.download_headers.items())) if episode.download_headers else ''])
+            print("Now playing: Episode %02d - '%s'" % (episode.number, episode.name))
+            
+            quality = ask('There seems to be multiple qualities available, please pick a quality to start streaming.', *episode.qualities) if [*episode.qualities][1:] else [*episode.qualities][0]
+            stream_url, headers = episode.get_url(quality)
+                     
+            process = subprocess.Popen(['mpv', stream_url] + ['--http-header-fields=%s' % ','.join('%s:%s' % (k, v) for k, v in headers.items())] if headers else [])
             process.wait()
         
             choice = ask('AnimDL detects that the process has ended, would you like to view the next episode in the queue or replay this one?', 'Next', 'Replay')
