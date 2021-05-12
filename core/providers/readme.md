@@ -8,3 +8,4 @@ Currently supported:
 - [Animixplay](https://www.animixplay.to/) (GGA/v1 only)
 - [Twist](https://www.twist.moe/)
 - [AnimePahe](https://www.animepahe.com/)
+- [4Anime](https://4anime.to/)
