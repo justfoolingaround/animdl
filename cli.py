@@ -1,7 +1,5 @@
 """
 This is an interactive cli which will allow you to download / watch your favorite anime without any .env hassle.
-
-Currently, only utilizing animixplay.to.
 """
 
 import re
@@ -11,11 +9,8 @@ import subprocess
 from PyInquirer import prompt
 
 from core import *
-from core.providers import animixplay
+from core.providers import current_providers, animixplay
 
-from core.providers import current_providers
-
-ANIMIXPLAY = re.compile(r'^(?:https?://)?(?:\S+\.)?animixplay\.to/v1/([^?&/]+)')
 
 def ask(message, *choices):
     return prompt([{'type': 'list', 'name': 'choice', 'message': message, 'choices': choices}]).get('choice')
@@ -101,7 +96,7 @@ def __cli__():
          }
     )
     
-    return internal_download(ANIMIXPLAY.match(result).group(1), client.fetch_appropriate(**afl_config))
+    return internal_download("Downloads", client.fetch_appropriate(**afl_config))
     
 if __name__ == '__main__':
     __cli__()
