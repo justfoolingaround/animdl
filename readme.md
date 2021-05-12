@@ -1,42 +1,38 @@
 AnimDL - Download & stream your favorite anime
 ---
 
-AnimDL is a reliable program to download or stream all your favorite anime(s) with or without Fillers.
+AnimDL is an incredibly powerful tool to download and/or stream your favorite anime. 
 
-Furthermore, this program contains various utilities that will be able to help you make a even greater client.
+The core advantage of this tool is that, it can download and stream from the sites mentioned below without using inefficient dependencies like Selenium and JS Evaluators. 
+This tool has taken advantage of internal streaming mechanisms in different site(s) such that, it acts as a browser itself internally to hunt down stream URL(s).
 
-Streaming with AnimDL
----
+**Supported Site(s)**
 
-Streaming with AnimDL requires an additional dependency known as `mpv` which can be downloaded from [here](https://github.com/mpv-player/mpv/releases/). If you don't 
-have `mpv` installed onto your PATH, the streaming mechanism will automatically be disabled and the downloading mechanism will be selected.
+| Website | Available Qualities | Status | Streamable | Downloadable |
+| ------- | ------------------- | ------ | --------- | ------------ |
+| [Animixplay](https://www.animixplay.to/) | Unknown  (Ranges from 360p to 1080p) | Working | Yes | Yes provided that the stream link is not m3u8. |
+| [Twist](https://www.twist.moe/) | 720p, 1080p | Working | Yes (Slow) | Yes (Slow) | 
+| [AnimePahe](https://www.animepahe.com/) | 360p, 480p, 720p, 1080p | Working | Yes (Ridiculously fast) | No |
 
-You can use AnimDL through the ['user-friendly' cli tool.](https://github.com/justfoolingaround/animdl/blob/master/cli.py)
+**Coming soon (sites)**
 
-It is recommended that you setup AnimeFillerList due to it being able to fetch appropriate episode name and filter fillers on your request.
+- GogoAnime
+- 9Anime (without using Selenium)
+- 4Anime
 
-The default cli does not support TwistMoe. TwistMoe can be used with the old cli tool though.
+aaaaaand, just about everything that streams anime (just make a issue and I'll consider it)
 
-`cli_old.py` can be configured using the `config.env` file which also has an example `config.env.example` as a guideline.
+**Coming soon (features)**
 
-The streaming client will be modified to an amazing AnimDL exclusive client *soon*.
+- HLS downloading; a support for downloading m3u8. There are libraries for this but they are not that efficient.
+- GUI!?
+
+**Streaming**
+
+Streaming needs an additional dependency known as `mpv`, you can download it from [here.](https://github.com/mpv-player/mpv/releases/)
+
+This dependency is incredibly efficient for streaming and light-weight too. You need to add it to your PATH for the tool to detect and run it.
 
 **Disclaimer**
 
 Downloading copyrighted materials might be illegal in your country.
-
-**Additional Information**
-
-This uses AnimixPlay and/or Twist.Moe as the provider of stream urls and in case of AnimixPlay, currently, only GogoAnime streams are supported. You can't really select the quality of the anime as it is the raw quality provided; the quality will fluctuate from 480p to 1080p in AnimixPlay and from 720p to 1080p in Twist.Moe.
-
-You may edit or modify the code based on your need. You may recieve help from the developer in any sort of modification you're performing as long as it's not some edgy stuff.
-
-Complete support for TwistMoe (using mechanism similar to [this](https://github.com/justfoolingaround/twistmoe-download-utils)) has been added.
-
-Clickable terminal texts have been removed due to their false length that was expected to cause issue with tqdm.
-
-**Developer Note:** Unless you're using a internet connection >250 Mbps, TwistMoe downloads will have massive fluctuations (downloads that are expected to happen in 2-3 minutes by tqdm could be held back to 2-3 times based on your internet speed). This is due to how the CDN processes the things; for now, there is no solution. 
-Even in an unlikely use-case (assuming you're too rich to use these measly tools), like in >250 Mbps internet, download expected to happen in 10-20 seconds extended upto a minute. 
-A concurrent/threaded mechanism also proved useless in this case due to same errors. 
-
-If you are rate-limited during a download from twistcdn, you can simply re-run the downloader and it will try to continue from where it left.
