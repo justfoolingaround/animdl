@@ -1,7 +1,3 @@
-"""
-AnimePahe is supposed to provide us with superior qualities. :P
-"""
-
 import re
 
 import requests
@@ -9,25 +5,19 @@ import requests
 API_URL = "https://animepahe.com/api"
 SITE_URL = "https://animepahe.com/"
 
+ID_RE = re.compile(r"/api\?m=release&id=([^&]+)")
 KWIK_RE = re.compile(r"Plyr\|querySelector\|document\|([^\\']+)")
 
-# https://animepahe.com/play/239f0d07-3a6d-616e-ed8c-f2f1a9489463/d288b66b298f54f727d2741cd512ce2becb07d91686de759658a08fa3a0e40f0
-
-# https://animepahe.com/api?m=release&id=4&l=30&sort=episode_desc&page=33
-
-ID_RE = re.compile(r"/api\?m=release&id=([^&]+)")
-
 def get_session_page(session, page, release_id):
-    
     with session.get(API_URL, params={'m': 'release', 'id': release_id, 'sort': 'episode_desc', 'page': page}) as response:
         return response.json()
 
 def get_m3u8_from_kwik(session, kwik_url):
-    
+    """
+    Better than 99% of those 'kwik_extractor.py' in **most** tools that download from AnimePahe.
+    """
     with session.get(kwik_url, headers={'referer': SITE_URL}) as kwik_page:
-        match = KWIK_RE.search(kwik_page.text).group(1)
-        
-    return "{10}://{9}-{8}-{7}.{6}.{5}/{4}/{3}/{2}/{1}.{0}".format(*match.split('|'))
+        return "{10}://{9}-{8}-{7}.{6}.{5}/{4}/{3}/{2}/{1}.{0}".format(*KWIK_RE.search(kwik_page.text).group(1).split('|'))
 
 def get_stream_url(session, release_id, stream_session):
     
@@ -46,7 +36,7 @@ def get_stream_urls_from_data(session, release_id, data, check):
 
 def predict_pages(total, check):
     """
-    A calculative call to minimize API calls :P.
+    A calculative function to minimize API calls.
     """
     for x in range(1, total + 1):
         if check(x):
