@@ -35,8 +35,8 @@ This is done because:
 | Website | Available Qualities | Status | Streamable | Downloadable |
 | ------- | ------------------- | ------ | --------- | ------------ |
 | [Animixplay](https://www.animixplay.to/) | Unknown  (Ranges from 360p to 1080p) | Working | Yes | Yes provided that the stream link is not m3u8. |
-| [Twist](https://www.twist.moe/) | 720p, 1080p | Working | Yes (Slow) | Yes (Slow) | 
-| [AnimePahe](https://www.animepahe.com/) | 360p, 480p, 720p, 1080p | Working | Yes (Ridiculously fast) | No |
+| [Twist](https://www.twist.moe/) | 720p, 1080p | Working | Yes | Yes | 
+| [AnimePahe](https://www.animepahe.com/) | 360p, 480p, 720p, 1080p | Working | Yes | No |
 
 **Coming soon (sites)**
 
