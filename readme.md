@@ -1,3 +1,6 @@
+
+![AnimDL Cover](https://raw.githubusercontent.com/justfoolingaround/animdl/master/assets/cover.png)
+
 AnimDL - Download & stream your favorite anime
 ---
 
