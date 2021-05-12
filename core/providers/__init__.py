@@ -9,6 +9,7 @@ import re
 from .animixplay import fetcher as animix_fetcher
 from .twistmoe import fetcher as twist_fetcher
 from .animepahe import fetcher as animepahe_fetcher
+from .fouranime import fetcher as fouranime_fetcher
 
 current_providers = {
     'animix': {
@@ -22,7 +23,11 @@ current_providers = {
     'animepahe': {
         'matcher': re.compile(r"(?:https?://)?(?:\S+\.)?animepahe\.com/anime/([^?&/]+)"),
         'fetcher': animepahe_fetcher,
-    }
+    },
+    'fouranime': {
+        'matcher': re.compile(r"(?:https?://)?(?:\S+\.)?4anime\.to/(?:(?:anime/([^?&/]+))|(?:([^?&/]+)-episode-\d+))"),
+        'fetcher': fouranime_fetcher,
+    },
 }
 
 def get_provider(url):
