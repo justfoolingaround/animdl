@@ -5,6 +5,7 @@ import requests
 API_URL = "https://animepahe.com/api"
 SITE_URL = "https://animepahe.com/"
 
+PLAYER_RE = re.compile(r"(?:https?://)?(?:\S+\.)?animepahe\.com/play/([^?&/]+)")
 ID_RE = re.compile(r"/api\?m=release&id=([^&]+)")
 KWIK_RE = re.compile(r"Plyr\|querySelector\|document\|([^\\']+)")
 
@@ -44,6 +45,10 @@ def predict_pages(total, check):
         
 
 def fetcher(session: requests.Session, url, check):
+    
+    if match := PLAYER_RE.search(url):
+        url = "https://www.animepahe.com/anime/%s" % match.group(1)
+    
     with session.get(url) as anime_page:
         release_id = ID_RE.search(anime_page.text).group(1)
     
