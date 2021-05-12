@@ -2,14 +2,13 @@
 This is an interactive cli which will allow you to download / watch your favorite anime without any .env hassle.
 """
 
-import re
 import shutil
 import subprocess
 
 from PyInquirer import prompt
 
 from core import *
-from core.providers import current_providers, animixplay
+from core.providers import animixplay, current_providers
 
 
 def ask(message, *choices):
@@ -94,8 +93,7 @@ def __cli__():
             'end': intinput('Till (if you want to download till Episode 31, type in 31, if you want to download till the end, type in 0 or something that\'s not an integer): ') or None,
          }
     )
-    
-    return internal_download("Downloads", client.fetch_appropriate(**afl_config))
+    return internal_download(input('Download folder name (might want to make it something reasonable like "One Piece"): '), client.fetch_appropriate(**afl_config))
     
 if __name__ == '__main__':
     __cli__()
