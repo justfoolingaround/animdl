@@ -60,7 +60,7 @@ def stream(url_generator):
             quality = ask('There seems to be multiple qualities available, please pick a quality to start streaming.', *episode.qualities) if [*episode.qualities][1:] else [*episode.qualities][0]
             stream_url, headers = episode.get_url(quality)
                      
-            process = subprocess.Popen(['mpv', stream_url] + ['--http-header-fields=%s' % ','.join('%s:%s' % (k, v) for k, v in headers.items())] if headers else [])
+            process = subprocess.Popen(['mpv', stream_url, "--title=Episode %02d - %s" % (episode.number, episode.name)] + ['--http-header-fields=%s' % ','.join('%s:%s' % (k, v) for k, v in headers.items())] if headers else [])
             process.wait()
         
             choice = ask('AnimDL detects that the process has ended, would you like to view the next episode in the queue or replay this one?', 'Next', 'Replay')
