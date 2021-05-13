@@ -3,6 +3,8 @@ from pathlib import Path
 import requests
 from tqdm import tqdm
 
+import time
+
 def sanitize_filename(f):
     return ''.join(' - ' if _ in '<>:"/\\|?*' else _ for _ in f)
 
@@ -33,7 +35,10 @@ def _download(url, _path, tqdm_bar_init, headers):
                     tqdm_bar.update(size)
                     sw.write(chunks)
             except requests.RequestException:
-                pass
+                """
+                A delay to avoid rate-limit(s).
+                """
+                time.sleep(1)
             
     tqdm_bar.close()
 
