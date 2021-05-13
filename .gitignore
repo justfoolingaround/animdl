@@ -1,2 +1,5 @@
 __pycache__/
 devtest.py
+
+# Shader files
+*.glsl

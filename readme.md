@@ -1,10 +1,10 @@
 
 ![AnimDL Cover](https://raw.githubusercontent.com/justfoolingaround/animdl/master/assets/cover.png)
 
-AnimDL - Download & stream your favorite anime
+AnimDL - Download & stream your favorite anime in best qualities
 ---
 
-AnimDL is an incredibly powerful tool to download and/or stream your favorite anime. 
+AnimDL is an incredibly powerful tool to download and/or stream your favorite anime alongside realtime upscaling. 
 
 The core advantage of this tool is that, it can download and stream from the sites mentioned below without using inefficient dependencies like Selenium and JS Evaluators. 
 This tool has taken advantage of internal streaming mechanisms in different site(s) such that, it acts as a browser itself internally to hunt down stream URL(s).
@@ -57,6 +57,19 @@ Streaming needs an additional dependency known as `mpv`, you can download it fro
 
 This dependency is incredibly efficient for streaming and light-weight too. You need to add it to your PATH for the tool to detect and run it.
 
+**Shaders**
+
+You can stream your favorite anime with realtime shaders from [bloc97/Anime4K](https://github.com/bloc97/Anime4K/). 
+This means that you can upscale your anime to an incredibly high resolution. (A low quality 480p can be converted to 2160p). 
+
+To use this feature, download your shaders to the working directory and make sure to configure shaders while using the "stream" feature. 
+All you need to do is type down the shader name. To use multiple shaders, you may separate shaders using ';'.
+
+For example: 
+
+`Anime4K_Denoise_Bilateral_Mode.glsl;Anime4K_Upscale_CNN_M_x2_Deblur.glsl` can be passed as the shader argument given that both 
+`Anime4K_Denoise_Bilateral_Mode.glsl` and `Anime4K_Upscale_CNN_M_x2_Deblur.glsl` are downloaded to the working directory from [here.](https://github.com/bloc97/Anime4K/releases/)
+
 **Disclaimer**
 
-Downloading copyrighted materials might be illegal in your country.
+Downloading or streaming copyrighted materials might be illegal in your country.
