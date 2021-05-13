@@ -27,7 +27,7 @@ def _download(url, _path, tqdm_bar_init, headers):
         tqdm_bar.update(d)
         while r > d:
             try:
-                for chunks in requests.get(url, stream=True, headers={'Range': 'bytes=%d-' % d} | headers,).iter_content(0x4000):
+                for chunks in requests.get(url, stream=True, headers={'Range': 'bytes=%d-' % d} | (headers or {}),).iter_content(0x4000):
                     size = len(chunks)
                     d += size
                     tqdm_bar.update(size)
