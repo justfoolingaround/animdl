@@ -97,11 +97,11 @@ class AnimDLSession(AnimDLCliObject):
         if not session_dict:
             return "Unable to continue from previous session as there was none. (Your session file may have gotten deleted.)", False
         
-        remarks = ("The previous session indicates scraping from '%(anime_url)s' and " + 
-            (" was set to continue to the end from E%(start)02d" if not session_dict.get('end') else " was set to play from E%(start)02d-E%(end)02d. ") + 
-                "Currently the session has reached E%(current)02d.") % session_dict
+        remarks = ("The previous session indicates scraping from '%(anime_url)s' and" + 
+            (" was set to continue to the end from E%(start)02d. " if not session_dict.get('end') else " was set to play from E%(start)02d-E%(end)02d. ") + 
+                "Currently the session has reached E%(current)02d. ") % session_dict
         
         if session_dict.get('afl'):
-            remarks += "Filler list from %(url)s with offset of %(offset)s was set. The filter for the session was set to [Canon: %(canon)s, Mixed Canon/Filler: %(mixed_canon)s, Filler: %(fillers)s]." % session_dict.get('afl')
+            remarks += "\nFiller list from %(url)s with offset of %(offset)s was set. The filter for the session was set to [Canon: %(canon)s, Mixed Canon/Filler: %(mixed_canon)s, Filler: %(fillers)s]." % session_dict.get('afl')
             
         return remarks, True
