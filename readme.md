@@ -16,10 +16,10 @@ If you're using the `cli.py` file, the search query mechanism will only search t
 
 | Query | Will Recognize | Action |
 | ----- | -------------- | ------ |
-| [`One Piece (AnimePahe Anime URL)`](https://animepahe.com/anime/b0c3ed18-0721-df22-574b-63dc56a57f68) | Yes | Will start scraping One Piece from AnimePahe |
-| [`One Piece (AnimePahe Episode URL)`](https://animepahe.com/play/b0c3ed18-0721-df22-574b-63dc56a57f68/321b254b5d2f1349dc49b6db4f43ff028591e51c1b3ce7f51f23e1c2d0606961) | Yes | Will convert to anime URL and start scraping One Piece from it. This will not download a singular episode. |
-| [`One Piece (Twist URL)`](https://twist.moe/a/one-piece) | Yes | Will start scraping One Piece from Twist |
-| [`One Piece (Animixplay URL)`](https://animixplay.to/v1/one-piece) | Yes | Will start scraping One Piece from Animixplay |
+| https://animepahe.com/anime/b0c3ed18-0721-df22-574b-63dc56a57f68 | Yes | Will start scraping One Piece from AnimePahe |
+| https://animepahe.com/play/b0c3ed18-0721-df22-574b-63dc56a57f68/321b254b5d2f1349dc49b6db4f43ff028591e51c1b3ce7f51f23e1c2d0606961 | Yes | Will convert to anime URL and start scraping One Piece from it. This will not download a singular episode. |
+| https://twist.moe/a/one-piece | Yes | Will start scraping One Piece from Twist |
+| https://animixplay.to/v1/one-piece | Yes | Will start scraping One Piece from Animixplay |
 | `one piece` | No | Will search through Animixplay and show selections |
 
 The only way of interacting with something other than Animixplay URLs is to put the URL referencing to the providers mentioned below. 
