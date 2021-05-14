@@ -3,3 +3,6 @@ devtest.py
 
 # Shader files
 *.glsl
+
+# Session files
+animdl_session.json

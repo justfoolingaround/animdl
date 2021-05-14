@@ -102,6 +102,6 @@ class AnimDLSession(AnimDLCliObject):
                 "Currently the session has reached E%(current)02d.") % session_dict
         
         if session_dict.get('afl'):
-            remarks += "Filler list from %(url)s with offset of %(offset)s was set. The filter for the session was set to [Canon: %(canon)s, Mixed Canon/Filler: %(mixed_canon)s, Filler: %(fillers)s]."
+            remarks += "Filler list from %(url)s with offset of %(offset)s was set. The filter for the session was set to [Canon: %(canon)s, Mixed Canon/Filler: %(mixed_canon)s, Filler: %(fillers)s]." % session_dict.get('afl')
             
         return remarks, True
