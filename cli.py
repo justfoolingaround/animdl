@@ -7,9 +7,13 @@ import subprocess
 
 from PyInquirer import prompt
 
-from core import *
+from core import internal_download
+from core.helper.cli_helper import AnimDLSession
 from core.providers import animixplay, current_providers
 
+SESSION_FILE = "animdl_session.json"
+
+streaming_feature = bool(shutil.which('mpv'))
 
 def ask(message, *choices):
     return prompt([{'type': 'list', 'name': 'choice', 'message': message, 'choices': choices}]).get('choice')
@@ -43,12 +47,13 @@ def get_afl_config():
         'offset': intinput('Offset (if the Episode 1 of your anime is marked as Episode 201 in AnimeFillerList, type in 200 (the difference); if not, type in 0 or something that\'s not an integer): '),
     }
     
-def stream(url_generator, shaders=None):
+def stream(session, shaders=None):
     
-    for episode in url_generator:
+    for episode in session.get_session_generator():
         
         replay = True
         while replay:
+            session.update_session(episode.number)
             print("Now playing: Episode %02d - '%s'" % (episode.number, episode.name))
             
             quality = ask('There seems to be multiple qualities available, please pick a quality to start streaming.', *episode.qualities) if [*episode.qualities][1:] else [*episode.qualities][0]
@@ -62,39 +67,34 @@ def stream(url_generator, shaders=None):
 
 def __cli__():
     
-    streaming_feature = True
     mode = 'download'
     afl_config = {}
     
-    if not shutil.which('mpv'):
+    if not streaming_feature:
         print("mpv wasn't found; streaming has been disabled.")
-        streaming_feature = False
         
     if streaming_feature:
         mode = ask('Download or stream?', "download", "stream")
         
-    if not (result := process_query(input('Search query: '))):
-        return print("Couldn't find anything of that query.")
+    session = AnimDLSession(SESSION_FILE)
     
-    client = Associator(result)
-    
-    if yesnoqn('Would you like to configure AnimeFillerList for filtering fillers?'):
-        afl_config = get_afl_config()
-    
-    client.filler_list = afl_config.pop('url', None)
-
+    if session.previous_session and yesnoqn('Session data from previous session found, would you like to continue from it?'):
+        remarks, _ = session.session_evaluator(session.previous_session)
+        print(remarks)
+        
+    else:
+        if not (result := process_query(input('Search query: '))):
+            return print("Couldn't find anything of that query.")
+        
+        if yesnoqn('Would you like to configure AnimeFillerList for filtering fillers?'):
+            afl_config = get_afl_config()
+        session = session.create_new_session(SESSION_FILE, result, afl_config, intinput('Start from (if you want to {0} from Episode 12, type in 12): '.format(mode)) or None, intinput('Till (if you want to {0} till Episode 31, type in 31, if you want to {0} till the end, type in 0 or something that\'s not an integer): '.format(mode)) or None,)
+        
     if mode == 'stream':
         shaders = input("Upscaling shader: (Leave blank if you don't know what this is for)") or None        
-        start = intinput("Start streaming from (if you want to stream from Episode 12, type in 12): ") or 1
-        return stream(client.fetch_appropriate(start=start, **afl_config), shaders)
+        return stream(session, shaders)
 
-    afl_config.update(
-        {
-            'start': intinput('Start from (if you want to download from Episode 12, type in 12): ') or None,
-            'end': intinput('Till (if you want to download till Episode 31, type in 31, if you want to download till the end, type in 0 or something that\'s not an integer): ') or None,
-         }
-    )
-    return internal_download(input('Download folder name (might want to make it something reasonable like "One Piece"): '), client.fetch_appropriate(**afl_config))
+    return internal_download(input('Download folder name (might want to make it something reasonable like "One Piece"): '), session.get_session_generator())
     
 if __name__ == '__main__':
     __cli__()
