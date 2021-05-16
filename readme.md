@@ -5,6 +5,8 @@
 
 AnimDL is an incredibly powerful tool to download and/or stream your favorite anime alongside realtime upscaling. 
 
+The only tool in existence that can bypass [9Anime](https://9anime.to)'s cloudflare protection and batch download from it.
+
 The core advantage of this tool is that, it can download and stream from the sites mentioned below without using inefficient dependencies like Selenium and JS Evaluators. 
 This tool has taken advantage of internal streaming mechanisms in different site(s) such that, it acts as a browser itself internally to hunt down stream URL(s).
 
@@ -29,6 +31,10 @@ This is done because:
 - [Twist](https://www.twist.moe/) does not have a good search mechanism. (One Piece is not available but the above link will work.)
 - [AnimePahe](https://www.animepahe.com/)'s search ajax cannot resolve Anime if the query string is less than 4 characters.
 
+#### 9Anime not working?
+
+If 9Anime is not working, it's probably because a captcha has appeared at the site, just go [here](https://9anime.to/ajax/anime/servers?id=ov8) and solve the captcha!
+
 ### Supported Site(s)
 
 | Website | Available Qualities | Status | Streamable | Downloadable |
@@ -38,12 +44,11 @@ This is done because:
 | [AnimePahe](https://www.animepahe.com/) | 360p, 480p, 720p, 1080p | Working | Yes | No |
 | [4Anime](https://4anime.to/) | 360p, 480p, 720p, 1080p | Working | Yes | Yes |
 | [GogoAnime](https://www1.gogoanime.ai/) | Unknown  (Ranges from 360p to 1080p) | Working | Yes | Yes provided that the stream link is not m3u8. |
+| [9Anime](https://9anime.to/) | 1080p / Highest quality possible | Yes | Yes for MP4, no for m3u8 |
 
-### Coming soon (sites)
+### Want more sites?
 
-- 9Anime (without using Selenium)
-
-aaaaaand, just about everything that streams anime (just make a issue and I'll consider it)
+AnimDL currently supports the best anime sites. If you want me to add support for your site, make an issue!
 
 ### Coming soon (features)
 

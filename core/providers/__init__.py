@@ -11,6 +11,7 @@ from .twistmoe import fetcher as twist_fetcher
 from .animepahe import fetcher as animepahe_fetcher
 from .fouranime import fetcher as fouranime_fetcher
 from .gogoanime import fetcher as gogoanime_fetcher
+from .nineanime import fetcher as nineanime_fetcher
 
 current_providers = {
     'animix': {
@@ -32,6 +33,10 @@ current_providers = {
     'gogoanime': {
         'matcher': re.compile(r"^(?:https?://)?(?:\S+\.)?gogoanime\.ai/(?:([^&?/]+)-episode-\d+|category/([^&?/]+))"),
         'fetcher': gogoanime_fetcher,
+    },
+    '9anime': {
+        'matcher': re.compile(r"(?:https?://)?(?:\S+\.)?9anime\.to/watch/[^&?/]+\.([^&?/]+)"),
+        'fetcher': nineanime_fetcher,
     }
 }
 

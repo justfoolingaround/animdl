@@ -37,6 +37,13 @@ These are all the regular expressions used internally in the program.
 ^(?:https?://)?(?:\S+\.)?gogoanime\.ai/(?:([^&?/]+)-episode-\d+|category/([^&?/]+))
 ```
 
+- [9Anime](https://9anime.to) Anime and/or Episode URL
+
+```
+^(?:https?://)?(?:\S+\.)?9anime\.to/watch/[^&?/]+\.([^&?/]+)
+```
+
+
 **Writing a fetcher yourself**
 
 You can modify the code for adding custom fetchers. These fetchers can produce any amount of stream links.
