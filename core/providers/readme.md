@@ -10,3 +10,4 @@ Currently supported:
 - [AnimePahe](https://www.animepahe.com/)
 - [4Anime](https://4anime.to/)
 - [GogoAnime](https://www1.gogoanime.ai/)
+- [9Anime](https://9anime.to/)
