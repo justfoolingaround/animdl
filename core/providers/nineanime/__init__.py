@@ -32,7 +32,7 @@ def get_vidstream_by_hash(session, hash, access_headers):
     vidstream_id = VIDSTREAM_ID.search(data).group('id')
     
     with session.get("https://vidstream.pro/info/%s" % vidstream_id, params={'skey': skey}, headers={'referer': data}) as vidstream_info:
-        return [{'quality': content.get('label', 'unknown'), 'stream_url': content.get('file', ''), 'referer': data} for content in vidstream_info.json().get('media', {}).get('sources', [])] 
+        return [{'quality': content.get('label', 'unknown'), 'stream_url': content.get('file', ''), 'headers': {'referer': data}} for content in vidstream_info.json().get('media', {}).get('sources', [])] 
     
     
 def fetcher(session, url, check):
