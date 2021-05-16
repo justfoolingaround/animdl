@@ -37,10 +37,10 @@ This is done because:
 | [Twist](https://www.twist.moe/) | 720p, 1080p | Working | Yes | Yes | 
 | [AnimePahe](https://www.animepahe.com/) | 360p, 480p, 720p, 1080p | Working | Yes | No |
 | [4Anime](https://4anime.to/) | 360p, 480p, 720p, 1080p | Working | Yes | Yes |
+| [GogoAnime](https://www1.gogoanime.ai/) | Unknown  (Ranges from 360p to 1080p) | Working | Yes | Yes provided that the stream link is not m3u8. |
 
 ### Coming soon (sites)
 
-- GogoAnime
 - 9Anime (without using Selenium)
 
 aaaaaand, just about everything that streams anime (just make a issue and I'll consider it)

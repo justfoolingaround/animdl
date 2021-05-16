@@ -9,3 +9,4 @@ Currently supported:
 - [Twist](https://www.twist.moe/)
 - [AnimePahe](https://www.animepahe.com/)
 - [4Anime](https://4anime.to/)
+- [GogoAnime](https://www1.gogoanime.ai/)

@@ -10,6 +10,7 @@ from .animixplay import fetcher as animix_fetcher
 from .twistmoe import fetcher as twist_fetcher
 from .animepahe import fetcher as animepahe_fetcher
 from .fouranime import fetcher as fouranime_fetcher
+from .gogoanime import fetcher as gogoanime_fetcher
 
 current_providers = {
     'animix': {
@@ -28,14 +29,17 @@ current_providers = {
         'matcher': re.compile(r"^(?:https?://)?(?:\S+\.)?4anime\.to/(?:(?:anime/([^?&/]+))|(?:([^?&/]+)-episode-\d+))"),
         'fetcher': fouranime_fetcher,
     },
+    'gogoanime': {
+        'matcher': re.compile(r"^(?:https?://)?(?:\S+\.)?gogoanime\.ai/(?:([^&?/]+)-episode-\d+|category/([^&?/]+))"),
+        'fetcher': gogoanime_fetcher,
+    }
 }
 
 def get_provider(url):
     for provider, provider_data in current_providers.items():
         if provider_data.get('matcher').match(url):
-            return provider_data
+            return provider, provider_data
         
 def get_appropriate(session, url, check=lambda *args: True):
-    
-    provider = get_provider(url)
+    provider_name, provider = get_provider(url)
     return provider.get('fetcher')(session, url, check)
