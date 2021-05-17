@@ -1,75 +1,56 @@
 from urllib.parse import unquote
 
+CHARACTER_MAP = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/"
 
-def decipher(encrypted_uri):
+def decipher(encrypted_url: str):
     """
-    Credits to: https://github.com/anime-dl/anime-downloader/blob/master/anime_downloader/sites/nineanime.py#L70
+    Just another another decryption algorithm
+    
+    I have no idea what it's name is, all I know is that, it works.
+    
+    Site(s) that use this algorithm in their API(s):
+        - 9Anime
+        - sWatchSeries.ru
+        - Fbox.to
+    
     """
-    str1 = encrypted_uri[:9]
-    str2 = encrypted_uri[9:]
+    s1, s2 = encrypted_url[:9], encrypted_url[9:].strip('=')
+    crypto = 0
+    
+    decrypted = ""
+    
+    for index, character in enumerate(s2, 1):
+        crypto <<= 6
 
-    encodedNum = 0
-    counter = 0
-    part1 = ""
+        if character in CHARACTER_MAP:
+            crypto |= CHARACTER_MAP.index(character)
 
-    for char in str2:
-        encodedNum <<= 6
+        if index and not (index % 4):
+            decrypted, crypto = decrypted + chr((0xff0000 & crypto) >> 16) + chr((0xff00 & crypto) >> 8) + chr(0xff & crypto), 0
+        
+    if index % 4 and not (index % 2):
+        crypto >>= 4
+        decrypted += chr(crypto)
 
-        try:
-            letterNum = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/'.index(char)
-            encodedNum |= letterNum
-        except:
-            pass
+    if index % 4 and not (index % 3):
+        decrypted += chr((65280 & crypto) >> 8) + chr(255 & crypto)
+            
+    decrypted = unquote(decrypted)
+    mapper = {byte_index: byte_index for byte_index in range(0x100)}
+    xcrypto = 0
 
-        counter += 1
+    for byte_index in range(0x100):
+        xcrypto = (xcrypto + mapper.get(byte_index) + ord(s1[byte_index % len(s1)])) % 0x100
+        mapper[byte_index], mapper[xcrypto] = mapper[xcrypto], mapper[byte_index]
 
-        if counter == 4:
-            part1 += chr((16711680 & encodedNum) >> 16)
-            part1 += chr((65280 & encodedNum) >> 8)
-            part1 += chr(255 & encodedNum)
-
-            encodedNum = 0
-            counter = 0
-
-    if counter == 2:
-        encodedNum >>= 4
-        part1 += chr(encodedNum)
-    elif counter == 3:
-        encodedNum >>2
-        part1 += chr((65280 & encodedNum) >> 8)
-        part1 += chr(255 & encodedNum)
-
-    try:
-        part1 = unquote(part1)
-    except:
-        pass
-
-    arr = {}
-    i = 0
-    byteSize = 256
-    final = ""
-
-    for c in range(byteSize):
-        arr[c] = c
-
-    x = 0
-    for c in range(byteSize):
-        x = (x + arr[c] + ord(str1[c % len(str1)])) % byteSize
-        i = arr[c]
-        arr[c] = arr[x]
-        arr[x] = i
-
-    x = 0
-    d = 0
-
-    for s in range(len(part1)):
-        d = (d + 1) % byteSize
-        x = (x + arr[d]) % byteSize
-
-        i = arr[d]
-        arr[d] = arr[x]
-        arr[x] = i
-
-        final += chr(ord(part1[s]) ^ arr[(arr[d] + arr[x]) % byteSize])
-
-    return final
+    xcryptoz, xcryptoy = 0, 0
+    
+    cipher = ""
+    
+    for character in decrypted:
+        xcryptoy = (xcryptoy + 1) % 0x100
+        xcryptoz = (xcryptoz + mapper.get(xcryptoy)) % 0x100
+        mapper[xcryptoy], mapper[xcryptoz] = mapper[xcryptoz], mapper[xcryptoy]
+        cipher += chr(ord(character) ^ mapper[(mapper[xcryptoy] + mapper[xcryptoz]) % 0x100])
+        
+    return cipher
