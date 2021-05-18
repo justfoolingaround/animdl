@@ -18,8 +18,10 @@ def get_m3u8_from_kwik(session, kwik_url):
     Better than 99% of those 'kwik_extractor.py' in **most** tools that download from AnimePahe.
     """
     with session.get(kwik_url, headers={'referer': SITE_URL}) as kwik_page:
-        return "{10}://{9}-{8}-{7}.{6}.{5}/{4}/{3}/{2}/{1}.{0}".format(*KWIK_RE.search(kwik_page.text).group(1).split('|'))
-
+        if (match := KWIK_RE.search(kwik_page.text)):
+            return "{10}://{9}-{8}-{7}.{6}.{5}/{4}/{3}/{2}/{1}.{0}".format(*match.group(1).split('|'))
+        raise Exception("Session fetch failure; please recheck and/or retry fetching anime URLs again. If this problem persists, please make an issue immediately.")
+        
 def get_stream_url(session, release_id, stream_session):
     
     with session.get(API_URL, params={'m': 'links', 'id': release_id, 'session': stream_session, 'p': 'kwik'}) as stream_url_data:

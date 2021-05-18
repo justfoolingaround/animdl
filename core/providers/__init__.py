@@ -23,7 +23,7 @@ current_providers = {
         'fetcher': twist_fetcher,
     },
     'animepahe': {
-        'matcher': re.compile(r"^(?:https?://)?(?:\S+\.)?animepahe\.com/anime/([^?&/]+)"),
+        'matcher': re.compile(r"^(?:https?://)?(?:\S+\.)?animepahe\.com/(?:anime|play)/([^?&/]+)"),
         'fetcher': animepahe_fetcher,
     },
     'fouranime': {
