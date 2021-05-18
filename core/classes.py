@@ -39,6 +39,7 @@ class Episode(AnimDLObject):
         for urls in self.urls:
             if (not quality) or (urls.get('quality') == quality):
                 return urls.get('stream_url'), urls.get('headers')
+        return None, None
         
     def __repr__(self):
         return "< Episode %02d - '%s' [%s], %s >" % (self.number, self.name, self.filler, self.date_aired)

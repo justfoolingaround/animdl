@@ -56,7 +56,7 @@ def internal_download_v1(base_folder, episodes):
             continue
         
         r = int(requests.head(url).headers.get('content-length', 0))        
-        progress = tqdm(desc='Episode %02d, %s' % (episode.number, episode.name), total=r, unit='B', unit_scale=True)
+        progress = tqdm(desc='Episode %02d, %s' % (episode.number, episode.name), total=r, unit='B', unit_scale=True, unit_divisor=1024)
         
         with open(base / (Path('E%02d - %s.mp4' % (episode.number, sanitize_filename(episode.name)))), 'ab') as sw:
             offset = sw.tell()
@@ -81,7 +81,7 @@ def internal_download(base_folder, episodes):
     for episode in episodes:
         url, headers = episode.get_url()
         
-        if url.endswith('m3u8'):
+        if (url or '').endswith('m3u8'):
             print('Episode %02d, %s\'s download has been aborted due to the available url being an m3u8 file (the download is pointless), please try to stream the URL instead. URL: %s' % (episode.number, episode.name, url))
             continue
 
