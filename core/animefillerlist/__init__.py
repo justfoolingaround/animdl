@@ -30,4 +30,4 @@ def get_using_xpath(session, afl_url, xpath):
     Returns a list of named tuples containing the episode number, title, content type (either canon, filler or mixed) and aired-date.
     """
     parsed = htmlparser.fromstring(session.get(afl_url).content)
-    return [PartialEpisode(int(tr.xpath('td[@class="Number"]')[0].text), tr.xpath('td[@class="Title"]/a')[0].text, tr.xpath('td[@class="Type"]/span')[0].text, tr.xpath('td[@class="Date"]')[0].text) for tr in parsed.xpath(xpath)]
+    return [PartialEpisode(int(tr.xpath('td[@class="Number"]')[0].text), tr.xpath('td[@class="Title"]/a')[0].text.strip(), tr.xpath('td[@class="Type"]/span')[0].text.strip(), tr.xpath('td[@class="Date"]')[0].text.strip()) for tr in parsed.xpath(xpath)]
