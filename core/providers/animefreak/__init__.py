@@ -23,7 +23,7 @@ def send_valid(session, stream_url):
 
 def extract_stream_uri(session, episode_url):
     with session.get(episode_url) as episode_page:
-        return send_valid(re.search(r"file\s*=\s*['\"]([^'\"]*)", episode_page.text).group(1))
+        return send_valid(session, re.search(r"file\s*=\s*['\"]([^'\"]*)", episode_page.text).group(1))
 
 def fetcher(session, url, check):
     if match := EPISODE_RE.search(url):
