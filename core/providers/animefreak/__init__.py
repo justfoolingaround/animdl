@@ -14,8 +14,9 @@ def fetcher(session, url, check):
         url = BASE_URL.format(match.group(1))
 
     with session.get(url) as anime_page:
-        episodes = htmlparser.fromstring(anime_page.text).xpath('(//ul[@class="check-list"])[2]/li/a')
-
+        html_element = htmlparser.fromstring(anime_page.text)
+        episodes = html_element.xpath('(//ul[@class="check-list"])[2]/li/a') or html_element.xpath('//ul[@class="check-list"]/li/a')
+        
     for episode in reversed(episodes):
         if check(int(re.search(r"\d+", episode.text_content()).group(0))):
             yield [{'quality': 'unknown', 'stream_url': extract_stream_uri(session, episode.get('href'))}]
