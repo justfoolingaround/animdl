@@ -17,6 +17,7 @@ def generate_appropriate_header(url, *, headers):
 
 def _download(url, _path, tqdm_bar_init, headers):
     
+    verify = headers.pop('ssl_verification', True)
     header, url = generate_appropriate_header(url, headers=headers)
     
     r = int(header.get('content-length', 0) or 0)    
@@ -29,7 +30,7 @@ def _download(url, _path, tqdm_bar_init, headers):
         tqdm_bar.update(d)
         while r > d:
             try:
-                for chunks in requests.get(url, stream=True, headers={'Range': 'bytes=%d-' % d} | (headers or {}),).iter_content(0x4000):
+                for chunks in requests.get(url, stream=True, headers={'Range': 'bytes=%d-' % d} | (headers or {}), verify=verify).iter_content(0x4000):
                     size = len(chunks)
                     d += size
                     tqdm_bar.update(size)
@@ -88,4 +89,4 @@ def internal_download(base_folder, episodes):
         if not url:
             continue
         
-        _download(url, base / (Path('E%02d - %s.mp4' % (episode.number, sanitize_filename(episode.name)))), lambda r: tqdm(desc='Episode %02d, %s' % (episode.number, episode.name), total=r, unit='B', unit_scale=True), headers)
+        _download(url, base / (Path('E%02d - %s.mp4' % (episode.number, sanitize_filename(episode.name)))), lambda r: tqdm(desc='Episode %02d, %s' % (episode.number, episode.name), total=r, unit='B', unit_scale=True, unit_divisor=1024), headers)

@@ -58,6 +58,7 @@ def stream(session, shaders=None):
             
             quality = ask('There seems to be multiple qualities available, please pick a quality to start streaming.', *episode.qualities) if [*episode.qualities][1:] else [*episode.qualities][0]
             stream_url, headers = episode.get_url(quality)
+            _ = headers.pop('ssl_verification', True)
             process = subprocess.Popen(['mpv', stream_url, "--title=Episode %02d - %s" % (episode.number, episode.name)] + (['--http-header-fields=%s' % ','.join('%s:%s' % (k, v) for k, v in headers.items())] if headers else []) + (['--glsl-shaders=%s' % shaders] if shaders else []))
             process.wait()
         
