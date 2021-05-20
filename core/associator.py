@@ -1,4 +1,7 @@
 import requests
+from urllib3.exceptions import InsecureRequestWarning
+
+requests.packages.urllib3.disable_warnings(category=InsecureRequestWarning)
 
 from .classes import Episode, AnimDLObject
 from .providers import get_appropriate
