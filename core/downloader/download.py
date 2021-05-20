@@ -8,17 +8,17 @@ import time
 def sanitize_filename(f):
     return ''.join(' - ' if _ in '<>:"/\\|?*' else _ for _ in f)
 
-def generate_appropriate_header(url, *, headers):
+def generate_appropriate_header(url, *, headers, verify):
     
-    c = requests.head(url, headers=headers)
+    c = requests.head(url, headers=headers, verify=verify)
     while semi_url := c.headers.get('location'):
-        c = requests.head(semi_url, headers=headers)
+        c = requests.head(semi_url, headers=headers, verify=verify)
     return c.headers, semi_url or url
 
 def _download(url, _path, tqdm_bar_init, headers):
     
     verify = headers.pop('ssl_verification', True)
-    header, url = generate_appropriate_header(url, headers=headers)
+    header, url = generate_appropriate_header(url, headers=headers, verify=verify)
     
     r = int(header.get('content-length', 0) or 0)    
     d = 0
