@@ -15,8 +15,8 @@ def generate_key(salt: bytes, *, output=48):
     current_key = key
     
     while len(current_key) < output:
-        key = md5(key + TWISTMOE_SECRET + salt)
-        current_key += key.digest()
+        key = md5(key + TWISTMOE_SECRET + salt).digest()
+        current_key += key
         
     return current_key[:output]
 
