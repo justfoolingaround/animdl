@@ -17,7 +17,8 @@ def send_valid(session, stream_url):
     file = STREAM_URL_RE.search(stream_url).group('file')
     
     for trial in range(6, 12):
-        with session.get(url := BASE_STREAM_URL % (trial, file), stream=True) as response:
+        url = BASE_STREAM_URL % (trial, file)
+        with session.get(url, stream=True) as response:
             if response.ok:
                 return url
 
@@ -26,7 +27,8 @@ def extract_stream_uri(session, episode_url):
         return send_valid(session, re.search(r"file\s*=\s*['\"]([^'\"]*)", episode_page.text).group(1))
 
 def fetcher(session, url, check):
-    if match := EPISODE_RE.search(url):
+    match  = EPISODE_RE.search(url)
+    if match:
         url = BASE_URL.format(match.group(1))
 
     with session.get(url) as anime_page:

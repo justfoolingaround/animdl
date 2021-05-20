@@ -15,7 +15,8 @@ def generate_key(salt: bytes, *, output=48):
     current_key = key
     
     while len(current_key) < output:
-        current_key += (key := md5(key + TWISTMOE_SECRET + salt).digest())
+        key = md5(key + TWISTMOE_SECRET + salt)
+        current_key += key.digest()
         
     return current_key[:output]
 
@@ -23,8 +24,8 @@ def decipher(encoded_url: str):
     
     s1 = b64decode(encoded_url.encode('utf-8'))
     assert s1.startswith(b'Salted__'), "Not a salt."
-    
-    return unpad_content(AES.new((key := generate_key(s1[8:16]))[:32], AES.MODE_CBC, key[32:]).decrypt(s1[16:])).decode('utf-8', 'ignore').lstrip(' ')
+    key = generate_key(s1[8:16])
+    return unpad_content(AES.new(key[:32], AES.MODE_CBC, key[32:]).decrypt(s1[16:])).decode('utf-8', 'ignore').lstrip(' ')
 
 def __internal_get_uri(stream_url):
     """

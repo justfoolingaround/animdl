@@ -10,8 +10,8 @@ def extract_stream_uri(session, episode_url):
         return (htmlparser.fromstring(episode_page.text).xpath('//video[@id="example_video_1"]/source') or [{}])[0].get('src', 'https://4anime.to/404')
 
 def fetcher(session, url, check):
-    
-    if match := EPISODE_RE.search(url):
+    match = EPISODE_RE.search(url)
+    if match:
         url = BASE_URL.format(match.group(1))
     
     with session.get(url) as anime_page:

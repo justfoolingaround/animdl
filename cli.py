@@ -35,7 +35,8 @@ def process_query(query):
     return "https://animixplay.to%s" % ask("Found a total of %d results:" % len(results), *[{'name': title, 'value': (slug)} for slug, title, image in results])
 
 def intinput(message, *, default=0):
-    return int(ch) if (ch := input(message)).isdigit() else default
+    ch = input(message)
+    return int(ch) if ch.isdigit() else default
 
 def get_afl_config():
     
@@ -84,7 +85,9 @@ def __cli__():
         print(remarks)
         
     else:
-        if not (result := process_query(input('Search query: '))):
+        print("The query below can be either a supported platform's url or a search string to search for in Animixplay.")
+        result = process_query(input('Query: '))
+        if not result:
             return print("Couldn't find anything of that query.")
         
         if yesnoqn('Would you like to configure AnimeFillerList for filtering fillers?'):

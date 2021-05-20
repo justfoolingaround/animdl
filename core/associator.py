@@ -34,4 +34,8 @@ class Associator(AnimDLObject):
             check = construct_check(episode_list, offset)
                     
         for i, url in enumerate(get_appropriate(self.session, self.url, check=check), 1):
-            yield Episode((e := episode_list.pop(0)).number - offset, e.title, e.content_type, e.aired_date, url) if episode_list else Episode.unloaded(i + start - 1 - offset, url)
+            if episode_list:
+                e = episode_list.pop(0)
+                yield Episode(e.number - offset, e.title, e.content_type, e.aired_date, url)
+            else:
+                yield Episode.unloaded(i + start - 1 - offset, url)

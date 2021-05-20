@@ -21,12 +21,13 @@ def get_episode_list(session, anime_id):
         yield SITE_URL + episode.get('href', '').strip()
         
 def get_anime_id(html_content):
-    assert (content := html_content.xpath('//input[@id="movie_id"]')), "No GGA Anime ID found."
+    content = html_content.xpath('//input[@id="movie_id"]')
+    assert content, "No GGA Anime ID found."
     return int(content[0].get('value', 0))
 
 def convert_to_anime_page(url):
-    
-    if match := ANIME_RE.search(url):
+    match = ANIME_RE.search(url)
+    if match:
         return SITE_URL + "/category/%s" % match.group(1)
     return url
 

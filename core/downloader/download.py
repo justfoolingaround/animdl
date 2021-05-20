@@ -11,8 +11,10 @@ def sanitize_filename(f):
 def generate_appropriate_header(url, *, headers, verify):
     
     c = requests.head(url, headers=headers, verify=verify)
-    while semi_url := c.headers.get('location'):
+    semi_url = c.headers.get('location')
+    while semi_url:
         c = requests.head(semi_url, headers=headers, verify=verify)
+        semi_url = c.headers.get('location')
     return c.headers, semi_url or url
 
 def _download(url, _path, tqdm_bar_init, headers):

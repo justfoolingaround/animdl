@@ -18,7 +18,8 @@ def get_m3u8_from_kwik(session, kwik_url):
     Better than 99% of those 'kwik_extractor.py' in **most** tools that download from AnimePahe.
     """
     with session.get(kwik_url, headers={'referer': SITE_URL}) as kwik_page:
-        if (match := KWIK_RE.search(kwik_page.text)):
+        match = KWIK_RE.search(kwik_page.text)
+        if match:
             return "{10}://{9}-{8}-{7}.{6}.{5}/{4}/{3}/{2}/{1}.{0}".format(*match.group(1).split('|'))
         raise Exception("Session fetch failure; please recheck and/or retry fetching anime URLs again. If this problem persists, please make an issue immediately.")
         
@@ -48,7 +49,8 @@ def predict_pages(total, check):
 
 def fetcher(session: requests.Session, url, check):
     
-    if match := PLAYER_RE.search(url):
+    match = PLAYER_RE.search(url)
+    if match:
         url = "https://www.animepahe.com/anime/%s" % match.group(1)
     
     with session.get(url) as anime_page:
