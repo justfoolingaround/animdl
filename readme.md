@@ -45,6 +45,7 @@ If 9Anime is not working, it's probably because a captcha has appeared at the si
 | [4Anime](https://4anime.to/) | 360p, 480p, 720p, 1080p | Working | Yes | Yes |
 | [GogoAnime](https://www1.gogoanime.ai/) | Unknown  (Ranges from 360p to 1080p) | Working | Yes | Yes provided that the stream link is not m3u8. |
 | [9Anime](https://9anime.to/) | 1080p / Highest quality possible | Working | Yes | Yes for MP4, no for m3u8 |
+| [AnimeFreak](https://www.animefreak.tv/) | 720p, 1080p | Working | Yes | No |
 
 ### Want more sites?
 
