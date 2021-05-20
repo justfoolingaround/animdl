@@ -1,6 +1,5 @@
-requests
-tqdm
-PyInquirer
 lxml
-shutil
+tqdm
+requests
+PyInquirer
 pycryptodomex
