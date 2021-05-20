@@ -1,79 +1,66 @@
 
 ![AnimDL Cover](https://raw.githubusercontent.com/justfoolingaround/animdl/master/assets/cover.png)
 
-# AnimDL - Download & stream your favorite anime in best qualities
+# AnimDL - Download & Stream your favorite anime
 
-AnimDL is an incredibly powerful tool to download and/or stream your favorite anime alongside realtime upscaling. 
+AnimDL is an incredibly powerful tool for downloading and streaming anime.
 
-The only tool in existence that can bypass [9Anime](https://9anime.to)'s cloudflare protection and batch download from it.
+### Core features
 
-The core advantage of this tool is that, it can download and stream from the sites mentioned below without using inefficient dependencies like Selenium and JS Evaluators. 
-This tool has taken advantage of internal streaming mechanisms in different site(s) such that, it acts as a browser itself internally to hunt down stream URL(s).
+- Abuses the developer's knowledge of internal streaming mechanisms in various different sites to hunt down high quality stream links.
+- Doesn't make a single unnecessary request to any servers and rules out such requests.
+- Doesn't use any heavy dependencies such as Selenium or Javascript Evaluators.
+- Effectively bypasses DRMs in several streaming sites.
+- Integrates AnimeFillerList so that the user can filter out any fillers from downloading or streaming.
+- Only tool in existence to bypass [9Anime](https://9anime.to)'s cloudflare protection.
+- Operates with full efficiency and speed by using Python's generator functions to their full capacity.
+- Supports [bloc97/Anime4K](https://github.com/bloc97/Anime4K/) for real time anime upscaling.
+- Supports streaming with [`mpv`](https://github.com/mpv-player/mpv/), an incredibly efficient, fast and light-weight dependency.
 
-## IMPORTANT
+And along with these above features, AnimDL supports top anime sites (supported sites are mentioned below)!
 
-If you're using the `cli.py` file, the search query mechanism will only search through Animixplay unless you enter the url of a supported website.
-
-#### For example:
-
-| Query | Will Recognize | Action |
-| ----- | -------------- | ------ |
-| https://animepahe.com/anime/b0c3ed18-0721-df22-574b-63dc56a57f68 | Yes | Will start scraping One Piece from AnimePahe |
-| https://animepahe.com/play/b0c3ed18-0721-df22-574b-63dc56a57f68/321b254b5d2f1349dc49b6db4f43ff028591e51c1b3ce7f51f23e1c2d0606961 | Yes | Will convert to anime URL and start scraping One Piece from it. This will not download a singular episode. |
-| https://twist.moe/a/one-piece | Yes | Will start scraping One Piece from Twist |
-| https://animixplay.to/v1/one-piece | Yes | Will start scraping One Piece from Animixplay |
-| `one piece` | No | Will search through Animixplay and show selections |
-
-The only way of interacting with something other than Animixplay URLs is to put the URL referencing to the providers mentioned below. 
-This is done because:
-
-- Searching through multiple sites is slow and inefficient.
-- [Twist](https://www.twist.moe/) does not have a good search mechanism. (One Piece is not available but the above link will work.)
-- [AnimePahe](https://www.animepahe.com/)'s search ajax cannot resolve Anime if the query string is less than 4 characters.
-
-#### 9Anime not working?
-
-If 9Anime is not working, it's probably because a captcha has appeared at the site, just go [here](https://9anime.to/ajax/anime/servers?id=ov8) and solve the captcha!
-
-### Supported Site(s)
+### Supported Sites
 
 | Website | Available Qualities | Status | Streamable | Downloadable |
 | ------- | ------------------- | ------ | --------- | ------------ |
-| [Animixplay](https://www.animixplay.to/) | Unknown  (Ranges from 360p to 1080p) | Working | Yes | Yes provided that the stream link is not m3u8. |
-| [Twist](https://www.twist.moe/) | 720p, 1080p | Working | Yes | Yes | 
-| [AnimePahe](https://www.animepahe.com/) | 360p, 480p, 720p, 1080p | Working | Yes | No |
-| [4Anime](https://4anime.to/) | 360p, 480p, 720p, 1080p | Working | Yes | Yes |
-| [GogoAnime](https://www1.gogoanime.ai/) | Unknown  (Ranges from 360p to 1080p) | Working | Yes | Yes provided that the stream link is not m3u8. |
-| [9Anime](https://9anime.to/) | 1080p / Highest quality possible | Working | Yes | Yes for MP4, no for m3u8 |
-| [AnimeFreak](https://www.animefreak.tv/) | 720p, 1080p | Working | Yes | No |
+| [4Anime](https://4anime.to/) | 720p, 1080p | Working | Yes | Yes |
+| [9Anime](https://9anime.to/) | 720p, 1080p | Working | Yes | Yes for MP4, no for m3u8 |
+| [AnimeFreak](https://www.animefreak.tv/) | 720p, 1080p | Working | Yes | Yes |
+| [AnimePahe](https://www.animepahe.com/) | 720p, 1080p | Working | Yes | No |
+| [Animixplay](https://www.animixplay.to/) | 480p, 720p, 1080p | Working | Yes | Yes for MP4, no for m3u8 |
+| [GogoAnime](https://www1.gogoanime.ai/) | 480p, 720p, 1080p | Working | Yes | Yes for MP4, no for m3u8 |
+| [Twist](https://www.twist.moe/) | 720p, 1080p | Working | Yes | Yes |
 
-### Want more sites?
+If a site is not working, please don't worry, you're encouraged to make an issue! 
 
-AnimDL currently supports the best anime sites. If you want me to add support for your site, make an issue!
+Want more sites? AnimDL seems to support the best sites currently but that doesn't mean we won't add more sites! You're encouraged to raise as many issues as possible for requests to add support for an anime site.
 
-### Coming soon (features)
+### Scraping from a site
 
-- HLS downloading; a support for downloading m3u8. There are libraries for this but they are not that efficient.
-- GUI!?
+If you've used the `cli.py`, you've probably noticed one thing. You can't choose a specific provider to download from. While it looks 
+like that from the front, you can actually choose a specific provider by simply putting the URL to your anime from that site to the 
+search query.
+
+**For example:**
+
+| Query | Will Recognize | Action |
+| ----- | -------------- | ------ |
+| [AnimePahe URL](https://animepahe.com/anime/b0c3ed18-0721-df22-574b-63dc56a57f68) | Yes | Will start scraping One Piece from AnimePahe |
+| [AnimePahe Player URL](https://animepahe.com/play/b0c3ed18-0721-df22-574b-63dc56a57f68/321b254b5d2f1349dc49b6db4f43ff028591e51c1b3ce7f51f23e1c2d0606961) | Yes | Will convert to anime URL and start scraping One Piece from it. This will not download a singular episode. |
+| [Twist URL](https://twist.moe/a/one-piece) | Yes | Will start scraping One Piece from Twist |
+| [Animixplay URL](https://animixplay.to/v1/one-piece) | Yes | Will start scraping One Piece from Animixplay |
+| `one piece` | No | Will search through Animixplay and show selections |
 
 ### Streaming
 
 Streaming needs an additional dependency known as `mpv`, you can download it from [here.](https://github.com/mpv-player/mpv/releases/)
 
-This dependency is incredibly efficient for streaming and light-weight too. You need to add it to your PATH for the tool to detect and run it.
+If you're having issues with the installation of mpv, you can make an issue to recieve full help on its installation and usage.
 
-### Shaders
+### Coming soon (features)
 
-You can stream your favorite anime with realtime shaders from [bloc97/Anime4K](https://github.com/bloc97/Anime4K/). 
-This means that you can upscale your anime to an incredibly high resolution. (A low quality 480p can be converted to 2160p). 
-
-To use this feature, download your shaders to the working directory and make sure to configure shaders while using the "stream" feature. 
-All you need to do is type down the shader name. To use multiple shaders, you may separate shaders using ';'.
-
-#### For example: 
-
-`Anime4K_Denoise_Bilateral_Mode.glsl;Anime4K_Upscale_CNN_M_x2_Deblur.glsl` can be passed as the shader argument given that both 
-`Anime4K_Denoise_Bilateral_Mode.glsl` and `Anime4K_Upscale_CNN_M_x2_Deblur.glsl` are downloaded to the working directory from [here.](https://github.com/bloc97/Anime4K/releases/)
+- HLS downloading; a support for downloading m3u8. There are libraries for this but they are not that efficient.
+- GUI (Possibly with Javascript frameworks, don't worry, I'll pick the most efficient one)
 
 ### Disclaimer
 
