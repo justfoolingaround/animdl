@@ -48,7 +48,13 @@ def get_vidstream_by_hash(session, hash, access_headers):
     vidstream_embed_url = established_data % vidstream_id
     
     with session.get(vidstream_embed_url, headers={'referer': NINEANIME_URL}) as vidstream_content:
-        skey = SKEY_RE.search(vidstream_content.text).group('skey')
+        skey_match = SKEY_RE.search(vidstream_content.text)    
+        if not skey_match:
+            if vidstream_content.ok:
+                raise Exception('Could not find session key from VidStream; associated url: "%s" (Include this in your GitHub issue!).')
+            return []
+        
+    skey = skey_match.group(1)
     
     with session.get(vidstream_info_ajax % vidstream_id, params={'skey': skey}, headers={'referer': vidstream_embed_url}) as vidstream_info:
         return [{'quality': content.get('label', 'unknown'), 'stream_url': content.get('file', ''), 'headers': {'referer': vidstream_embed_url}} for content in vidstream_info.json().get('media', {}).get('sources', [])] 
