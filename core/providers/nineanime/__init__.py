@@ -16,23 +16,42 @@ WAF_SEPARATOR = re.compile(r"\w{2}")
 ANIME_SLUG = re.compile(r"(?:https?://)?(?:\S+\.)?9anime\.to/watch/[^&?/]+\.(?P<slug>[^&?/]+)")
 SKEY_RE = re.compile(r"skey = '(?P<skey>[^']+)';")
 
-VIDSTREAM_ID = re.compile(r"(?:https?://)?(?:\S+\.)?vidstream\.pro/e/(?P<id>[^&?/]+)")
+VIDSTREAM_REGEXES = {
+    'online': {
+        'matcher': re.compile(r"(?:https?://)?(?:\S+\.)?vidstreamz\.online/embed/(?P<id>[A-Z0-9]+)"),
+        'info_ajax': 'https://vidstreamz.online/info/%s',
+        },
+    'pro': {
+        'matcher': re.compile(r"(?:https?://)?(?:\S+\.)?vidstream\.pro/e/(?P<id>[A-Z0-9]+)"),
+        'info_ajax': 'https://vidstream.pro/info/%s',
+        },
+}
+
+def get_appropriate_vidstream(vidstream_url):
+    for content, data in VIDSTREAM_REGEXES.items():
+        match = data.get('matcher').search(vidstream_url)
+        if match:
+            return match.group('id'), data.get('info_ajax', ''), "https://vidstream.pro/e/%s"
+    
+    raise Exception("VidStream unsupported URL: '%s', please raise an issue on the GitHub with the anime name and episode immediately!")
 
 def get_waf_token(session):
     with session.get(NINEANIME_URL) as cloudflare_page:
         return ''.join(chr(int(c, 16)) for c in WAF_SEPARATOR.findall(WAF_TOKEN.search(cloudflare_page.text).group(1)))
     
 def get_vidstream_by_hash(session, hash, access_headers):
+    
     with session.get(NINEANIME_URL + "ajax/anime/episode", params={'id': hash}, headers=access_headers) as ajax_server_response:
         data = decode(ajax_server_response.json().get('url', ''))
         
-    with session.get(data, headers={'referer': NINEANIME_URL}) as vidstream_content:
-        skey = SKEY_RE.search(vidstream_content.text).group('skey')
-        
-    vidstream_id = VIDSTREAM_ID.search(data).group('id')
+    vidstream_id, vidstream_info_ajax, established_data = get_appropriate_vidstream(data)
+    vidstream_embed_url = established_data % vidstream_id
     
-    with session.get("https://vidstream.pro/info/%s" % vidstream_id, params={'skey': skey}, headers={'referer': data}) as vidstream_info:
-        return [{'quality': content.get('label', 'unknown'), 'stream_url': content.get('file', ''), 'headers': {'referer': data}} for content in vidstream_info.json().get('media', {}).get('sources', [])] 
+    with session.get(vidstream_embed_url, headers={'referer': NINEANIME_URL}) as vidstream_content:
+        skey = SKEY_RE.search(vidstream_content.text).group('skey')
+    
+    with session.get(vidstream_info_ajax % vidstream_id, params={'skey': skey}, headers={'referer': vidstream_embed_url}) as vidstream_info:
+        return [{'quality': content.get('label', 'unknown'), 'stream_url': content.get('file', ''), 'headers': {'referer': vidstream_embed_url}} for content in vidstream_info.json().get('media', {}).get('sources', [])] 
     
     
 def fetcher(session, url, check):

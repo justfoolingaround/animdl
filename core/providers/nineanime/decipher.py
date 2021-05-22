@@ -4,7 +4,7 @@ CHARACTER_MAP = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+
 
 def decipher(encrypted_url: str):
     
-    s1, s2 = encrypted_url[:9], encrypted_url[9:].strip('=')
+    s1, s2 = encrypted_url[:9], encrypted_url[9:]
     crypto = 0
     
     decrypted = ""
@@ -41,6 +41,8 @@ def decipher(encrypted_url: str):
         xcryptoy = (xcryptoy + 1) % 0x100
         xcryptoz = (xcryptoz + mapper.get(xcryptoy)) % 0x100
         mapper[xcryptoy], mapper[xcryptoz] = mapper[xcryptoz], mapper[xcryptoy]
-        cipher += chr(ord(character) ^ mapper[(mapper[xcryptoy] + mapper[xcryptoz]) % 0x100])
+        appendlet = chr(ord(character) ^ mapper[(mapper[xcryptoy] + mapper[xcryptoz]) % 0x100])
+        if appendlet.isascii():
+            cipher += appendlet
         
     return cipher
