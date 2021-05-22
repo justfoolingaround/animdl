@@ -10,7 +10,7 @@ BASE_STREAM_URL = "https://st%d.anime1.com/%s"
 
 def send_valid(session, stream_url):
 
-    with session.get(stream_url, stream=True) as response:
+    with session.get(stream_url, stream=True, verify=False) as response:
         if response.ok:
             return stream_url
     
@@ -18,7 +18,7 @@ def send_valid(session, stream_url):
     
     for trial in range(6, 12):
         url = BASE_STREAM_URL % (trial, file)
-        with session.get(url, stream=True) as response:
+        with session.get(url, stream=True, verify=False) as response:
             if response.ok:
                 return url
 
@@ -35,8 +35,6 @@ def fetcher(session, url, check):
         html_element = htmlparser.fromstring(anime_page.text)
         episodes = html_element.xpath('(//ul[@class="check-list"])[2]/li/a') or html_element.xpath('//ul[@class="check-list"]/li/a')
 
-    session.verify = False        
     for episode in reversed(episodes):
         if check(int(re.search(r"\d+", episode.text_content()).group(0))):
             yield [{'quality': 'unknown', 'stream_url': extract_stream_uri(session, episode.get('href')), 'headers':  {'ssl_verification': False}}]
-    session.verify = True

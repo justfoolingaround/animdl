@@ -3,17 +3,7 @@ from urllib.parse import unquote
 CHARACTER_MAP = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/"
 
 def decipher(encrypted_url: str):
-    """
-    Just another another decryption algorithm
     
-    I have no idea what it's name is, all I know is that, it works.
-    
-    Site(s) that use this algorithm in their API(s):
-        - 9Anime
-        - sWatchSeries.ru
-        - Fbox.to
-    
-    """
     s1, s2 = encrypted_url[:9], encrypted_url[9:].strip('=')
     crypto = 0
     

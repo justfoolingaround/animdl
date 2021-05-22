@@ -1,15 +1,17 @@
+import time
 from pathlib import Path
 
 import requests
 from tqdm import tqdm
 
-import time
-
 def sanitize_filename(f):
     return ''.join(' - ' if _ in '<>:"/\\|?*' else _ for _ in f)
 
 def generate_appropriate_header(url, *, headers, verify):
-    
+    """
+    Combat against annoying responses that contain location in the headers but \
+        doesn't redirect properly.
+    """
     c = requests.head(url, headers=headers, verify=verify)
     semi_url = c.headers.get('location')
     while semi_url:

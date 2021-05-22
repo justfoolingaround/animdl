@@ -7,12 +7,12 @@ The fetcher function must take session, url and check parameters to work.
 import re
 
 from .animefreak import fetcher as animefreak_fetcher
-from .animepahe import fetcher as animepahe_fetcher
+from .animepahe  import fetcher as animepahe_fetcher
 from .animixplay import fetcher as animix_fetcher
-from .fouranime import fetcher as fouranime_fetcher
-from .gogoanime import fetcher as gogoanime_fetcher
-from .nineanime import fetcher as nineanime_fetcher
-from .twistmoe import fetcher as twist_fetcher
+from .fouranime  import fetcher as fouranime_fetcher
+from .gogoanime  import fetcher as gogoanime_fetcher
+from .nineanime  import fetcher as nineanime_fetcher
+from .twistmoe   import fetcher as twist_fetcher
 
 current_providers = {
     'animix': {

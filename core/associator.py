@@ -3,10 +3,11 @@ from urllib3.exceptions import InsecureRequestWarning
 
 requests.packages.urllib3.disable_warnings(category=InsecureRequestWarning)
 
-from .classes import Episode, AnimDLObject
-from .providers import get_appropriate
 from .animefillerlist import get_filler_list
+from .classes import AnimDLObject, Episode
 from .helper import construct_check, filter_episodes
+from .providers import get_appropriate
+
 
 class Associator(AnimDLObject):
     """
