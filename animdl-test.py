@@ -44,15 +44,15 @@ print("\x1b[33mComparing the test results to the last curated test by AnimDL's d
 
 for anime, anime_result in RESULTS.items():
     if anime_result:
-        if (anime_result != PROVIDERS.get('anime', False)):
-            print("\x1b[36m{}\x1b[39m should not be working but is working now; you can raise an issue for requesting an update on this.")
+        if (anime_result != PROVIDERS.get(anime, False)):
+            print("\x1b[36m{}\x1b[39m should not be working but is working now; you can raise an issue for requesting an update on this.".format(anime))
         else:
-            print("\x1b[36m{}\x1b[39m's status has matched with the curated test.")
+            print("\x1b[36m{}\x1b[39m's status has matched with the curated test.".format(anime))
     else:
-        if (anime_result != PROVIDERS.get('anime', False)):  
-            print("\x1b[36m{}\x1b[39m is not working as intended; raise an issue immediately to get this fixed!")
+        if (anime_result != PROVIDERS.get(anime, False)):  
+            print("\x1b[36m{}\x1b[39m is not working as intended; raise an issue immediately to get this fixed!".format(anime))
         else:
-            print("\x1b[36m{}\x1b[39m is not working currently, the developers are aware of this and the issue will get fixed soon.")
+            print("\x1b[36m{}\x1b[39m is not working currently, the developers are aware of this and the issue will get fixed soon.".format(anime))
             
 if LAST_CURATED_TEST.get('current_version') != current_version:
     print("\x1b[31m{}\x1b[39m".format('The above results are subject to be severely outdated. Please update the code by performing a git pull or re-downloading the repository.'))
