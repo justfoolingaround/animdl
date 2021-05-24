@@ -23,6 +23,7 @@ Extraction where the process may seem random but provides a guarenteed content y
 Note that Curated-Random Extraction algorithms are created by developers after they're certain that the algorithm is working perfectly in a standard use case. 
 Curated random extraction is hence, an algorithm difficult to create, that is the main reason why this 'elite' algorithm group isn't all over the extractors. 
 </strong>
+
 ## Usage (outside AnimDL)
 
 These extractors provide single or multiple qualities availabile in the site. In an singular fetch, quality identification is difficult; 
