@@ -1,9 +1,12 @@
 {
-    "4Anime": true,
-    "9Anime": true,
-    "AnimeFreak": true,
-    "AnimePahe": true,
-    "Animixplay": true,
-    "GogoAnime": true,
-    "Twist": true
+    "status": {
+        "4Anime": true,
+        "9Anime": true,
+        "AnimeFreak": true,
+        "AnimePahe": true,
+        "Animixplay": true,
+        "GogoAnime": true,
+        "Twist": true
+    },
+    "current_version": "20210524-1"
 }
