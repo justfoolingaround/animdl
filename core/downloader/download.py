@@ -1,11 +1,24 @@
+import re
 import time
 from pathlib import Path
 
 import requests
 from tqdm import tqdm
 
+URL_REGEX = re.compile(r"(?:https?://)?(?:\S+\.)+(?:[^/]+/)+(?P<url_end>[^?/]+)")
+
 def sanitize_filename(f):
     return ''.join(' - ' if _ in '<>:"/\\|?*' else _ for _ in f)
+
+def absolute_extension_determination(url):
+    """
+    Making use of the best regular expression I've ever seen.
+    """
+    match = URL_REGEX.search(url)
+    if match:
+        url_end = match.group('url_end')
+        return '' if url_end.rfind('.') == -1 else url_end[url_end.rfind('.') + 1:]
+    return ''
 
 def generate_appropriate_header(url, *, headers, verify):
     """
@@ -85,12 +98,12 @@ def internal_download(base_folder, episodes):
     
     for episode in episodes:
         url, headers = episode.get_url()
-        
-        if (url or '').endswith('m3u8'):
+        extension = absolute_extension_determination(url or '')
+        if extension in ['m3u8', 'm3u']:
             print('Episode %02d, %s\'s download has been aborted due to the available url being an m3u8 file (the download is pointless), please try to stream the URL instead. URL: %s' % (episode.number, episode.name, url))
             continue
 
         if not url:
             continue
         
-        _download(url, base / (Path('E%02d - %s.mp4' % (episode.number, sanitize_filename(episode.name)))), lambda r: tqdm(desc='Episode %02d, %s' % (episode.number, episode.name), total=r, unit='B', unit_scale=True, unit_divisor=1024), headers)
+        _download(url, base / (Path('E%02d - %s.%s' % (episode.number, sanitize_filename(episode.name), extension))), lambda r: tqdm(desc='Episode %02d, %s' % (episode.number, episode.name), total=r, unit='B', unit_scale=True, unit_divisor=1024), headers)
