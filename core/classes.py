@@ -38,7 +38,7 @@ class Episode(AnimDLObject):
     def get_url(self, quality=None):        
         for urls in self.urls:
             if (not quality) or (urls.get('quality') == quality):
-                return urls.get('stream_url'), urls.get('headers')
+                return urls.get('stream_url', ''), urls.get('headers', {})
         return None, None
         
     def __repr__(self):
