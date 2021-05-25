@@ -26,7 +26,12 @@ def quality_prompt(stream_list, provider):
 @click.option('-q', '--query', help="A search query or anime url string to begin scraping from.", required=True)
 @click.option('-s', '--start', help="An integer that determines where to begin the streaming from.", required=False, default=0, show_default=False, type=int)
 @click.option('-t', '--title', help="Optional title for the anime if the query is a direct URL.", required=False, default='', show_default=False)
-def animdl_stream(query, start=0, title=''):
+@click.option('-fl', '--filler-list', help="Filler list associated with the content enqueued for the stream.", required=False, default='', show_default=False)
+@click.option('-o', '--offset', "Offset (If the E1 of your anime is marked as E27 on AnimeFillerList, this value should be 27).", required=False, default=0, show_default=False)
+@click.option('--filler', is_flag=True, flag_value=False, help="Auto-skip fillers (If filler list is configured).")
+@click.option('--mixed', is_flag=True, flag_value=False, help="Auto-skip mixed fillers/canons (If filler list is configured).")
+@click.option('--canon', is_flag=True, flag_value=False, help="Auto-skip canons (If filler list is configured).")
+def animdl_stream(query, start, title, filler_list, offset, filler, mixed, canon):
     """
     Streamer call for animdl streaming session.
     """
@@ -44,28 +49,12 @@ def animdl_stream(query, start=0, title=''):
     check = lambda *args, **kwargs: True
     raw_episodes = []
     
-    tx("Load AnimeFillerList for scraping out episodes?")
-    tx("AnimeFillerList allows you to get episode names, filter out filler content & aware the streamer about the index of last episode.")
-    tx("A few seconds of configuring could elevate the streaming experience more.")
-    
-    if click.confirm("Configure AnimeFillerList settings? (defaults to 'N')", default=False):
-        tx("Now configuring AnimeFillerList; please read the stdout stream below to be aware about what to enter.")
-        tx("Required: AnimeFillerList URL.")
-        tx("Optional: Offset (If the E1 of your anime is marked as E27 on AnimeFillerList, this value should be 27)")
-        tx("Optional: Auto-skip fillers content.")
-        tx("Optional: Auto-skip mixed filler/canon content.")
-        tx("Optional: Auto-skip canon content.")
-        afl_url = click.prompt("Filler list URL")
-        raw_episodes = get_filler_list(session, afl_url, fillers=True)
-        tx("Succesfully loaded the filler list from '%s'." % afl_url)
-        offset = click.prompt("Content offset (defaults to 0)", default=0, type=int, show_default=False)
-        filler, mixed, canon = not click.confirm("Auto-skip fillers (defaults to 'N')", default=False), not click.confirm("Auto-skip mixed filler/canon (defaults to 'N')", default=False), not click.confirm("Auto-skip canon (defaults to 'N')", default=False)
+    if filler_list:
+        raw_episodes = get_filler_list(session, filler_list, fillers=True)
+        ts("Succesfully loaded the filler list from '%s'." % filler_list)
         start += offset
-        check = (
-            lambda x: raw_episodes[offset + x - 1].content_type in ((['Filler'] if filler else []) + (['Mixed Canon/Filler'] if mixed else []) + (['Anime Canon', 'Manga Canon'] if canon else []))
-        )
-        
-        
+        check = (lambda x: raw_episodes[offset + x - 1].content_type in ((['Filler'] if filler else []) + (['Mixed Canon/Filler'] if mixed else []) + (['Anime Canon', 'Manga Canon'] if canon else [])))
+       
     for c, stream_urls in enumerate(anime_associator.raw_fetch_using_check(lambda x: check(x) and x >= start), start):
         ts("Active stream session @ [%02d/%s]" % (c, ('%02d' % (len(raw_episodes) - 1)) if raw_episodes else '?'))
         playing = True
