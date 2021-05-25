@@ -77,4 +77,4 @@ def animdl_download(query, start, end, title):
             ts("Failed to download '%s' due to lack of downloadable stream urls. (Possible that m3u8 streams were only available in the site.)" % content_title)
         
         content = valid_urls[0]
-        url_download(content.get('stream_url'), base / Path('%s.%s' % (content_title, aed(content.get('stream_url')))), lambda r: tqdm(desc=title, total=r, unit='B', unit_scale=True, unit_divisor=1024), content.get('headers', {}))
+        url_download(content.get('stream_url'), base / Path('%s.%s' % (content_title, aed(content.get('stream_url')))), lambda r: tqdm(desc=content_title, total=r, unit='B', unit_scale=True, unit_divisor=1024), content.get('headers', {}))

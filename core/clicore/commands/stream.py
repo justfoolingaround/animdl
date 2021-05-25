@@ -48,7 +48,7 @@ def animdl_stream(query, start=0, title=''):
     tx("AnimeFillerList allows you to get episode names, filter out filler content & aware the streamer about the index of last episode.")
     tx("A few seconds of configuring could elevate the streaming experience more.")
     
-    if click.confirm("Configure AnimeFillerList settings? ", default=False):
+    if click.confirm("Configure AnimeFillerList settings? (defaults to 'N')", default=False):
         tx("Now configuring AnimeFillerList; please read the stdout stream below to be aware about what to enter.")
         tx("Required: AnimeFillerList URL.")
         tx("Optional: Offset (If the E1 of your anime is marked as E27 on AnimeFillerList, this value should be 27)")
