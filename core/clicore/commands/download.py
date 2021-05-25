@@ -34,7 +34,7 @@ def animdl_download(query, start, end, title):
     if not start:
         start = click.prompt("Episode number to intiate downloading from (defaults to 1)", default=1, show_default=False) or 1
     
-    ts("Initialzing download session @ [%02d/%s]" % (start, '%02d' % end if not isinstance(end, float) else '?'))    
+    ts("Initialzing download session @ [%02d/%s]" % (start, '%02d' % end if isinstance(end, int) else '?'))    
     anime_associator = Associator(anime.get('anime_url'))    
     check = lambda *args, **kwargs: True
     raw_episodes = []
@@ -56,6 +56,7 @@ def animdl_download(query, start, end, title):
         offset = click.prompt("Content offset", default=0, type=int, show_default=False)
         filler, mixed, canon = not click.confirm("Auto-skip fillers (defaults to 'N')", default=False), not click.confirm("Auto-skip mixed filler/canon (defaults to 'N')", default=False), not click.confirm("Auto-skip canon (defaults to 'N')", default=False)
         start += offset
+        end = len(raw_episodes) - 1
         check = (
             lambda x: raw_episodes[offset + x - 1].content_type in ((['Filler'] if filler else []) + (['Mixed Canon/Filler'] if mixed else []) + (['Anime Canon', 'Manga Canon'] if canon else []))
         )
