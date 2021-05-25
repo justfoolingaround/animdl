@@ -41,7 +41,7 @@ def prompt_user(anime_list, provider_name):
     ts = lambda x: to_stdout(x, "%s-searcher" % provider_name)
     ts("Found %d anime(s)" % len(anime_list))
     for n, anime in enumerate(anime_list, 1):
-        ts("[#%02d] %s" % (n, anime.get('name')))
+        ts("[#%02d] %s \x1b[33m%s\x1b[39m" % (n, anime.get('name'), anime.get('anime_url')))
     
     index = prompt("Select by the index (defaults to 1)", default=1, type=int, show_default=False) - 1
     
