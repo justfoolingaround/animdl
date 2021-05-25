@@ -56,7 +56,8 @@ def animdl_download(query, start, end, title):
         offset = click.prompt("Content offset", default=0, type=int, show_default=False)
         filler, mixed, canon = not click.confirm("Auto-skip fillers (defaults to 'N')", default=False), not click.confirm("Auto-skip mixed filler/canon (defaults to 'N')", default=False), not click.confirm("Auto-skip canon (defaults to 'N')", default=False)
         start += offset
-        end = len(raw_episodes) - 1
+        if not isinstance(end, int):
+            end = len(raw_episodes) - 1
         check = (
             lambda x: raw_episodes[offset + x - 1].content_type in ((['Filler'] if filler else []) + (['Mixed Canon/Filler'] if mixed else []) + (['Anime Canon', 'Manga Canon'] if canon else []))
         )
