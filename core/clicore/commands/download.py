@@ -1,8 +1,7 @@
-import subprocess
+from pathlib import Path
 
 import click
 import requests
-from pathlib import Path
 from tqdm import tqdm
 
 from ... import Associator
