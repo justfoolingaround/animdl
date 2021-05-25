@@ -40,3 +40,7 @@ class Associator(AnimDLObject):
                 yield Episode(e.number - offset, e.title, e.content_type, e.aired_date, url)
             else:
                 yield Episode.unloaded(i + start - 1 - offset, url)
+
+    def raw_fetch_using_check(self, check):
+        for urls in get_appropriate(self.session, self.url, check=check):
+            yield urls
