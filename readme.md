@@ -68,12 +68,6 @@ If a site is not working, please don't worry, you're encouraged to make an issue
 
 Want more sites? AnimDL seems to support the best sites currently but that doesn't mean we won't add more sites! You're encouraged to raise as many issues as possible for requests to add support for an anime site.
 
-### Scraping from a site
-
-If you've used the `cli.py`, you've probably noticed one thing. You can't choose a specific provider to download from. While it looks 
-like that from the front, you can actually choose a specific provider by simply putting the URL to your anime from that site to the 
-search query.
-
 **For example:**
 
 | Query | Will Recognize | Action |
