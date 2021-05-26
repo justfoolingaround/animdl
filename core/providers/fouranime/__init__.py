@@ -18,5 +18,6 @@ def fetcher(session, url, check):
         episodes = htmlparser.fromstring(anime_page.text).xpath('//ul[@class="episodes range active"]/li/a') # type: list[htmlparser.HtmlElement]
     
     for episode in episodes:
-        if check(int(episode.text_content())):
-            yield [{'quality': 'unknown', 'stream_url': extract_stream_uri(session, episode.get('href'))}]
+        en = int(episode.text_content())
+        if check(en):
+            yield [{'quality': 'unknown', 'stream_url': extract_stream_uri(session, episode.get('href'))}], en

@@ -74,5 +74,6 @@ def fetcher(session, url, check):
         data = htmlparser.fromstring(ajax_server_response.json().get('html', ''))
         
     for el in data.xpath('//li/a'):
-        if check(int(el.get('data-base', 0))):
-            yield get_vidstream_by_hash(session, json.loads(el.get('data-sources', '{}')).get('41', ''), access_headers)
+        en = int(el.get('data-base', 0))
+        if check(en):
+            yield get_vidstream_by_hash(session, json.loads(el.get('data-sources', '{}')).get('41', ''), access_headers), en

@@ -36,7 +36,7 @@ def get_stream_url(session, release_id, stream_session):
 def get_stream_urls_from_data(session, release_id, data, check):
     for content in reversed(data):
         if check(content.get('episode', 0)):
-            yield [*get_stream_url(session, release_id, content.get('session'))]  
+            yield [*get_stream_url(session, release_id, content.get('session'))], content.get('episode', 0)
 
 def predict_pages(total, check):
     """

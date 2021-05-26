@@ -61,7 +61,7 @@ def animdl_download(query, start, end, title, filler_list, offset, filler, mixed
     base = Path('./%s/' % sanitize_filename(content_name))
     base.mkdir(exist_ok=True)
     
-    for c, stream_urls in enumerate(anime_associator.raw_fetch_using_check(lambda x: check(x) and end >= x >= start), start):
+    for stream_urls, c in anime_associator.raw_fetch_using_check(lambda x: check(x) and end >= x >= start):
         sfhandler.save_session(SESSION_FILE, url, c, content_name, filler_list, offset, filler, mixed, canon, t='download', end=end)
         content_title = "E%02d" % c
         if raw_episodes:

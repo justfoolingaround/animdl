@@ -59,4 +59,4 @@ def fetcher(session, url, check):
     
     for index, episode in enumerate(episodes, 1):
         if check(index):
-            yield get_stream_url(session, episode)
+            yield get_stream_url(session, episode), index
