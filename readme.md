@@ -8,7 +8,7 @@ AnimDL is an incredibly powerful tool for downloading and streaming anime.
 ### Usage
 
 ```
-animdl.py [download|stream|continue]
+animdl.py [( download | stream | grab ) --query QUERY | continue | help ]
 ```
 
 ### Installation
