@@ -68,16 +68,6 @@ If a site is not working, please don't worry, you're encouraged to make an issue
 
 Want more sites? AnimDL seems to support the best sites currently but that doesn't mean we won't add more sites! You're encouraged to raise as many issues as possible for requests to add support for an anime site.
 
-**For example:**
-
-| Query | Will Recognize | Action |
-| ----- | -------------- | ------ |
-| [AnimePahe URL](https://animepahe.com/anime/b0c3ed18-0721-df22-574b-63dc56a57f68) | Yes | Will start scraping One Piece from AnimePahe |
-| [AnimePahe Player URL](https://animepahe.com/play/b0c3ed18-0721-df22-574b-63dc56a57f68/321b254b5d2f1349dc49b6db4f43ff028591e51c1b3ce7f51f23e1c2d0606961) | Yes | Will convert to anime URL and start scraping One Piece from it. This will not download a singular episode. |
-| [Twist URL](https://twist.moe/a/one-piece) | Yes | Will start scraping One Piece from Twist |
-| [Animixplay URL](https://animixplay.to/v1/one-piece) | Yes | Will start scraping One Piece from Animixplay |
-| `one piece` | No | Will search through Animixplay and show selections |
-
 ### Streaming
 
 Streaming needs an additional dependency known as `mpv`, you can download it from [here.](https://github.com/mpv-player/mpv/releases/)
