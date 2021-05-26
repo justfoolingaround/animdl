@@ -57,8 +57,9 @@ def update_session_file(session_file, session_dict):
         with open(session_file, 'w') as sf:
             json.dump([], sf)
 
+    sessions = load_sessions(session_file)
     with open(session_file, 'w') as sw:
-        json.dump([s for s in load_sessions(session_file) if (s.get('identifier', '')).lower() != session_dict.get('identifier', '').lower()] + [session_dict], sw)
+        json.dump([s for s in sessions if (s.get('identifier', '')).lower() != session_dict.get('identifier', '').lower()] + [session_dict], sw)
         
 
 def save_session(session_file, url, start, identifier, afl_url, afl_offset, afl_fillers, afl_canon, afl_mixed, *, t='stream', end=0):
