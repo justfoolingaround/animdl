@@ -50,7 +50,7 @@ def animdl_download(query, start, end, title, filler_list, offset, filler, mixed
         ts("Succesfully loaded the filler list from '%s'." % filler_list)
         start += offset
         if not isinstance(end, int):
-            end = len(raw_episodes) - 1
+            end = len(raw_episodes)
         check = (lambda x: raw_episodes[offset + x - 1].content_type in ((['Filler'] if filler else []) + (['Mixed Canon/Filler'] if mixed else []) + (['Anime Canon', 'Manga Canon'] if canon else [])))
     
     ts("Starting download session @ [%02d/%s]" % (start, ('%02d' % end if isinstance(end, int) else '?')))
