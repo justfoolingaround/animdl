@@ -8,8 +8,9 @@ from ... import Associator
 from ...animefillerlist import get_filler_list
 from ...downloader import *
 from ..helpers import *
+from .constants import SESSION_FILE
 
-@click.command(name='download')
+@click.command(name='download', help="Download your favorite anime by query.")
 @click.option('-q', '--query', required=True)
 @click.option('-s', '--start', help="An integer that determines where to begin the downloading from.", required=False, default=0, show_default=False, type=int)
 @click.option('-e', '--end', help="A integer that determines where to end the downloading at.", required=False, default=0, show_default=False, type=int)
@@ -39,7 +40,8 @@ def animdl_download(query, start, end, title, filler_list, offset, filler, mixed
         start = click.prompt("Episode number to intiate downloading from (defaults to 1)", default=1, show_default=False) or 1
     
     ts("Initialzing download session @ [%02d/%s]" % (start, '%02d' % end if isinstance(end, int) else '?'))    
-    anime_associator = Associator(anime.get('anime_url'))    
+    url = anime.get('anime_url')
+    anime_associator = Associator(url)    
     check = lambda *args, **kwargs: True
     raw_episodes = []
     
@@ -54,10 +56,13 @@ def animdl_download(query, start, end, title, filler_list, offset, filler, mixed
     ts("Starting download session @ [%02d/%s]" % (start, ('%02d' % end if isinstance(end, int) else '?')))
     ts("Downloads will be done in the folder '%s'" % content_name)
     
+    sfhandler.save_session(SESSION_FILE, url, start, content_name, filler_list, offset, filler, mixed, canon, t='download', end=end)
+    
     base = Path('./%s/' % sanitize_filename(content_name))
     base.mkdir(exist_ok=True)
     
     for c, stream_urls in enumerate(anime_associator.raw_fetch_using_check(lambda x: check(x) and end >= x >= start), start):
+        sfhandler.save_session(SESSION_FILE, url, c, content_name, filler_list, offset, filler, mixed, canon, t='download', end=end)
         content_title = "E%02d" % c
         if raw_episodes:
             content_title += " - %s" % raw_episodes[c - 1].title

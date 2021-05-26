@@ -6,10 +6,11 @@ import shutil
 
 import click
 
-from core.clicore.commands import download, stream
+from core.clicore.commands import download, stream, continuation
 
 commands = {
     'download': download.animdl_download,
+    'continue': continuation.animdl_continue,
 }
 
 mpv = bool(shutil.which('mpv'))

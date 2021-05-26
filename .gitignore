@@ -5,7 +5,7 @@ devtest.py
 *.glsl
 
 # Session files
-animdl_session.json
+cli_session_animdl.json
 
 # justfoolingaround's test anime downloads
 downloadsdev/

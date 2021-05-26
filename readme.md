@@ -5,7 +5,19 @@
 
 AnimDL is an incredibly powerful tool for downloading and streaming anime.
 
-*`cli-beta.py` is functional but some features are awaited for the final push. You can use it if you have `click` (a Python module) installed.*
+### Usage
+
+```
+animdl.py [download|stream|continue]
+```
+
+### Installation
+
+Clone / download the repo and simply run:
+
+```
+pip install -r requirements.txt
+```
 
 ### Core features
 
