@@ -3,7 +3,18 @@
 
 # AnimDL - Download & Stream your favorite anime
 
-AnimDL is an incredibly powerful tool for downloading and streaming anime.
+**AnimDL** is an incredibly powerful tool for downloading and streaming anime.
+
+### Core features
+
+- Abuses the developer's knowledge of internal streaming mechanisms in various different sites to hunt down high quality stream links.
+- Doesn't make a single unnecessary request to any servers and rules out such requests.
+- Doesn't use any heavy dependencies such as Selenium or Javascript Evaluators.
+- Effectively bypasses DRMs in several streaming sites.
+- Integrates AnimeFillerList so that the user can filter out any fillers from downloading or streaming.
+- Only tool in existence to bypass [9Anime](https://9anime.to)'s cloudflare protection.
+- Operates with full efficiency and speed by using Python's generator functions to their full capacity.
+- Supports streaming with [`mpv`](https://github.com/mpv-player/mpv/), an incredibly efficient, fast and light-weight dependency.
 
 ### Usage
 
@@ -17,41 +28,29 @@ Examples:
 animdl.py stream -q "one piece" -s 1 # Starts searching 'one piece' on 9Anime and streams from E01.
 animdl.py stream -q "4anime:one piece" -s 1 # Starts searching 'one piece' on 4Anime and streams from E01.
 animdl.py stream -q "https://9anime.to/watch/one-piece.ov8" -s 1 # Starts scraping One Piece from 9Anime and streams from E01.
-
-# Similarly, AnimeFillerList can be configured to get the episode names, filter out unwanted fillers and 
-# make animdl fully aware about when to stop (basically the end of the episodes).
-
-animdl.py stream -q "https://9anime.to/watch/one-piece.ov8" -s 1 -fl "https://animefillerlist.com/shows/one-piece" --fillers
-
-# The filler flag makes animdl skip through filler. It is recommened to use this AnimeFillerList integration when possible.
-# 4anime, 9anime, animefreak, animepahe, animix, gogoanime, twist can be used as prefix followed by a ':' and the query to make animdl search from them.
-
-# You can quit animdl and continue watching anime from where you left it any time using the 'continue'.
-# Similarly, stream urls can be set to be printed / written on stdout using the 'grab' command.
 ```
+Similarly, AnimeFillerList can be configured to get the episode names, filter out unwanted fillers and 
+make animdl fully aware about when to stop (basically the end of the episodes).
+```py
+animdl.py stream -q "https://9anime.to/watch/one-piece.ov8" -s 1 -fl "https://animefillerlist.com/shows/one-piece" --fillers
+```
+The filler flag makes AnimDL skip through filler. It is recommened to use this AnimeFillerList integration when possible.
 
+`4anime`, `9anime`, `animefreak`, `animepahe`, `animix`, `gogoanime`, `twist` (case insensitive) can be used as prefix followed by a ':' and the query to make AnimDL search from them.
+
+You can quit AnimDL and continue watching anime from where you left it any time using the 'continue'.
+
+Similarly, stream urls can be set to be printed / written on stdout using the 'grab' command.
 
 ### Installation
 
-Clone / download the repo and simply run:
+Clone / download the repository and simply run the following command in the working directory:
 
 ```
 pip install -r requirements.txt
 ```
 
-### Core features
-
-- Abuses the developer's knowledge of internal streaming mechanisms in various different sites to hunt down high quality stream links.
-- Doesn't make a single unnecessary request to any servers and rules out such requests.
-- Doesn't use any heavy dependencies such as Selenium or Javascript Evaluators.
-- Effectively bypasses DRMs in several streaming sites.
-- Integrates AnimeFillerList so that the user can filter out any fillers from downloading or streaming.
-- Only tool in existence to bypass [9Anime](https://9anime.to)'s cloudflare protection.
-- Operates with full efficiency and speed by using Python's generator functions to their full capacity.
-- Supports [bloc97/Anime4K](https://github.com/bloc97/Anime4K/) for real time anime upscaling.
-- Supports streaming with [`mpv`](https://github.com/mpv-player/mpv/), an incredibly efficient, fast and light-weight dependency.
-
-And along with these above features, AnimDL supports top anime sites (supported sites are mentioned below)!
+Python 3.6 >= is supported by AnimDL.
 
 ### Supported Sites
 
@@ -98,4 +97,4 @@ If you're having issues with the installation of mpv, you can make an issue to r
 
 ### Disclaimer
 
-Downloading or streaming copyrighted materials might be illegal in your country.
+Downloading or streaming copyrighted materials might be illegal in your country. 
