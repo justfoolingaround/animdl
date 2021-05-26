@@ -35,7 +35,7 @@ def create_random_titles():
     ]
 
 def to_stdout(message, caller='animdl'):
-    return print("\x1b[36m%s\x1b[39m %s" % ("[%s]" % caller, message))
+    return print("[\x1b[36m%s\x1b[39m] %s" % (caller, message))
 
 def stream_judiciary(url):
     """
