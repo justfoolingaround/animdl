@@ -8,8 +8,28 @@ AnimDL is an incredibly powerful tool for downloading and streaming anime.
 ### Usage
 
 ```
-animdl.py [( download | stream | grab ) --query QUERY | continue | help ]
+animdl.py [( download | stream | grab ) --query QUERY | continue ]
 ```
+
+Examples:
+
+```py
+animdl.py stream -q "one piece" -s 1 # Starts searching 'one piece' on 9Anime and streams from E01.
+animdl.py stream -q "4anime:one piece" -s 1 # Starts searching 'one piece' on 4Anime and streams from E01.
+animdl.py stream -q "https://9anime.to/watch/one-piece.ov8" -s 1 # Starts scraping One Piece from 9Anime and streams from E01.
+
+# Similarly, AnimeFillerList can be configured to get the episode names, filter out unwanted fillers and 
+# make animdl fully aware about when to stop (basically the end of the episodes).
+
+animdl.py stream -q "https://9anime.to/watch/one-piece.ov8" -s 1 -fl "https://animefillerlist.com/shows/one-piece" --fillers
+
+# The filler flag makes animdl skip through filler. It is recommened to use this AnimeFillerList integration when possible.
+# 4anime, 9anime, animefreak, animepahe, animix, gogoanime, twist can be used as prefix followed by a ':' and the query to make animdl search from them.
+
+# You can quit animdl and continue watching anime from where you left it any time using the 'continue'.
+# Similarly, stream urls can be set to be printed / written on stdout using the 'grab' command.
+```
+
 
 ### Installation
 
