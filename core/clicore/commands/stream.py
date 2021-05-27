@@ -85,4 +85,4 @@ def animdl_stream(query, start, title, filler_list, offset, filler, mixed, canon
             if mpv_process.returncode:
                 ts("Detected a non-zero return code.")
                 tx("If there was an error or a crash during playback. Don't sweat it, you're going to be prompted for this instance.")
-                playing = not click.confirm("Would you like to repeat '%s'? " % title)
+                playing = click.confirm("Would you like to repeat '%s'? " % title)
