@@ -14,12 +14,12 @@ class Associator(AnimDLObject):
     Associator associates a anime with its url, filler list and stream url.
     """
     
-    def __init__(self, uri, afl_uri=None):
+    def __init__(self, uri, afl_uri=None, *, session=None):
         
         self.url = uri
         self.filler_list = afl_uri
         
-        self.session = requests.Session()
+        self.session = session or requests.Session()
                 
     def fetch_appropriate(self, start=None, end=None, *, 
         offset=0, canon=True, mixed_canon=True, fillers=False):
