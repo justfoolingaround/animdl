@@ -50,7 +50,7 @@ Clone / download the repository and simply run the following command in the work
 pip install -r requirements.txt
 ```
 
-Python 3.6 >= is supported by AnimDL.
+Python 3.6 and higher are supported by AnimDL.
 
 ### Supported Sites
 
