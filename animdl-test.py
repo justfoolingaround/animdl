@@ -4,7 +4,7 @@ An effective benchmark on the providers.
 Tries to get a single stream link across each provider.
 """
 
-current_version = "20210524-1"
+current_version = "20210530-1"
 
 import requests
 from core import Associator
