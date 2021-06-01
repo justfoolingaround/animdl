@@ -71,6 +71,8 @@ def animdl_download(query, start, end, title, filler_list, offset, filler, mixed
         
         if not valid_urls:
             ts("Failed to download '%s' due to lack of downloadable stream urls. (Possible that m3u8 streams were only available in the site.)" % content_title)
+            if stream_urls:
+                ts("Here are some usable streams: %s" % stream_urls)
             continue
         
         content = valid_urls[0]
