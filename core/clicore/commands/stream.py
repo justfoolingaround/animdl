@@ -43,7 +43,7 @@ def animdl_stream(query, start, title, filler_list, offset, filler, mixed, canon
     ts = lambda x: to_stdout(x, 'animdl-%s-streamer-core' % provider)
     tx = lambda x: to_stdout(x, 'animdl-protip')
     ts('Now initiating your stream session')
-    content_name = title or anime.get('name') or ("direct-uri: %s" % query)
+    content_name = title or anime.get('name') or choice(create_random_titles())
     if not start:
         start = click.prompt("Episode number to intiate streaming from (defaults to 1)", default=1, show_default=False) or 1
     ts("Starting stream session @ [%02d/?]" % start)

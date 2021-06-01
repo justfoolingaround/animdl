@@ -33,7 +33,7 @@ def animdl_download(query, start, end, title, filler_list, offset, filler, mixed
     tx = lambda x: to_stdout(x, 'animdl-protip')
     content_name = title or anime.get('name')
     if not content_name:
-        content_name = create_random_titles()[0]
+        content_name = choice(create_random_titles())
         ts("Could not get the folder to download to, generating a cool random folder name: %s" % content_name)    
     
     if not start:
