@@ -40,6 +40,6 @@ def fetcher(session, url, check):
 
     for episode in reversed(episodes):
         episode_number = re.search(r"\d+", episode.text_content())
-        en = int(episode_number.group(0) if episode_number else 0)
+        en = int(episode_number.group(0) if episode_number else 1)
         if check(en):
             yield [{'quality': 'unknown', 'stream_url': extract_stream_uri(session, episode.get('href')), 'headers':  {'ssl_verification': False}}], en
