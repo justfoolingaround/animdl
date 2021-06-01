@@ -9,6 +9,8 @@ current_version = "20210530-1"
 import requests
 from core import Associator
 
+from core.config import *
+
 SHOW_FULL_URLS = False
 LAST_CURATED_TEST = requests.get("https://raw.githubusercontent.com/justfoolingaround/animdl/master/last-curated-test.json").json()
 PROVIDERS = LAST_CURATED_TEST.get('status', {})
@@ -17,16 +19,16 @@ def get_animepahe_onepiece():
     """
     AnimePahe seems to randomize their Anime sessions.
     """
-    return "https://animepahe.com/anime/%s" % requests.get('https://animepahe.com/api', params={'m': 'search', 'q': 'one piece'}).json().get('data', [{}])[0].get('session')
+    return ANIMEPAHE + "anime/%s" % requests.get(ANIMEPAHE + 'api', params={'m': 'search', 'q': 'one piece'}).json().get('data', [{}])[0].get('session')
 
 SITE_BASED = {
-    '4Anime': 'https://4anime.to/anime/one-piece',
-    '9Anime': 'https://9anime.to/watch/one-piece.ov8',
-    'AnimeFreak': 'https://www.animefreak.tv/watch/one-piece',
+    '4Anime': FOURANIME + 'anime/one-piece',
+    '9Anime': NINEANIME + 'watch/one-piece.ov8',
+    'AnimeFreak': ANIMEFREAK + 'watch/one-piece',
     'AnimePahe': get_animepahe_onepiece(),
-    'Animixplay': 'https://animixplay.to/v1/one-piece',
-    'GogoAnime': 'https://www1.gogoanime.ai/category/one-piece',
-    'Twist': 'https://twist.moe/a/one-piece',
+    'Animixplay': ANIMIXPLAY + 'v1/one-piece',
+    'GogoAnime': GOGOANIME + 'category/one-piece',
+    'Twist': TWIST + 'a/one-piece',
 }
 
 RESULTS = {}
