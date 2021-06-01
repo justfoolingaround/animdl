@@ -41,7 +41,6 @@ def animdl_stream(query, start, title, filler_list, offset, filler, mixed, canon
     
     anime, provider = process_query(session, query)
     ts = lambda x: to_stdout(x, 'animdl-%s-streamer-core' % provider)
-    tx = lambda x: to_stdout(x, 'animdl-protip')
     ts('Now initiating your stream session')
     content_name = title or anime.get('name') or choice(create_random_titles())
     if not start:
@@ -83,6 +82,6 @@ def animdl_stream(query, start, title, filler_list, offset, filler, mixed, canon
             playing = False
             
             if mpv_process.returncode:
-                ts("Detected a non-zero return code.")
-                tx("If there was an error or a crash during playback. Don't sweat it, you're going to be prompted for this instance.")
+                ts("Detected a non-zero return code. [%d]" % mpv_process.returncode)
+                ts("If there was an error or a crash during playback. Don't sweat it, you're going to be prompted for this instance.")
                 playing = click.confirm("[\x1b[33m%s\x1b[39m] Would you like to repeat '%s'? " % ('animdl-%s-streamer-core' % provider, title))
