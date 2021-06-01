@@ -10,8 +10,7 @@ from ...config import *
 
 FOURANIME_URL_SEARCH = FOURANIME + "?s=%s"
 
-NINEANIME_URL = NINEANIME
-NINEANIME_URL_SEARCH = NINEANIME_URL + "search"
+NINEANIME_URL_SEARCH = NINEANIME + "search"
 
 ANIMEFREAK_URL_SEARCH_AJAX = ANIMEFREAK + "search/topSearch"
 ANIMEFREAK_URL_CONTENT = ANIMEFREAK + "watch/%s"
@@ -23,7 +22,6 @@ ANIMIX_URL_SEARCH_POST = "https://v1.zv5vxk4uogwdp7jzbh6ku.workers.dev/"
 ANIMIX_URL_CONTENT = ANIMIXPLAY.rstrip('/')
 
 GOGOANIME_URL_SEARCH = GOGOANIME + "/search.html?"
-GOGOANIME_URL = GOGOANIME
 
 TWIST_URL_CONTENT_API = "https://api.twist.moe/api/anime"
 TWIST_URL_CONTENT = TWIST + "a/"
@@ -39,14 +37,14 @@ def search_4anime(session, query):
         yield {'anime_url': results.get('href'), 'name': ' '.join(_.text_content() for _ in results.xpath('div'))}
 
 def search_9anime(session, query):
-    with session.get(NINEANIME_URL) as cloudflare_page:
+    with session.get(NINEANIME) as cloudflare_page:
         waf_token =  ''.join(chr(int(c, 16)) for c in WAF_SEPARATOR.findall(WAF_TOKEN.search(cloudflare_page.text).group(1)))
     
     with session.get(NINEANIME_URL_SEARCH, params={'keyword': query}, headers={'cookie': 'waf_cv=%s' % waf_token}) as nineanime_results:
         parsed = htmlparser.fromstring(nineanime_results.text)
     
     for results in parsed.xpath('//ul[@class="anime-list"]/li/a[@class="name"]'):
-        yield {'anime_url': NINEANIME_URL.rstrip('/') + results.get('href'), 'name': results.get('data-jtitle')}
+        yield {'anime_url': NINEANIME.rstrip('/') + results.get('href'), 'name': results.get('data-jtitle')}
 
 def search_animefreak(session, query):
     with session.get(ANIMEFREAK_URL_SEARCH_AJAX, params={'q': query}) as animefreak_results:
@@ -74,7 +72,7 @@ def search_gogoanime(session, query):
         parsed = htmlparser.fromstring(gogoanime_results.text)
         
     for results in parsed.xpath('//p[@class="name"]/a'):
-        yield {'anime_url': GOGOANIME_URL.strip('/') + results.get('href'), 'name': results.get('title')}
+        yield {'anime_url': GOGOANIME.strip('/') + results.get('href'), 'name': results.get('title')}
 
 def search_twist(session, query):
     with session.get(TWIST_URL_CONTENT_API, headers={'x-access-token': '0df14814b9e590a1f26d3071a4ed7974'}) as content:
