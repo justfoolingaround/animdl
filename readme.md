@@ -5,6 +5,11 @@
 
 **AnimDL** is an incredibly powerful tool for downloading and streaming anime.
 
+A supported site got blocked in your region? Feel free to go to the [configurations](https://github.com/justfoolingaround/animdl/blob/master/core/config/__init__.py) 
+for replacing the site with its official alt domains.
+
+For 9Anime, check [here](https://9anime.zone/) or in their [reddit](https://old.reddit.com/r/9anime) for official alternative sites.
+
 ### Core features
 
 - Abuses the developer's knowledge of internal streaming mechanisms in various different sites to hunt down high quality stream links.
