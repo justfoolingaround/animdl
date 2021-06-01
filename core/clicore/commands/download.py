@@ -12,6 +12,7 @@ from .constants import SESSION_FILE
 
 @click.command(name='download', help="Download your favorite anime by query.")
 @click.option('-q', '--query', required=True)
+@click.option('-a', '--anonymous', is_flag=True, default=False, help='Avoid writing session files for this session.')
 @click.option('-s', '--start', help="An integer that determines where to begin the downloading from.", required=False, default=0, show_default=False, type=int)
 @click.option('-e', '--end', help="A integer that determines where to end the downloading at.", required=False, default=0, show_default=False, type=int)
 @click.option('-t', '--title', help="Optional title for the anime if the query is a direct URL. This will be used as the download folder name.", required=False, default='', show_default=False)
@@ -20,7 +21,7 @@ from .constants import SESSION_FILE
 @click.option('--filler', is_flag=True, default=True, help="Auto-skip fillers (If filler list is configured).")
 @click.option('--mixed', is_flag=True, default=True, help="Auto-skip mixed fillers/canons (If filler list is configured).")
 @click.option('--canon', is_flag=True, default=True, help="Auto-skip canons (If filler list is configured).")
-def animdl_download(query, start, end, title, filler_list, offset, filler, mixed, canon):
+def animdl_download(query, anonymous, start, end, title, filler_list, offset, filler, mixed, canon):
     """
     Download call.
     """
@@ -56,13 +57,17 @@ def animdl_download(query, start, end, title, filler_list, offset, filler, mixed
     ts("Starting download session @ [%02d/%s]" % (start, ('%02d' % end if isinstance(end, int) else '?')))
     ts("Downloads will be done in the folder '%s'" % content_name)
     
-    sfhandler.save_session(SESSION_FILE, url, start, content_name, filler_list, offset, filler, mixed, canon, t='download', end=end)
+    if not anonymous:
+        sfhandler.save_session(SESSION_FILE, url, start, content_name, filler_list, offset, filler, mixed, canon, t='download', end=end)
     
     base = Path('./%s/' % sanitize_filename(content_name))
     base.mkdir(exist_ok=True)
     
     for stream_urls, c in anime_associator.raw_fetch_using_check(lambda x: check(x) and end >= x >= start):
-        sfhandler.save_session(SESSION_FILE, url, c, content_name, filler_list, offset, filler, mixed, canon, t='download', end=end)
+        
+        if not anonymous:
+            sfhandler.save_session(SESSION_FILE, url, c, content_name, filler_list, offset, filler, mixed, canon, t='download', end=end)
+        
         content_title = "E%02d" % c
         if raw_episodes:
             content_title += " - %s" % raw_episodes[c - 1].title

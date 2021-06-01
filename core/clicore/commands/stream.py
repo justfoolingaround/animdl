@@ -26,6 +26,7 @@ def quality_prompt(stream_list, provider):
 
 @click.command(name='stream', help="Stream your favorite anime by query.")
 @click.option('-q', '--query', help="A search query or anime url string to begin scraping from.", required=True)
+@click.option('-a', '--anonymous', is_flag=True, default=False, help='Avoid writing session files for this session.')
 @click.option('-s', '--start', help="An integer that determines where to begin the streaming from.", required=False, default=0, show_default=False, type=int)
 @click.option('-t', '--title', help="Optional title for the anime if the query is a direct URL.", required=False, default='', show_default=False)
 @click.option('-fl', '--filler-list', help="Filler list associated with the content enqueued for the stream.", required=False, default='', show_default=False)
@@ -33,7 +34,7 @@ def quality_prompt(stream_list, provider):
 @click.option('--filler', is_flag=True, default=True, help="Auto-skip fillers (If filler list is configured).")
 @click.option('--mixed', is_flag=True, default=True, help="Auto-skip mixed fillers/canons (If filler list is configured).")
 @click.option('--canon', is_flag=True, default=True, help="Auto-skip canons (If filler list is configured).")
-def animdl_stream(query, start, title, filler_list, offset, filler, mixed, canon):
+def animdl_stream(query, anonymous, start, title, filler_list, offset, filler, mixed, canon):
     """
     Streamer call for animdl streaming session.
     """    
@@ -56,12 +57,14 @@ def animdl_stream(query, start, title, filler_list, offset, filler, mixed, canon
         ts("Succesfully loaded the filler list from '%s'." % filler_list)
         start += offset
         check = (lambda x: raw_episodes[offset + x - 1].content_type in ((['Filler'] if filler else []) + (['Mixed Canon/Filler'] if mixed else []) + (['Anime Canon', 'Manga Canon'] if canon else [])))
-       
-    sfhandler.save_session(SESSION_FILE, url, start, content_name, filler_list, offset, filler, mixed, canon)
+    
+    if not anonymous:
+        sfhandler.save_session(SESSION_FILE, url, start, content_name, filler_list, offset, filler, mixed, canon)
     
     for stream_urls, c in anime_associator.raw_fetch_using_check(lambda x: check(x) and x >= start):
         ts("Active stream session @ [%02d/%s]" % (c, ('%02d' % len(raw_episodes)) if raw_episodes else '?'))
-        sfhandler.save_session(SESSION_FILE, url, c, content_name, filler_list, offset, filler, mixed, canon)
+        if not anonymous:
+            sfhandler.save_session(SESSION_FILE, url, c, content_name, filler_list, offset, filler, mixed, canon)
         playing = True
         while playing:
             title = "Episode %02d" % c
