@@ -5,7 +5,7 @@ requests.packages.urllib3.disable_warnings(category=InsecureRequestWarning)
 
 from .animefillerlist import get_filler_list
 from .classes import AnimDLObject, Episode
-from .helper import construct_check, filter_episodes
+from .helper import append_protocol, construct_check, filter_episodes
 from .providers import get_appropriate
 
 
@@ -16,7 +16,7 @@ class Associator(AnimDLObject):
     
     def __init__(self, uri, afl_uri=None, *, session=None):
         
-        self.url = uri
+        self.url = append_protocol(uri)
         self.filler_list = afl_uri
         
         self.session = session or requests.Session()
