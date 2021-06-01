@@ -8,12 +8,15 @@ import lxml.html as htmlparser
 import json
 from .decipher import decipher as decode
 
-NINEANIME_URL = "https://9anime.to/"
+from ...config import NINEANIME
+from ...helper import construct_site_based_regex
+
+NINEANIME_URL = NINEANIME
 
 WAF_TOKEN = re.compile(r"(\d{64})")
 WAF_SEPARATOR = re.compile(r"\w{2}")
 
-ANIME_SLUG = re.compile(r"(?:https?://)?(?:\S+\.)?9anime\.to/watch/[^&?/]+\.(?P<slug>[^&?/]+)")
+ANIME_SLUG = construct_site_based_regex(NINEANIME, extra_regex=r'/watch/[^&?/]+\.(?P<slug>[^&?/]+)')
 SKEY_RE = re.compile(r"skey = '(?P<skey>[^']+)';")
 
 VIDSTREAM_REGEXES = {

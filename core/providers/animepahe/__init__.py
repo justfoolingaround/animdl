@@ -2,10 +2,13 @@ import re
 
 import requests
 
-API_URL = "https://animepahe.com/api"
-SITE_URL = "https://animepahe.com/"
+from ...config import ANIMEPAHE
+from ...helper import construct_site_based_regex
 
-PLAYER_RE = re.compile(r"(?:https?://)?(?:\S+\.)?animepahe\.com/play/([^?&/]+)")
+API_URL = ANIMEPAHE + "api"
+SITE_URL = ANIMEPAHE
+
+PLAYER_RE = construct_site_based_regex(ANIMEPAHE, extra_regex=r'/play/([^?&/]+)')
 ID_RE = re.compile(r"/api\?m=release&id=([^&]+)")
 KWIK_RE = re.compile(r"Plyr\|querySelector\|document\|([^\\']+)")
 

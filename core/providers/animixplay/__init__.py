@@ -1,9 +1,12 @@
 from .stream_url import *
 from .search import *
 
+from ...config import ANIMIXPLAY
+from ...helper import construct_site_based_regex
+
 AVAILABLE_PARSERS = {
     'gogo-anime': {
-        'matcher': re.compile(r'^(?:https?://)?(?:\S+\.)?animixplay\.to/v1/([^?&/]+)'),
+        'matcher': construct_site_based_regex(ANIMIXPLAY, extra_regex=r"/v1/([^?&/]+)"),
         'parser': lambda session, url, check=lambda *args: True: fetching_chain(from_site_url, gogoanime_parser, session, url, check),
     }
 }

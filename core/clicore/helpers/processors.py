@@ -9,36 +9,14 @@ from click.termui import prompt
 from .fun import to_stdout
 from .searchonsite import get_searcher
 
-DEFAULT_SITE = "9anime" # Forced-default to choose from.
+from ...providers import current_providers as URL_MATCHERS
 
-URL_MATCHERS = {
-    'animixplay': {
-        'matcher': re.compile(r'^(?:https?://)?(?:\S+\.)?animixplay\.to/v\d+/([^?&/]+)'),
-    },
-    'twist': {
-        'matcher': re.compile(r"^(?:https?://)?(?:\S+\.)?twist\.moe/a/([^?&/]+)"),
-    },
-    'animepahe': {
-        'matcher': re.compile(r"^(?:https?://)?(?:\S+\.)?animepahe\.com/(?:anime|play)/([^?&/]+)"),
-    },
-    '4anime': {
-        'matcher': re.compile(r"^(?:https?://)?(?:\S+\.)?4anime\.to/(?:(?:anime/([^?&/]+))|(?:([^?&/]+)-episode-\d+))"),
-    },
-    'gogoanime': {
-        'matcher': re.compile(r"^(?:https?://)?(?:\S+\.)?gogoanime\.ai/(?:([^&?/]+)-episode-\d+|category/([^&?/]+))"),
-    },
-    '9anime': {
-        'matcher': re.compile(r"(?:https?://)?(?:\S+\.)?9anime\.to/watch/[^&?/]+\.([^&?/]+)"),
-    },
-    'animefreak': {
-        'matcher': re.compile(r"^(?:https?://)?(?:\S+\.)?animefreak\.tv/watch/(?:(?:([^?&/]+)/episode/episode-\d+)|(?:([^?&/]+)))"),
-    }
-}
+DEFAULT_SITE = "9anime" # Forced-default to choose from.
 
 INCLUDED_PROVIDER = re.compile(r"^(?P<provider>.*):(?P<query>.*)", re.S)
 
 def prompt_user(anime_list, provider_name):
-    ts = lambda x: to_stdout(x, "%s-searcher" % provider_name)
+    ts = lambda x: to_stdout(x, "%s-searcher" % provider_name)        
     ts("Found %d anime(s)" % len(anime_list))
     for n, anime in enumerate(anime_list, 1):
         ts("[#%02d] %s \x1b[33m%s\x1b[39m" % (n, anime.get('name'), anime.get('anime_url')))

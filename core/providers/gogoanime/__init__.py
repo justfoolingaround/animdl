@@ -1,10 +1,13 @@
 import re
 import lxml.html as htmlparser
 
-ANIME_RE = re.compile(r"(?:https?://)?(?:\S+\.)?gogoanime\.ai/([^&?/]+)-episode-\d+")
+from ...config import GOGOANIME
+from ...helper import construct_site_based_regex
+
+ANIME_RE = construct_site_based_regex(GOGOANIME, extra_regex=r"/([^&?/]+)-episode-\d+")
 
 EPISODE_LOAD_AJAX = "https://ajax.gogo-load.com/ajax/load-list-episode"
-SITE_URL = "https://www1.gogoanime.ai"
+SITE_URL = GOGOANIME
 
 ajax_parse = lambda dt: (
     dt.get('source', [{}])[0].get('file'), dt.get('source', [{}])[0].get('label'), dt.get('source', [{}])[0].get('type'), 

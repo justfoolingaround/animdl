@@ -14,33 +14,36 @@ from .gogoanime  import fetcher as gogoanime_fetcher
 from .nineanime  import fetcher as nineanime_fetcher
 from .twistmoe   import fetcher as twist_fetcher
 
+from ..helper import construct_site_based_regex
+from ..config import *
+
 current_providers = {
-    'animix': {
-        'matcher': re.compile(r'^(?:https?://)?(?:\S+\.)?animixplay\.to/v\d+/([^?&/]+)'),
+    'animixplay': {
+        'matcher': construct_site_based_regex(ANIMIXPLAY, extra_regex=r'/v\d+/([^?&/]+)'),
         'fetcher': animix_fetcher,
     },
-    'twistmoe': {
-        'matcher': re.compile(r"^(?:https?://)?(?:\S+\.)?twist\.moe/a/([^?&/]+)"),
+    'twist': {
+        'matcher': construct_site_based_regex(TWIST, extra_regex=r'/a/([^?&/]+)'),
         'fetcher': twist_fetcher,
     },
     'animepahe': {
-        'matcher': re.compile(r"^(?:https?://)?(?:\S+\.)?animepahe\.com/(?:anime|play)/([^?&/]+)"),
+        'matcher': construct_site_based_regex(ANIMEPAHE, extra_regex=r'/(?:anime|play)/([^?&/]+)'),
         'fetcher': animepahe_fetcher,
     },
-    'fouranime': {
-        'matcher': re.compile(r"^(?:https?://)?(?:\S+\.)?4anime\.to/(?:(?:anime/([^?&/]+))|(?:([^?&/]+)-episode-\d+))"),
+    '4anime': {
+        'matcher': construct_site_based_regex(FOURANIME, extra_regex=r'/(?:(?:anime/([^?&/]+))|(?:([^?&/]+)-episode-\d+))'),
         'fetcher': fouranime_fetcher,
     },
     'gogoanime': {
-        'matcher': re.compile(r"^(?:https?://)?(?:\S+\.)?gogoanime\.ai/(?:([^&?/]+)-episode-\d+|category/([^&?/]+))"),
+        'matcher': construct_site_based_regex(GOGOANIME, extra_regex=r'/(?:([^&?/]+)-episode-\d+|category/([^&?/]+))'),
         'fetcher': gogoanime_fetcher,
     },
     '9anime': {
-        'matcher': re.compile(r"(?:https?://)?(?:\S+\.)?9anime\.to/watch/[^&?/]+\.([^&?/]+)"),
+        'matcher': construct_site_based_regex(NINEANIME, extra_regex=r'/watch/[^&?/]+\.([^&?/]+)'),
         'fetcher': nineanime_fetcher,
     },
     'animefreak': {
-        'matcher': re.compile(r"^(?:https?://)?(?:\S+\.)?animefreak\.tv/watch/(?:(?:([^?&/]+)/episode/episode-\d+)|(?:([^?&/]+)))"),
+        'matcher': construct_site_based_regex(ANIMEFREAK, extra_regex=r'/watch/(?:(?:([^?&/]+)/episode/episode-\d+)|(?:([^?&/]+)))'),
         'fetcher': animefreak_fetcher,
     }
 }

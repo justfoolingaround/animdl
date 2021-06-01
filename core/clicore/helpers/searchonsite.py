@@ -6,25 +6,27 @@ import re
 
 import lxml.html as htmlparser
 
-FOURANIME_URL_SEARCH = "https://4anime.to/?s=%s"
+from ...config import *
 
-NINEANIME_URL = "https://9anime.to"
-NINEANIME_URL_SEARCH = "https://9anime.to/search"
+FOURANIME_URL_SEARCH = FOURANIME + "?s=%s"
 
-ANIMEFREAK_URL_SEARCH_AJAX = "https://www.animefreak.tv/search/topSearch"
-ANIMEFREAK_URL_CONTENT = "https://animefreak.tv/watch/%s"
+NINEANIME_URL = NINEANIME
+NINEANIME_URL_SEARCH = NINEANIME_URL + "search"
 
-ANIMEPAHE_URL_CONTENT = "https://animepahe.com/anime/%s"
-ANIMEPAHE_URL_SEARCH_AJAX = "https://animepahe.com/api"
+ANIMEFREAK_URL_SEARCH_AJAX = ANIMEFREAK + "search/topSearch"
+ANIMEFREAK_URL_CONTENT = ANIMEFREAK + "watch/%s"
+
+ANIMEPAHE_URL_CONTENT = ANIMEPAHE + "anime/%s"
+ANIMEPAHE_URL_SEARCH_AJAX = ANIMEPAHE + "api"
 
 ANIMIX_URL_SEARCH_POST = "https://v1.zv5vxk4uogwdp7jzbh6ku.workers.dev/"
-ANIMIX_URL_CONTENT = "https://animixplay.to"
+ANIMIX_URL_CONTENT = ANIMIXPLAY.rstrip('/')
 
-GOGOANIME_URL_SEARCH = "https://www1.gogoanime.ai//search.html?"
-GOGOANIME_URL = "https://www1.gogoanime.ai"
+GOGOANIME_URL_SEARCH = GOGOANIME + "/search.html?"
+GOGOANIME_URL = GOGOANIME
 
 TWIST_URL_CONTENT_API = "https://api.twist.moe/api/anime"
-TWIST_URL_CONTENT = "https://twist.moe/a/"
+TWIST_URL_CONTENT = TWIST + "a/"
 
 WAF_TOKEN = re.compile(r"(\d{64})")
 WAF_SEPARATOR = re.compile(r"\w{2}")
@@ -44,7 +46,7 @@ def search_9anime(session, query):
         parsed = htmlparser.fromstring(nineanime_results.text)
     
     for results in parsed.xpath('//ul[@class="anime-list"]/li/a[@class="name"]'):
-        yield {'anime_url': NINEANIME_URL + results.get('href'), 'name': results.get('data-jtitle')}
+        yield {'anime_url': NINEANIME_URL.rstrip('/') + results.get('href'), 'name': results.get('data-jtitle')}
 
 def search_animefreak(session, query):
     with session.get(ANIMEFREAK_URL_SEARCH_AJAX, params={'q': query}) as animefreak_results:

@@ -2,7 +2,10 @@ import re
 
 import lxml.html as htmlparser
 
-EPISODE_RE = re.compile(r"(?:https?://)?(?:\S+\.)?4anime\.to/([^?&/]+)-episode-\d+")
+from ...config import FOURANIME
+from ...helper import construct_site_based_regex
+
+EPISODE_RE = construct_site_based_regex(FOURANIME, extra_regex=r"/([^?&/]+)-episode-\d+")
 BASE_URL = "https://4anime.to/anime/{}"
 
 def extract_stream_uri(session, episode_url):

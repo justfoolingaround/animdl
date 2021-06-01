@@ -2,10 +2,13 @@ import re
 
 import lxml.html as htmlparser
 
-EPISODE_RE = re.compile(r"(?:https?://)?(?:\S+\.)?animefreak\.tv/watch/([^?&/]+)/episode/episode-\d+")
+from ...config import ANIMEFREAK
+from ...helper import construct_site_based_regex
+
+EPISODE_RE = construct_site_based_regex(ANIMEFREAK, extra_regex=r'/watch/([^?&/]+)/episode/episode-\d+')
 STREAM_URL_RE = re.compile(r"(?:https?://)?st\d+\.anime1\.com/(?P<file>.*)")
 
-BASE_URL = "https://www.animefreak.tv/watch/{}"
+BASE_URL = ANIMEFREAK + "watch/{}"
 BASE_STREAM_URL = "https://st%d.anime1.com/%s"
 
 def send_valid(session, stream_url):
