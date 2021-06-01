@@ -39,6 +39,7 @@ def fetcher(session, url, check):
         episodes = html_element.xpath('(//ul[@class="check-list"])[2]/li/a') or html_element.xpath('//ul[@class="check-list"]/li/a')
 
     for episode in reversed(episodes):
-        en = int(re.search(r"\d+", episode.text_content()).group(0))
+        episode_number = re.search(r"\d+", episode.text_content())
+        en = int(episode_number.group(0) if episode_number else 0)
         if check(en):
             yield [{'quality': 'unknown', 'stream_url': extract_stream_uri(session, episode.get('href')), 'headers':  {'ssl_verification': False}}], en
