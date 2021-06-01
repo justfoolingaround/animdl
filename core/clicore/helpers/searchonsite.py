@@ -74,7 +74,7 @@ def search_gogoanime(session, query):
         parsed = htmlparser.fromstring(gogoanime_results.text)
         
     for results in parsed.xpath('//p[@class="name"]/a'):
-        yield {'anime_url': GOGOANIME_URL + results.get('href'), 'name': results.get('title')}
+        yield {'anime_url': GOGOANIME_URL.strip('/') + results.get('href'), 'name': results.get('title')}
 
 def search_twist(session, query):
     with session.get(TWIST_URL_CONTENT_API, headers={'x-access-token': '0df14814b9e590a1f26d3071a4ed7974'}) as content:
