@@ -47,7 +47,7 @@ def animdl_stream(query, start, title, filler_list, offset, filler, mixed, canon
         start = click.prompt("Episode number to intiate streaming from (defaults to 1)", default=1, show_default=False) or 1
     ts("Starting stream session @ [%02d/?]" % start)
     url = anime.get('anime_url')
-    anime_associator = Associator(url)    
+    anime_associator = Associator(url, session=session)    
     check = lambda *args, **kwargs: True
     raw_episodes = []
     

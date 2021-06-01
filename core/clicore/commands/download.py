@@ -41,7 +41,7 @@ def animdl_download(query, start, end, title, filler_list, offset, filler, mixed
     
     ts("Initialzing download session @ [%02d/%s]" % (start, '%02d' % end if isinstance(end, int) else '?'))    
     url = anime.get('anime_url')
-    anime_associator = Associator(url)    
+    anime_associator = Associator(url, session=session)    
     check = lambda *args, **kwargs: True
     raw_episodes = []
     
