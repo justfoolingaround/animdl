@@ -56,7 +56,7 @@ def _download(url, _path, tqdm_bar_init, headers):
                 """
                 A delay to avoid rate-limit(s).
                 """
-                time.sleep(1)
+                time.sleep(.3)
             
     tqdm_bar.close()
 
