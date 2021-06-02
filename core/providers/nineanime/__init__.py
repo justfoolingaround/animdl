@@ -21,11 +21,11 @@ SKEY_RE = re.compile(r"skey = '(?P<skey>[^']+)';")
 
 VIDSTREAM_REGEXES = {
     'online': {
-        'matcher': re.compile(r"(?:https?://)?(?:\S+\.)?vidstreamz\.online/embed/(?P<id>[A-Z0-9]+)"),
+        'matcher': re.compile(r"(?:https?://)?(?:\S+\.)?vidstreamz\.online/(?:e|embed)/(?P<id>[A-Z0-9]+)"),
         'info_ajax': 'https://vidstreamz.online/info/%s',
         },
     'pro': {
-        'matcher': re.compile(r"(?:https?://)?(?:\S+\.)?vidstream\.pro/e/(?P<id>[A-Z0-9]+)"),
+        'matcher': re.compile(r"(?:https?://)?(?:\S+\.)?vidstream\.pro/(?:e|embed)/(?P<id>[A-Z0-9]+)"),
         'info_ajax': 'https://vidstream.pro/info/%s',
         },
 }
@@ -36,7 +36,7 @@ def get_appropriate_vidstream(vidstream_url):
         if match:
             return match.group('id'), data.get('info_ajax', ''), "https://vidstream.pro/e/%s"
     
-    raise Exception("VidStream unsupported URL: '%s', please raise an issue on the GitHub with the anime name and episode immediately!")
+    raise Exception("VidStream unsupported URL: '%s', please raise an issue on the GitHub with the anime name and episode immediately!" % vidstream_url)
 
 def get_waf_token(session):
     with session.get(NINEANIME_URL) as cloudflare_page:
@@ -54,10 +54,10 @@ def get_vidstream_by_hash(session, hash, access_headers):
         skey_match = SKEY_RE.search(vidstream_content.text)    
         if not skey_match:
             if vidstream_content.ok:
-                raise Exception('Could not find session key from VidStream; associated url: "%s" (Include this in your GitHub issue!).')
+                raise Exception('Could not find session key from VidStream; associated url: "%s" (Include this in your GitHub issue!).' % vidstream_embed_url)
             return []
         
-    skey = skey_match.group(1)
+    skey = skey_match.group('skey')
     
     with session.get(vidstream_info_ajax % vidstream_id, params={'skey': skey}, headers={'referer': vidstream_embed_url}) as vidstream_info:
         return [{'quality': content.get('label', 'unknown'), 'stream_url': content.get('file', ''), 'headers': {'referer': vidstream_embed_url}} for content in vidstream_info.json().get('media', {}).get('sources', [])] 
