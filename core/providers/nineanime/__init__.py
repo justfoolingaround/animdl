@@ -42,6 +42,27 @@ def get_waf_token(session):
     with session.get(NINEANIME_URL) as cloudflare_page:
         return ''.join(chr(int(c, 16)) for c in WAF_SEPARATOR.findall(WAF_TOKEN.search(cloudflare_page.text).group(1)))
     
+def ensure_streams(f, max_tries, *args, **kwargs):
+    
+    tb = ''
+    tries = 0
+    
+    while tries <= max_tries:
+        try:
+            rt_value = f(*args, **kwargs)
+            if rt_value:
+                return rt_value
+            tb = 'no.streams'
+            raise Exception()
+        except Exception as e:
+            tb = 'fetch.error'
+        tries += 1
+        
+    if tb == 'no.streams':
+        return []    
+    raise e
+    
+    
 def get_vidstream_by_hash(session, hash, access_headers):
     
     with session.get(NINEANIME_URL + "ajax/anime/episode", params={'id': hash}, headers=access_headers) as ajax_server_response:
@@ -79,4 +100,4 @@ def fetcher(session, url, check):
     for el in data.xpath('//li/a'):
         en = int(el.get('data-base', 0))
         if check(en):
-            yield get_vidstream_by_hash(session, json.loads(el.get('data-sources', '{}')).get('41', ''), access_headers), en
+            yield ensure_streams(get_vidstream_by_hash, 3, session, json.loads(el.get('data-sources', '{}')).get('41', ''), access_headers), en
