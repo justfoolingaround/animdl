@@ -11,12 +11,12 @@ from ..helpers import *
 from .constants import SESSION_FILE
 
 def quality_prompt(stream_list, provider):
-    ts = lambda x: to_stdout(x, "%s-url-selector" % provider)
+    ts = lambda x: to_stdout(x, "animdl-%s-url-selector" % provider)
     ts("Found %d stream(s)" % len(stream_list))
     for n, anime in enumerate(stream_list, 1):
         ts("[#%02d] %s" % (n, stream_judiciary(anime.get('stream_url'))))
     
-    index = click.prompt("Select by the index (defaults to 1)", default=1, type=int, show_default=False) - 1
+    index = click.prompt("[\x1b[33m%s\x1b[39m] Select by the index (defaults to 1)" % ('animdl-%s-streamer-core' % provider), default=1, type=int, show_default=False) - 1
     
     if (index + 1) > len(stream_list):
         ts("Applying modulus to get a valid index from incorrect index: #%02d -> #%02d" % (index + 1, index % len(stream_list) + 1))
