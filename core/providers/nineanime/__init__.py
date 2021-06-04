@@ -46,6 +46,7 @@ def ensure_streams(f, max_tries, *args, **kwargs):
     
     tb = ''
     tries = 0
+    caught_tb = None
     
     while tries <= max_tries:
         try:
@@ -56,12 +57,12 @@ def ensure_streams(f, max_tries, *args, **kwargs):
             raise Exception()
         except Exception as e:
             tb = 'fetch.error'
+            caught_tb = e
         tries += 1
-        
     if tb == 'no.streams':
-        return []    
-    raise e
-    
+        return []
+    if caught_tb:
+        raise caught_tb
     
 def get_vidstream_by_hash(session, hash, access_headers):
     
