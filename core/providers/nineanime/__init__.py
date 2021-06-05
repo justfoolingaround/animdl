@@ -33,7 +33,7 @@ def get_mp4upload_by_hash(session, _hash, access_headers):
         if mp4upload_embed_page.text == 'File was deleted':
             return []
         content = MP4UPLOAD_REGEX.search(mp4upload_embed_page.text).group(1).split('|')
-        return [{'quality': content[53], 'stream_url': "{3}://{18}.{1}.{0}:{73}/d/{72}/{71}.{70}".format(*content), 'referer': mp4upload_url}]
+        return [{'quality': content[53], 'stream_url': "{3}://{18}.{1}.{0}:{73}/d/{72}/{71}.{70}".format(*content), 'headers': {'referer': mp4upload_url}}]
 
 def fetcher(session, url, check):
     
