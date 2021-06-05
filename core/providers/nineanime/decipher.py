@@ -8,6 +8,7 @@ def decipher(encrypted_url: str):
     crypto = 0
     
     decrypted = ""
+    index = 0
     
     for index, character in enumerate(s2, 1):
         crypto <<= 6
