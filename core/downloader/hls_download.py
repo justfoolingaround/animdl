@@ -53,7 +53,7 @@ def m3u8_generation(session_init, m3u8_uri, *, is_origin=True):
             yield {'quality': quality, 'stream_url': content_uri}
 
 def select_best(q_dicts, preferred_quality):
-    return (sorted([q for q in q_dicts if absolute_extension_determination(q.get('stream_url')) in ['m3u', 'm3u8'] and q.get('quality').isdigit() and int(q.get('quality')) <= preferred_quality], key=lambda q: int(q.get('quality'))) or q_dicts)[0]
+    return (sorted([q for q in q_dicts if absolute_extension_determination(q.get('stream_url')) in ['m3u', 'm3u8'] and q.get('quality').isdigit() and int(q.get('quality')) <= preferred_quality], key=lambda q: int(q.get('quality')), reverse=True) or q_dicts)[0]
 
 
 def hls_yield(session, q_dicts, preferred_quality=QUALITY):
