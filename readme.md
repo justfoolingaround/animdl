@@ -17,6 +17,7 @@ For 9Anime, check [here](https://9anime.zone/) or in their [reddit](https://old.
 - Doesn't use any heavy dependencies such as Selenium or Javascript Evaluators.
 - Effectively bypasses DRMs in several streaming sites.
 - Integrates AnimeFillerList so that the user can filter out any fillers from downloading or streaming.
+- Integrates powerful, fast and efficient internal HLS downloader.
 - Only tool in existence to bypass [9Anime](https://9anime.to)'s cloudflare protection.
 - Operates with full efficiency and speed by using Python's generator functions to their full capacity.
 - Supports streaming with [`mpv`](https://github.com/mpv-player/mpv/), an incredibly efficient, fast and light-weight dependency.
@@ -62,11 +63,11 @@ Python 3.6 and higher are supported by AnimDL.
 | Website | Available Qualities | Status | Streamable | Downloadable |
 | ------- | ------------------- | ------ | --------- | ------------ |
 | [4Anime](https://4anime.to/) | 720p, 1080p | Working | Yes | Yes |
-| [9Anime](https://9anime.to/) | 720p, 1080p | Working | Yes | Yes for MP4, no for m3u8 |
+| [9Anime](https://9anime.to/) | 720p, 1080p | Working | Yes | Yes |
 | [AnimeFreak](https://www.animefreak.tv/) | 720p, 1080p | Working | Yes | Yes |
-| [AnimePahe](https://www.animepahe.com/) | 720p, 1080p | Working | Yes | No |
-| [Animixplay](https://www.animixplay.to/) | 480p, 720p, 1080p | Working | Yes | Yes for MP4, no for m3u8 |
-| [GogoAnime](https://www1.gogoanime.ai/) | 480p, 720p, 1080p | Working | Yes | Yes for MP4, no for m3u8 |
+| [AnimePahe](https://www.animepahe.com/) | 720p, 1080p | Working | Yes | Yes |
+| [Animixplay](https://www.animixplay.to/) | 480p, 720p, 1080p | Working | Yes | Yes |
+| [GogoAnime](https://www1.gogoanime.ai/) | 480p, 720p, 1080p | Working | Yes | Yes |
 | [Twist](https://www.twist.moe/) | 720p, 1080p | Working | Yes | Yes |
 
 If a site is not working, please don't worry, you're encouraged to make an issue! 
@@ -79,9 +80,6 @@ Streaming needs an additional dependency known as `mpv`, you can download it fro
 
 If you're having issues with the installation of mpv, you can make an issue to recieve full help on its installation and usage.
 
-### Coming soon (features)
-
-- HLS downloading; a support for downloading m3u8. There are libraries for this but they are not that efficient.
 - GUI (Possibly with Javascript frameworks, don't worry, I'll pick the most efficient one)
 
 ### Disclaimer
