@@ -60,15 +60,15 @@ Python 3.6 and higher are supported by AnimDL.
 
 ### Supported Sites
 
-| Website | Available Qualities | Status | Streamable | Downloadable |
-| ------- | ------------------- | ------ | --------- | ------------ |
-| [4Anime](https://4anime.to/) | 720p, 1080p | Working | Yes | Yes |
-| [9Anime](https://9anime.to/) | 720p, 1080p | Working | Yes | Yes |
-| [AnimeFreak](https://www.animefreak.tv/) | 720p, 1080p | Working | Yes | Yes |
-| [AnimePahe](https://www.animepahe.com/) | 720p, 1080p | Working | Yes | Yes |
-| [Animixplay](https://www.animixplay.to/) | 480p, 720p, 1080p | Working | Yes | Yes |
-| [GogoAnime](https://www1.gogoanime.ai/) | 480p, 720p, 1080p | Working | Yes | Yes |
-| [Twist](https://www.twist.moe/) | 720p, 1080p | Working | Yes | Yes |
+| Website | Available Qualities | Status | Content Extension |
+| ------- | ------------------- | ------ | ----------------- |
+| [4Anime](https://4anime.to/) | 720p, 1080p | Working | MP4 |
+| [9Anime](https://9anime.to/) | 720p, 1080p | Working | MP4 / TS  | 
+| [AnimeFreak](https://www.animefreak.tv/) | 720p, 1080p | Working | MP4 | 
+| [AnimePahe](https://www.animepahe.com/) | 720p, 1080p | Working | TS | 
+| [Animixplay](https://www.animixplay.to/) | 480p, 720p, 1080p | Working | MP4 / TS |
+| [GogoAnime](https://www1.gogoanime.ai/) | 480p, 720p, 1080p | Working | MP4 / TS |
+| [Twist](https://www.twist.moe/) | 720p, 1080p | Working| MP4 |
 
 If a site is not working, please don't worry, you're encouraged to make an issue! 
 
