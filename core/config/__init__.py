@@ -9,3 +9,9 @@ ANIMEPAHE = "https://animepahe.com/"
 ANIMIXPLAY = "https://animixplay.to/"
 GOGOANIME = "https://gogoanime.ai/"
 TWIST = "https://twist.moe/"
+
+"""
+Set preferred quality here. (Only for HLS streams)
+"""
+
+QUALITY = 1080

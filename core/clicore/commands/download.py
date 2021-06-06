@@ -71,14 +71,18 @@ def animdl_download(query, anonymous, start, end, title, filler_list, offset, fi
         content_title = "E%02d" % c
         if raw_episodes:
             content_title += " - %s" % raw_episodes[c - 1].title
-        
-        valid_urls = [_ for _ in stream_urls if not aed(_.get('stream_url', '')) in ['m3u8', 'm3u']]
-        
-        if not valid_urls:
-            ts("Failed to download '%s' due to lack of downloadable stream urls. (Possible that m3u8 streams were only available in the site.)" % content_title)
-            if stream_urls:
-                ts("Here are some usable streams: %s" % stream_urls)
+                
+        if not stream_urls:
+            ts("Failed to download '%s' due to lack of stream urls." % content_title)
             continue
         
-        content = valid_urls[0]
-        url_download(content.get('stream_url'), base / Path('%s.%s' % (content_title, aed(content.get('stream_url')))), lambda r: tqdm(desc=content_title, total=r, unit='B', unit_scale=True, unit_divisor=1024), content.get('headers', {}))
+        content = stream_urls[0]
+        
+        extension = aed(content.get('stream_url'))
+        download_path = base / Path('%s.%s' % (sanitize_filename(content_title), extension if extension not in ['m3u', 'm3u8'] else 'ts'))
+                
+        if extension in ['m3u', 'm3u8']:
+            hls_download(stream_urls, download_path, content_title)
+            continue
+        
+        url_download(content.get('stream_url'), base / Path('%s.%s' % (sanitize_filename(content_title), aed(content.get('stream_url')))), lambda r: tqdm(desc=content_title, total=r, unit='B', unit_scale=True, unit_divisor=1024), content.get('headers', {}))

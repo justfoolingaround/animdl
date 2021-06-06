@@ -5,6 +5,8 @@ from pathlib import Path
 import requests
 from tqdm import tqdm
 
+from .hls_download import hls_yield
+
 URL_REGEX = re.compile(r"(?:https?://)?(?:\S+\.)+(?:[^/]+/)+(?P<url_end>[^?/]+)")
 
 def sanitize_filename(f):
@@ -89,6 +91,23 @@ def internal_download_v1(base_folder, episodes):
                 
         progress.close()
         
+def hls_download(quality_dict, _path, episode_identifier, _tqdm=True):
+    
+    session = requests.Session()
+    _tqdm_bar = None
+    
+    with open(_path, 'ab') as sw:
+        for content in hls_yield(session, quality_dict):
+            if _tqdm and not _tqdm_bar:
+                _tqdm_bar = tqdm(desc="[HLS] %s " % episode_identifier, total=content.get('total', 0), unit='ts')
+            sw.write(content.get('bytes'))
+            if _tqdm:
+                _tqdm_bar.update(1)
+            
+    if _tqdm:
+        _tqdm_bar.close()
+    
+        
 def internal_download(base_folder, episodes):
     """
     v2, currently being used.
@@ -99,8 +118,11 @@ def internal_download(base_folder, episodes):
     for episode in episodes:
         url, headers = episode.get_url()
         extension = absolute_extension_determination(url or '')
+        
+        identifier = "Episode {0.number:02d}, {0.name}".format(episode)
+        
         if extension in ['m3u8', 'm3u']:
-            print('Episode %02d, %s\'s download has been aborted due to the available url being an m3u8 file (the download is pointless), please try to stream the URL instead. URL: %s' % (episode.number, episode.name, url))
+            hls_download(episode.urls, base / (Path('E%02d - %s.ts' % (episode.number, sanitize_filename(episode.name)))), identifier)
             continue
 
         if not url:
