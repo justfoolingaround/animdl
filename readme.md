@@ -80,8 +80,6 @@ Streaming needs an additional dependency known as `mpv`, you can download it fro
 
 If you're having issues with the installation of mpv, you can make an issue to recieve full help on its installation and usage.
 
-- GUI (Possibly with Javascript frameworks, don't worry, I'll pick the most efficient one)
-
 ### Disclaimer
 
 Downloading or streaming copyrighted materials might be illegal in your country. 
