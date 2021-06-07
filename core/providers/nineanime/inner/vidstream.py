@@ -35,7 +35,7 @@ def extract(session, vidstream_uri):
         skey_match = SKEY_RE.search(vidstream_content.text)    
         if not skey_match:
             if vidstream_content.ok:
-                raise Exception('Could not find session key from VidStream; associated url: "%s" (Include this in your GitHub issue!).' % vidstream_uri)
+                print('[\x1b[31manimdl-warning\x1b[39m] Could not find session key from VidStream; associated url: "%s" (Include this in your GitHub issue!).' % vidstream_uri)
             return []
             
     with session.get(info_ajax, params={'skey': skey_match.group('skey')}, headers={'referer': vidstream_uri}) as vidstream_info:

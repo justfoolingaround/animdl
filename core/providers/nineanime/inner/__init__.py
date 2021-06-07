@@ -20,9 +20,25 @@ from .streamtape import extract as extract_2
 from .vidstream  import extract as extract_3
 from .mycloud    import extract as extract_4
 
+import json
+import time
+
+def validate_json_content_yield(session, url, **session_kwargs):
+    """
+    Use this when the JSON content yield is guarenteed, else, it will request content till eternity.
+    
+    9Anime throws 500s if fast paced traffic is seen; this function combats that.
+    """
+    c = False
+    while not c:
+        time.sleep(.3)
+        with session.get(url, **session_kwargs) as response:
+            c = response.ok
+
+    return json.loads(response.text)
+
 def get_url_by_hash(session, _hash, access_headers):
-    with session.get(NINEANIME + "ajax/anime/episode", params={'id': _hash}, headers=access_headers) as ajax_server_response:
-        return decode(ajax_server_response.json().get('url', ''))
+    return decode(validate_json_content_yield(session, NINEANIME + "ajax/anime/episode", params={'id': _hash}, headers=access_headers).get('url', ''))
 
 def fallback_extraction(session, content_json, access_headers):
     

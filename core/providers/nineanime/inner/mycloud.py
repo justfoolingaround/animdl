@@ -22,7 +22,7 @@ def extract(session, mcloud_uri):
         skey_match = SKEY_RE.search(mcloud_content.text)    
         if not skey_match:
             if mcloud_content.ok:
-                raise Exception('Could not find session key from MyCloud; associated url: "%s" (Include this in your GitHub issue!).' % mcloud_uri)
+                print('[\x1b[31manimdl-warning\x1b[39m] Could not find session key from MyCloud; associated url: "%s" (Include this in your GitHub issue!).' % mcloud_uri)
             return []
             
     with session.get(info_ajax, params={'skey': skey_match.group('skey')}, headers={'referer': mcloud_uri}) as mcloud_info:
