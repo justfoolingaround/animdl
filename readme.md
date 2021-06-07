@@ -1,19 +1,14 @@
 
 ![AnimDL Cover](https://raw.githubusercontent.com/justfoolingaround/animdl/master/assets/cover.png)
 
-# AnimDL - Download & Stream your favorite anime
+<h1><center> AnimDL - Download & Stream Your Favorite Anime </center></h1>
 
 **AnimDL** is an incredibly powerful tool for downloading and streaming anime.
-
-A supported site got blocked in your region? Feel free to go to the [configurations](https://github.com/justfoolingaround/animdl/blob/master/core/config/__init__.py) 
-for replacing the site with its official alt domains.
-
-For 9Anime, check [here](https://9anime.zone/) or in their [reddit](https://old.reddit.com/r/9anime) for official alternative sites.
 
 ### Core features
 
 - Abuses the developer's knowledge of internal streaming mechanisms in various different sites to hunt down high quality stream links.
-- Doesn't make a single unnecessary request to any servers and rules out such requests.
+- Doesn't make a single unnecessary request; the official site may make 1k requests, this tool makes 3~5.
 - Doesn't use any heavy dependencies such as Selenium or Javascript Evaluators.
 - Effectively bypasses DRMs in several streaming sites.
 - Integrates AnimeFillerList so that the user can filter out any fillers from downloading or streaming.
@@ -25,28 +20,64 @@ For 9Anime, check [here](https://9anime.zone/) or in their [reddit](https://old.
 ### Usage
 
 ```
-animdl.py [( download | stream | grab ) --query QUERY | continue ]
+animdl.py [OPTIONS] COMMAND [ARGS]...
+
+Options:
+  --help  Show this message and exit.       
+
+Commands:
+  continue  Continue your downloads or stream from where t'was left.
+  download  Download your favorite anime by query.
+  grab      Stream the stream links to the stdout stream for external usage.
+  stream    Stream your favorite anime by query.
 ```
 
-Examples:
+**Examples:**
 
-```py
-animdl.py stream -q "one piece" -s 1 # Starts searching 'one piece' on 9Anime and streams from E01.
-animdl.py stream -q "4anime:one piece" -s 1 # Starts searching 'one piece' on 4Anime and streams from E01.
-animdl.py stream -q "https://9anime.to/watch/one-piece.ov8" -s 1 # Starts scraping One Piece from 9Anime and streams from E01.
-```
-Similarly, AnimeFillerList can be configured to get the episode names, filter out unwanted fillers and 
-make animdl fully aware about when to stop (basically the end of the episodes).
-```py
-animdl.py stream -q "https://9anime.to/watch/one-piece.ov8" -s 1 -fl "https://animefillerlist.com/shows/one-piece" --fillers
-```
-The filler flag makes AnimDL skip through filler. It is recommened to use this AnimeFillerList integration when possible.
+1. Streaming **One Piece** on [**9Anime**](https://9anime.to/) from episode 1 by placing a search forehand:
 
-`4anime`, `9anime`, `animefreak`, `animepahe`, `animix`, `gogoanime`, `twist` (case insensitive) can be used as prefix followed by a ':' and the query to make AnimDL search from them.
+-
+    ```
+    animdl.py stream -q "one piece" -s 1
+    ```
 
-You can quit AnimDL and continue watching anime from where you left it any time using the 'continue'.
 
-Similarly, stream urls can be set to be printed / written on stdout using the 'grab' command.
+2. Streaming **One Piece** on [**4Anime**](https://4anime.to/) from episode 1 by placing a search forehand.
+
+-
+    ```
+    animdl.py stream -q "4anime:one piece" -s 1
+    ```
+
+3. Streaming **One Piece** on [**9Anime**](https://9anime.to/) with anime url from episode 1.
+
+-
+    ```
+    animdl.py stream -q "https://9anime.to/watch/one-piece.ov8" -s 1
+    ```
+
+4. Streaming with the setting of **3** with **AnimeFillerList** integration that filters out fillers.
+
+- 
+    ```
+    animdl.py stream -q "https://9anime.to/watch/one-piece.ov8" -s 1 -fl "https://animefillerlist.com/shows/one-piece" --fillers
+    ```
+    
+5. Continuing a previous stream / download session without worrying about the command.
+
+- 
+    ```
+    animdl.py continue
+    ```
+
+6. Scraping the episode stream links of **One Piece** from **[9Anime](https://9anime.to/)** to **stdout** without downloading:
+
+- 
+    ```
+    animdl.py grab -q "https://9anime.to/watch/one-piece.ov8" -s 1
+    ```
+
+**Downloading** is the same as the examples 1-4, except the `download` command is used.
 
 ### Installation
 
@@ -56,23 +87,26 @@ Clone / download the repository and simply run the following command in the work
 pip install -r requirements.txt
 ```
 
-Python 3.6 and higher are supported by AnimDL.
+**Support:** Python 3.6 and higher
 
 ### Supported Sites
 
-| Website | Available Qualities | Status | Content Extension |
-| ------- | ------------------- | ------ | ----------------- |
-| [4Anime](https://4anime.to/) | 720p, 1080p | Working | MP4 |
-| [9Anime](https://9anime.to/) | 720p, 1080p | Working | MP4 / TS  | 
-| [AnimeFreak](https://www.animefreak.tv/) | 720p, 1080p | Working | MP4 | 
-| [AnimePahe](https://www.animepahe.com/) | 720p, 1080p | Working | TS | 
-| [Animixplay](https://www.animixplay.to/) | 480p, 720p, 1080p | Working | MP4 / TS |
-| [GogoAnime](https://www1.gogoanime.ai/) | 480p, 720p, 1080p | Working | MP4 / TS |
-| [Twist](https://www.twist.moe/) | 720p, 1080p | Working| MP4 |
 
-If a site is not working, please don't worry, you're encouraged to make an issue! 
+| Website | Searcher Prefix | Available Qualities | Status | Content Extension |
+| ------- | ---------------- | ------------------- | ------ | ----------------- |
+| [4Anime](https://4anime.to/) | `4anime` | 720p, 1080p | Working | MP4 |
+| [9Anime](https://9anime.to/) | `9anime `| 720p, 1080p | Working | MP4 / TS  | 
+| [AnimeFreak](https://www.animefreak.tv/) | `animefreak` | 720p, 1080p | Working | MP4 | 
+| [AnimePahe](https://www.animepahe.com/) | `animepahe` | 720p, 1080p | Working | TS | 
+| [Animixplay](https://www.animixplay.to/) | `animix` | 480p, 720p, 1080p | Working | MP4 / TS |
+| [GogoAnime](https://www1.gogoanime.ai/) | `gogoanime` | 480p, 720p, 1080p | Working | MP4 / TS |
+| [Twist](https://www.twist.moe/) | `twist` | 720p, 1080p | Working| MP4 |
 
-Want more sites? AnimDL seems to support the best sites currently but that doesn't mean we won't add more sites! You're encouraged to raise as many issues as possible for requests to add support for an anime site.
+### More sites?
+
+Currently, there are no plans to add more sites as **AnimDL** supports top sites that stream anime. However, this does not mean that this is it for the sites. You can raise as many issues as possible for requesting a new site.
+
+**Note:** Your request may be denied in case of Cloudflare protections and powerful anti-bot scripts in the site.
 
 ### Streaming
 
@@ -82,4 +116,4 @@ If you're having issues with the installation of mpv, you can make an issue to r
 
 ### Disclaimer
 
-Downloading or streaming copyrighted materials might be illegal in your country. 
+Downloading or streaming copyrighted materials might be illegal in your country.
