@@ -46,7 +46,7 @@ def generate_stream_arguments(session_dict):
 def search_identifiers(session_file, identifer):
     for session in load_sessions(session_file):
         if identifer.lower() in session.get('identifier', '').lower():
-            yield session.get('identifier', '').lower()
+            yield session
         
 def get_most_recent_session(session_file):
     sessions = load_sessions(session_file)
