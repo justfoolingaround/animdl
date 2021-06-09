@@ -72,8 +72,7 @@ def animdl_stream(query, anonymous, start, title, filler_list, offset, filler, m
                 title += ": %s" % raw_episodes[c - 1].title
             
             if not stream_urls:
-                ts("Could not find any streams for %s." % title)
-                playing = False
+                playing = not click.confirm("[\x1b[33m%s\x1b[39m] Could not find any streams for %s; continue? " % ('animdl-%s-streamer-core', title))
                 continue
             
             selection = quality_prompt(stream_urls, provider) if len(stream_urls) > 1 else stream_urls[0]
