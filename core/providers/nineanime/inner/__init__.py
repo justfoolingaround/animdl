@@ -37,9 +37,9 @@ def validate_json_content_yield(session, url, **session_kwargs):
 
     return json.loads(response.text)
 
-def fallback_handler(f, *args, **kwargs):
+def fallback_handler(f, session, _hash_cb):
     try:
-        return f(*args, **kwargs)
+        return f(session, _hash_cb())
     except Exception as e:
         print('[\x1b[31manimdl-9anime-warning\x1b[39m] Falling back to mirrors due to an unexpected error: {}.'.format(e))
         print('[\x1b[31manimdl-9anime-warning\x1b[39m] If the problem persists, feel free to raise an issue with the anime url and episode number immediately.')
@@ -50,7 +50,7 @@ def get_url_by_hash(session, _hash, access_headers):
 
 def fallback_extraction(session, content_json, access_headers):
     
-    return fallback_handler(extract_1, session, get_url_by_hash(session, content_json.get('35'), access_headers)) or \
-        fallback_handler(extract_2, session, get_url_by_hash(session, content_json.get('40'), access_headers)) or \
-        fallback_handler(extract_3, session, get_url_by_hash(session, content_json.get('41'), access_headers)) or \
-        fallback_handler(extract_4, session, get_url_by_hash(session, content_json.get('28'), access_headers))
+    return fallback_handler(extract_1, session, lambda: get_url_by_hash(session, content_json.get('35'), access_headers)) or \
+        fallback_handler(extract_2, session, lambda: get_url_by_hash(session, content_json.get('40'), access_headers)) or \
+        fallback_handler(extract_3, session, lambda: get_url_by_hash(session, content_json.get('41'), access_headers)) or \
+        fallback_handler(extract_4, session, lambda: get_url_by_hash(session, content_json.get('28'), access_headers))
