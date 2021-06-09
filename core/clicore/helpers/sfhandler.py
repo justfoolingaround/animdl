@@ -55,11 +55,11 @@ def get_most_recent_session(session_file):
 def update_session_file(session_file, session_dict):
     if not Path(session_file).exists():
         with open(session_file, 'w') as sf:
-            json.dump([], sf)
+            json.dump([], sf, indent=4)
 
     sessions = load_sessions(session_file)
     with open(session_file, 'w') as sw:
-        json.dump([s for s in sessions if (s.get('identifier', '')).lower() != session_dict.get('identifier', '').lower()] + [session_dict], sw)
+        json.dump([s for s in sessions if (s.get('identifier', '')).lower() != session_dict.get('identifier', '').lower()] + [session_dict], sw, indent=4)
         
 
 def save_session(session_file, url, start, identifier, afl_url, afl_offset, afl_fillers, afl_canon, afl_mixed, *, t='stream', end=0):
