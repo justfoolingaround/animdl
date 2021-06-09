@@ -28,6 +28,7 @@ def absolute_extension_determination(url):
 def def_iv(initial=1):
     while True:
         yield initial.to_bytes(16, 'big')
+        initial += 1
 
 default_iv_generator = def_iv()
 
