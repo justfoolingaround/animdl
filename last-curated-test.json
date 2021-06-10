@@ -2,11 +2,11 @@
     "status": {
         "4Anime": true,
         "9Anime": true,
-        "AnimeFreak": true,
+        "AnimeFreak": false,
         "AnimePahe": true,
         "Animixplay": true,
         "GogoAnime": true,
         "Twist": true
     },
-    "current_version": "20210530-1"
+    "current_version": "20210610-1"
 }
