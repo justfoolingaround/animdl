@@ -8,6 +8,7 @@ import lxml.html as htmlparser
 
 from ...config import *
 
+FOURANIME_SEARCH_AJAX = FOURANIME + "wp-admin/admin-ajax.php"
 FOURANIME_URL_SEARCH = FOURANIME + "?s=%s"
 
 NINEANIME_URL_SEARCH = NINEANIME + "search"
@@ -30,6 +31,13 @@ WAF_TOKEN = re.compile(r"(\d{64})")
 WAF_SEPARATOR = re.compile(r"\w{2}")
 
 def search_4anime(session, query):
+    
+    with session.post(FOURANIME_SEARCH_AJAX, data={'action': 'ajaxsearchlite_search', 'aslp': query, 'options': 'qtranslate_lang=0&set_intitle=None&customset%5B%5D=anime'}) as fouranime_ajax_results:
+        parsed = htmlparser.fromstring(fouranime_ajax_results.text)
+    
+    for results in parsed.xpath('//a[@class="name"]'):
+        yield {'anime_url': results.get('href'), 'name': results.text_content()}
+    
     with session.get(FOURANIME_URL_SEARCH % query) as fouranime_results:
         parsed = htmlparser.fromstring(fouranime_results.text)
 
