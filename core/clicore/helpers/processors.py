@@ -15,19 +15,19 @@ DEFAULT_SITE = "9anime" # Forced-default to choose from.
 
 INCLUDED_PROVIDER = re.compile(r"^(?P<provider>.*):(?P<query>.*)", re.S)
 
-def prompt_user(anime_list, provider_name):
+def prompt_user(anime_list_genexp, provider_name):
     ts = lambda x: to_stdout(x, "%s-searcher" % provider_name)        
-    ts("Found %d anime(s)" % len(anime_list))
-    for n, anime in enumerate(anime_list, 1):
+    r = []
+    for n, anime in enumerate(anime_list_genexp, 1):
         ts("[#%02d] %s \x1b[33m%s\x1b[39m" % (n, anime.get('name'), anime.get('anime_url')))
+        r.append(anime)
     
     index = prompt("Select by the index (defaults to 1)", default=1, type=int, show_default=False) - 1
+    if (index + 1) > len(r):
+        ts("Applying modulus to get a valid index from incorrect index: #%02d -> #%02d" % (index + 1, index % len(r) + 1))
+        index %= len(r)
     
-    if (index + 1) > len(anime_list):
-        ts("Applying modulus to get a valid index from incorrect index: #%02d -> #%02d" % (index + 1, index % len(anime_list) + 1))
-        index %= len(anime_list)
-    
-    return anime_list[index], provider_name
+    return r[index], provider_name
     
 def process_query(session, query, *, provider=DEFAULT_SITE):
     
@@ -44,4 +44,4 @@ def process_query(session, query, *, provider=DEFAULT_SITE):
         query = "%s:%s" % (provider, query)
         provider = DEFAULT_SITE
     
-    return prompt_user([*get_searcher(provider)(session, query)], provider)
+    return prompt_user(get_searcher(provider)(session, query), provider)
