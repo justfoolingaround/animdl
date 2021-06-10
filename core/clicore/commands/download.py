@@ -63,7 +63,10 @@ def animdl_download(query, anonymous, start, end, title, filler_list, offset, fi
     base = Path('./%s/' % sanitize_filename(content_name))
     base.mkdir(exist_ok=True)
     
-    for stream_urls, c in anime_associator.raw_fetch_using_check(lambda x: check(x) and end >= x >= start):
+    streams = [*anime_associator.raw_fetch_using_check(lambda x: check(x) and end >= x >= start)]
+    
+    for stream_url_caller, c in streams:
+        stream_urls = stream_url_caller()
         
         if not anonymous:
             sfhandler.save_session(SESSION_FILE, url, c, content_name, filler_list, offset, filler, mixed, canon, t='download', end=end)

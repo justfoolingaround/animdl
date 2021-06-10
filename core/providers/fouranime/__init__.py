@@ -1,3 +1,4 @@
+from functools import partial
 import re
 
 import lxml.html as htmlparser
@@ -23,4 +24,4 @@ def fetcher(session, url, check):
     for episode in episodes:
         en = int(episode.text_content())
         if check(en):
-            yield [{'quality': 'unknown', 'stream_url': extract_stream_uri(session, episode.get('href'))}], en
+            yield partial(lambda s, e: [{'quality': 'unknown', 'stream_url': extract_stream_uri(s, e)}], session, episode.get('href')), en

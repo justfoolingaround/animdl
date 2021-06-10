@@ -7,6 +7,8 @@ import re
 
 import lxml.html as htmlparser
 
+from functools import partial
+
 from ...config import NINEANIME
 from ...helper import construct_site_based_regex
 from .inner import fallback_extraction
@@ -36,4 +38,4 @@ def fetcher(session, url, check):
     for el in data.xpath('//li/a'):
         en = int(el.get('data-base', 0))
         if check(en):
-            yield fallback_extraction(session, json.loads(el.get('data-sources', '{}')), access_headers), en
+            yield partial(fallback_extraction, session, json.loads(el.get('data-sources', '{}')), access_headers), en

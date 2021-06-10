@@ -5,6 +5,8 @@ import lxml.html as htmlparser
 from ...config import ANIMEFREAK
 from ...helper import construct_site_based_regex
 
+from functools import partial
+
 EPISODE_RE = construct_site_based_regex(ANIMEFREAK, extra_regex=r'/watch/([^?&/]+)/episode/episode-\d+')
 STREAM_URL_RE = re.compile(r"(?:https?://)?st\d+\.anime1\.com/(?P<file>.*)")
 
@@ -42,4 +44,4 @@ def fetcher(session, url, check):
         episode_number = re.search(r"\d+", episode.text_content())
         en = int(episode_number.group(0) if episode_number else 1)
         if check(en):
-            yield [{'quality': 'unknown', 'stream_url': extract_stream_uri(session, episode.get('href')), 'headers':  {'ssl_verification': False}}], en
+            yield partial(lambda s, e: [{'quality': 'unknown', 'stream_url': extract_stream_uri(s, e.get('href')), 'headers':  {'ssl_verification': False}}], session, episode), en

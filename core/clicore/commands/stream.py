@@ -61,8 +61,10 @@ def animdl_stream(query, anonymous, start, title, filler_list, offset, filler, m
     if not anonymous:
         sfhandler.save_session(SESSION_FILE, url, start, content_name, filler_list, offset, filler, mixed, canon)
     
-    for stream_urls, c in anime_associator.raw_fetch_using_check(lambda x: check(x) and x >= start):
-        ts("Active stream session @ [%02d/%s]" % (c, ('%02d' % len(raw_episodes)) if raw_episodes else '?'))
+    streams = [*anime_associator.raw_fetch_using_check(lambda x: check(x) and x >= start)]
+    
+    for stream_urls_caller, c in streams:
+        ts("Active stream session @ [%02d/%02d]" % (c, len(streams)))
         if not anonymous:
             sfhandler.save_session(SESSION_FILE, url, c, content_name, filler_list, offset, filler, mixed, canon)
         playing = True
@@ -70,6 +72,8 @@ def animdl_stream(query, anonymous, start, title, filler_list, offset, filler, m
             title = "Episode %02d" % c
             if raw_episodes:
                 title += ": %s" % raw_episodes[c - 1].title
+            
+            stream_urls = stream_urls_caller()
             
             if not stream_urls:
                 playing = not click.confirm("[\x1b[33m%s\x1b[39m] Could not find any streams for %s; continue? " % ('animdl-%s-streamer-core' % provider, title))

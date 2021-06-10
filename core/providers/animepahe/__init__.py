@@ -5,6 +5,8 @@ import requests
 from ...config import ANIMEPAHE
 from ...helper import construct_site_based_regex
 
+from functools import partial
+
 API_URL = ANIMEPAHE + "api"
 SITE_URL = ANIMEPAHE
 
@@ -39,7 +41,7 @@ def get_stream_url(session, release_id, stream_session):
 def get_stream_urls_from_data(session, release_id, data, check):
     for content in reversed(data):
         if check(content.get('episode', 0)):
-            yield [*get_stream_url(session, release_id, content.get('session'))], content.get('episode', 0)
+            yield partial(lambda session, release_id, content: ([*get_stream_url(session, release_id, content.get('session'))]), session, release_id, content), content.get('episode', 0)
 
 def predict_pages(total, check):
     """
