@@ -23,7 +23,7 @@ from .mycloud    import extract as extract_4
 import json
 import time
 
-def validate_json_content_yield(session, url, **session_kwargs):
+def validate_json_content_yield(session, url, ensurer=lambda *args, **kwargs: True, **session_kwargs):
     """
     Use this when the JSON content yield is guarenteed, else, it will request content till eternity.
     
@@ -33,7 +33,7 @@ def validate_json_content_yield(session, url, **session_kwargs):
     while not c:
         time.sleep(.3)
         with session.get(url, **session_kwargs) as response:
-            c = response.ok
+            c = response.ok and ensurer(response)
 
     return json.loads(response.text)
 
@@ -46,7 +46,7 @@ def fallback_handler(f, session, _hash_cb):
     return []
 
 def get_url_by_hash(session, _hash, access_headers):
-    return decode(validate_json_content_yield(session, NINEANIME + "ajax/anime/episode", params={'id': _hash}, headers=access_headers).get('url', ''))
+    return decode(validate_json_content_yield(session, NINEANIME + "ajax/anime/episode", ensurer=lambda r: json.loads(r.text).get('url'),  params={'id': _hash}, headers=access_headers).get('url', ''))
 
 def fallback_extraction(session, content_json, access_headers):
     
