@@ -64,7 +64,7 @@ def animdl_stream(query, anonymous, start, title, filler_list, offset, filler, m
     streams = [*anime_associator.raw_fetch_using_check(lambda x: check(x) and x >= start)]
     
     for stream_urls_caller, c in streams:
-        ts("Active stream session @ [%02d/%02d]" % (c, len(streams)))
+        ts("Active stream session @ [%02d/%02d]" % (c, (c + len(streams)) if not raw_episodes else len(raw_episodes)))
         if not anonymous:
             sfhandler.save_session(SESSION_FILE, url, c, content_name, filler_list, offset, filler, mixed, canon)
         playing = True
