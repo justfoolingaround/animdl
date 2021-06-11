@@ -23,10 +23,8 @@ from .mycloud    import extract as extract_4
 import json
 import time
 
-def validate_json_content_yield(session, url, ensurer=lambda *args, **kwargs: True, **session_kwargs):
+def validate_json_content_yield(session, url, ensurer=lambda *args, **kwargs: True, max_tries=5, **session_kwargs):
     """
-    Use this when the JSON content yield is guarenteed, else, it will request content till eternity.
-    
     9Anime throws 500s if fast paced traffic is seen; this function combats that.
     """
     c = False
@@ -34,7 +32,9 @@ def validate_json_content_yield(session, url, ensurer=lambda *args, **kwargs: Tr
         time.sleep(.3)
         with session.get(url, **session_kwargs) as response:
             c = response.ok and ensurer(response)
-
+        max_tries -= 1
+        if not max_tries:
+            raise Exception('Max tries exceeded with the given provider mirror.')
     return json.loads(response.text)
 
 def fallback_handler(f, session, _hash_cb):
