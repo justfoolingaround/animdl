@@ -64,7 +64,6 @@ def animdl_stream(query, anonymous, start, title, filler_list, offset, filler, m
     streams = [*anime_associator.raw_fetch_using_check(lambda x: check(x) and x >= start)]
     
     for stream_urls_caller, c in streams:
-        ts("Active stream session @ [%02d/%02d]" % (c, (c + len(streams)) if not raw_episodes else len(raw_episodes)))
         if not anonymous:
             sfhandler.save_session(SESSION_FILE, url, c, content_name, filler_list, offset, filler, mixed, canon)
         playing = True
@@ -82,6 +81,7 @@ def animdl_stream(query, anonymous, start, title, filler_list, offset, filler, m
             selection = quality_prompt(stream_urls, provider) if len(stream_urls) > 1 else stream_urls[0]
             headers = selection.get('headers', {})
             _ = headers.pop('ssl_verification', True)
+            ts("Active stream session @ [%02d/%02d]" % (c, (c + len(streams)) if not raw_episodes else len(raw_episodes)))
             mpv_process = subprocess.Popen(['mpv', selection.get('stream_url'), "--title=%s" % title] + (['--http-header-fields=%s' % ','.join('%s:%s' % (k, v) for k, v in headers.items())] if headers else []))
             mpv_process.wait()
             
