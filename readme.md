@@ -1,5 +1,5 @@
 
-![AnimDL Cover](https://raw.githubusercontent.com/justfoolingaround/animdl/master/assets/cover.png)
+![AnimDL Cover](https://i.imgur.com/nNXSZi6.png)
 
 <h1><p align="center"> AnimDL - Download & Stream Your Favorite Anime </p></h1>
 
@@ -94,13 +94,13 @@ pip install -r requirements.txt
 
 | Website | Searcher Prefix | Available Qualities | Status | Content Extension |
 | ------- | ---------------- | ------------------- | ------ | ----------------- |
-| [4Anime](https://4anime.to/) | `4anime` | 720p, 1080p | <p align="center"><code><img height="20" src="https://raw.githubusercontent.com/justfoolingaround/animdl/master/assets/working.png"></code></p> | MP4 |
-| [9Anime](https://9anime.to/) | `9anime `| 720p, 1080p | <p align="center"><code><img height="20" src="https://raw.githubusercontent.com/justfoolingaround/animdl/master/assets/working.png"></code></p>  | MP4 / TS  | 
-| [AnimeFreak](https://www.animefreak.tv/) | `animefreak` | 720p, 1080p | <p align="center"><code><a href="https://api-prod.downfor.cloud/httpcheck/animefreak.tv"><img height="20" src="https://raw.githubusercontent.com/justfoolingaround/animdl/master/assets/!working.png"></a></code>  </p>  | MP4 | 
-| [AnimePahe](https://www.animepahe.com/) | `animepahe` | 720p, 1080p | <p align="center"><code><img height="20" src="https://raw.githubusercontent.com/justfoolingaround/animdl/master/assets/working.png"></code></p>  | TS | 
-| [Animixplay](https://www.animixplay.to/) | `animix` | 480p, 720p, 1080p | <p align="center"><code><img height="20" src="https://raw.githubusercontent.com/justfoolingaround/animdl/master/assets/working.png"></code></p>  | MP4 / TS |
-| [GogoAnime](https://www1.gogoanime.ai/) | `gogoanime` | 480p, 720p, 1080p | <p align="center"><code><img height="20" src="https://raw.githubusercontent.com/justfoolingaround/animdl/master/assets/working.png"></code></p>  | MP4 / TS |
-| [Twist](https://www.twist.moe/) | `twist` | 720p, 1080p | <p align="center"><code><img height="20" src="https://raw.githubusercontent.com/justfoolingaround/animdl/master/assets/working.png"></code></p> | MP4 |
+| [4Anime](https://4anime.to/) | `4anime` | 720p, 1080p | <p align="center"><code><img height="20" src="https://i.imgur.com/tG9nb8s.png"></code></p> | MP4 |
+| [9Anime](https://9anime.to/) | `9anime `| 720p, 1080p | <p align="center"><code><img height="20" src="https://i.imgur.com/tG9nb8s.png"></code></p>  | MP4 / TS  | 
+| [AnimeFreak](https://www.animefreak.tv/) | `animefreak` | 720p, 1080p | <p align="center"><code><a href="https://api-prod.downfor.cloud/httpcheck/animefreak.tv"><img height="20" src="https://i.imgur.com/bTLO7LJ.png"></a></code>  </p>  | MP4 | 
+| [AnimePahe](https://www.animepahe.com/) | `animepahe` | 720p, 1080p | <p align="center"><code><img height="20" src="https://i.imgur.com/tG9nb8s.png"></code></p>  | TS | 
+| [Animixplay](https://www.animixplay.to/) | `animix` | 480p, 720p, 1080p | <p align="center"><code><img height="20" src="https://i.imgur.com/tG9nb8s.png"></code></p>  | MP4 / TS |
+| [GogoAnime](https://www1.gogoanime.ai/) | `gogoanime` | 480p, 720p, 1080p | <p align="center"><code><img height="20" src="https://i.imgur.com/tG9nb8s.png"></code></p>  | MP4 / TS |
+| [Twist](https://www.twist.moe/) | `twist` | 720p, 1080p | <p align="center"><code><img height="20" src="https://i.imgur.com/tG9nb8s.png"></code></p> | MP4 |
 
 ### More sites?
 
