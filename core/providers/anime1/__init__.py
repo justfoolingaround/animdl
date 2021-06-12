@@ -20,7 +20,7 @@ def extract(session, url):
         with session.get(url, verify=False) as episode:
             stream_url = STREAM_EXTRACTOR_RE.search(episode.text).group(0)
         healthy = is_healthy(session, stream_url)
-    return {'quality': 'unknown', 'stream_url': stream_url}
+    return {'quality': 'unknown', 'stream_url': stream_url, 'headers': {'ssl_verification': False}}
 
 def fetcher(session, url, check):
     match = EPISODE_RE.search(url)
