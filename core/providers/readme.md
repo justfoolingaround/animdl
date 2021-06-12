@@ -12,3 +12,4 @@ Currently supported:
 - [GogoAnime](https://www1.gogoanime.ai/)
 - [9Anime](https://9anime.to/)
 - [AnimeFreak](https://www.animefreak.tv/)
+- [Anime1](http://www.anime1.com/)

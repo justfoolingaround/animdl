@@ -4,6 +4,7 @@ Change stuff here if the site got changed / banned in your region.
 
 FOURANIME = "https://4anime.to/"
 NINEANIME = "https://9anime.to/"
+ANIME1 = "http://www.anime1.com/"
 ANIMEFREAK = "https://animefreak.tv/"
 ANIMEPAHE = "https://animepahe.com/"
 ANIMIXPLAY = "https://animixplay.to/"

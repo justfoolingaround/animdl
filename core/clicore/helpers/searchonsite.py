@@ -13,6 +13,8 @@ FOURANIME_URL_SEARCH = FOURANIME + "?s=%s"
 
 NINEANIME_URL_SEARCH = NINEANIME + "search"
 
+ANIME1_SEARCH_AJAX = ANIME1 + "/home/default/"
+
 ANIMEFREAK_URL_SEARCH_AJAX = ANIMEFREAK + "search/topSearch"
 ANIMEFREAK_URL_CONTENT = ANIMEFREAK + "watch/%s"
 
@@ -92,9 +94,17 @@ def search_twist(session, query):
         if searcher(query, anime):
             yield {'anime_url': TWIST_URL_CONTENT + anime.get('slug', {}).get('slug'), 'name': anime.get('title', '')}
 
+def search_anime1(session, query):
+    with session.get(ANIME1_SEARCH_AJAX, params={'query': query}, headers={'x-requested-with': 'XMLHttpRequest'}, verify=False) as api_content:
+        results = api_content.json()
+
+    for slug, name in zip(results.get('data'), results.get('suggestions')):
+        yield {'anime_url': ANIME1 + "watch/" + slug, 'name': name}
+
 link = {
     '4anime': search_4anime,
     '9anime': search_9anime,
+    'anime1': search_anime1,
     'animefreak': search_animefreak,
     'animepahe': search_animepahe,
     'animixplay': search_animixplay,
