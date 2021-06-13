@@ -81,7 +81,7 @@ def animdl_stream(query, anonymous, start, title, filler_list, offset, filler, m
             selection = quality_prompt(stream_urls, provider) if len(stream_urls) > 1 else stream_urls[0]
             headers = selection.get('headers', {})
             _ = headers.pop('ssl_verification', True)
-            ts("Active stream session @ [%02d/%02d]" % (c, (c + len(streams) - 1) if not raw_episodes else len(raw_episodes)))
+            ts("Active stream session @ [%02d/%02d]" % (c, (start + len(streams) - 1) if not raw_episodes else len(raw_episodes)))
             mpv_process = subprocess.Popen(['mpv', selection.get('stream_url'), "--title=%s" % title] + (['--http-header-fields=%s' % ','.join('%s:%s' % (k, v) for k, v in headers.items())] if headers else []))
             mpv_process.wait()
             
