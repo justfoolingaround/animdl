@@ -1,14 +1,13 @@
-from core.clicore.helpers import sfhandler
-import subprocess
-
 import click
 import requests
-import json
 
 from ... import Associator
 from ...animefillerlist import get_filler_list
+from ...config import MPV_EXECUTABLE
 from ..helpers import *
+from ..helpers.xmpv import start_streaming
 from .constants import SESSION_FILE
+
 
 def quality_prompt(stream_list, provider):
     ts = lambda x: to_stdout(x, "animdl-%s-url-selector" % provider)
@@ -82,7 +81,7 @@ def animdl_stream(query, anonymous, start, title, filler_list, offset, filler, m
             headers = selection.get('headers', {})
             _ = headers.pop('ssl_verification', True)
             ts("Active stream session @ [%02d/%02d]" % (c, (start + len(streams) - 1) if not raw_episodes else len(raw_episodes)))
-            mpv_process = subprocess.Popen(['mpv', selection.get('stream_url'), "--title=%s" % title] + (['--http-header-fields=%s' % ','.join('%s:%s' % (k, v) for k, v in headers.items())] if headers else []))
+            mpv_process = start_streaming(selection.get('stream_url'), headers=headers, window_title=title)
             mpv_process.wait()
             
             playing = False

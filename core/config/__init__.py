@@ -16,3 +16,5 @@ Set preferred quality here. (Only for HLS streams)
 """
 
 QUALITY = 1080
+
+MPV_EXECUTABLE = "mpv"

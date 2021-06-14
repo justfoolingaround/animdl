@@ -7,6 +7,7 @@ import shutil
 import click
 
 from core.clicore.commands import download, stream, continuation, grab
+from core.config import MPV_EXECUTABLE
 
 commands = {
     'download': download.animdl_download,
@@ -14,7 +15,7 @@ commands = {
     'grab': grab.animdl_grab
 }
 
-mpv = bool(shutil.which('mpv'))
+mpv = bool(shutil.which(MPV_EXECUTABLE))
 
 if mpv:
     commands.update({'stream': stream.animdl_stream})
