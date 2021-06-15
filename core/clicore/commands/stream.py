@@ -3,7 +3,6 @@ import requests
 
 from ... import Associator
 from ...animefillerlist import get_filler_list
-from ...config import MPV_EXECUTABLE
 from ..helpers import *
 from ..helpers.xmpv import start_streaming
 from .constants import SESSION_FILE
