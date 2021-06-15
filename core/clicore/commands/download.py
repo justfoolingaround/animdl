@@ -40,7 +40,7 @@ def animdl_download(query, anonymous, start, end, title, filler_list, offset, fi
     if not start:
         start = click.prompt("Episode number to intiate downloading from (defaults to 1)", default=1, show_default=False) or 1
     
-    ts("Initialzing download session @ [%02d/%s]" % (start, '%02d' % end if isinstance(end, int) else '?'))    
+    ts("Initializing download session [%02d -> %s]" % (start, '%02d' % end if isinstance(end, int) else '?'))    
     url = anime.get('anime_url')
     anime_associator = Associator(url, session=session)    
     check = lambda *args, **kwargs: True
@@ -54,9 +54,6 @@ def animdl_download(query, anonymous, start, end, title, filler_list, offset, fi
             end = len(raw_episodes)
         check = (lambda x: raw_episodes[offset + x - 1].content_type in ((['Filler'] if filler else []) + (['Mixed Canon/Filler'] if mixed else []) + (['Anime Canon', 'Manga Canon'] if canon else [])))
     
-    ts("Starting download session @ [%02d/%s]" % (start, ('%02d' % end if isinstance(end, int) else '?')))
-    ts("Downloads will be done in the folder '%s'" % content_name)
-    
     if not anonymous:
         sfhandler.save_session(SESSION_FILE, url, start, content_name, filler_list, offset, filler, mixed, canon, t='download', end=end)
     
@@ -64,6 +61,8 @@ def animdl_download(query, anonymous, start, end, title, filler_list, offset, fi
     base.mkdir(exist_ok=True)
     
     streams = [*anime_associator.raw_fetch_using_check(lambda x: check(x) and end >= x >= start)]
+    ts("Starting download session [%02d -> %s]" % (start, ('%02d' % end if isinstance(end, int) else len(streams) if not raw_episodes else len(raw_episodes))))
+    ts("Downloads will be done in the folder '%s'" % content_name)
     
     for stream_url_caller, c in streams:
         stream_urls = stream_url_caller()
