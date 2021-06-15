@@ -1,7 +1,7 @@
 
 ![AnimDL Cover](https://i.imgur.com/nNXSZi6.png)
 
-<h1><p align="center"> AnimDL - Download & Stream Your Favorite Anime </p></h1>
+<h1><p align="center"> AnimDL - Download & Stream Your Favorite Anime </p>
 
 <p align="center"><a href="https://github.com/justfoolingaround/animdl">
 
@@ -13,6 +13,7 @@
 <img src="https://forthebadge.com/images/badges/powered-by-coffee.svg" height="30px">
 </a>
 </p>
+</h1>
 
 **AnimDL** is an incredibly powerful tool for downloading and streaming anime.
 
