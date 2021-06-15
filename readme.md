@@ -3,6 +3,17 @@
 
 <h1><p align="center"> AnimDL - Download & Stream Your Favorite Anime </p></h1>
 
+<p align="center"><a href="https://github.com/justfoolingaround/animdl">
+
+<img src="https://forthebadge.com/images/badges/built-by-developers.svg" height="30px">
+
+
+<img src="https://forthebadge.com/images/badges/made-with-python.svg" height="30px">
+
+<img src="https://forthebadge.com/images/badges/powered-by-coffee.svg" height="30px">
+</a>
+</p>
+
 **AnimDL** is an incredibly powerful tool for downloading and streaming anime.
 
 ### Core features
