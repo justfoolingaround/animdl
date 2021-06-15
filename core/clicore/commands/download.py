@@ -61,7 +61,7 @@ def animdl_download(query, anonymous, start, end, title, filler_list, offset, fi
     base.mkdir(exist_ok=True)
     
     streams = [*anime_associator.raw_fetch_using_check(lambda x: check(x) and end >= x >= start)]
-    ts("Starting download session [%02d -> %s]" % (start, ('%02d' % end if isinstance(end, int) else len(streams) if not raw_episodes else len(raw_episodes))))
+    ts("Starting download session [%02d -> %s]" % (start, ('%02d' % end if isinstance(end, int) else (start + len(streams) - 1) if not raw_episodes else len(raw_episodes))))
     ts("Downloads will be done in the folder '%s'" % content_name)
     
     for stream_url_caller, c in streams:
