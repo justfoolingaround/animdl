@@ -18,6 +18,7 @@
 - Integrates powerful, fast and efficient internal HLS downloader.
 - Only tool in existence to bypass [9Anime](https://9anime.to)'s cloudflare protection.
 - Operates with full efficiency and speed by using Python's generator functions to their full capacity.
+- Supports downloading with [Internet Download Manager](https://www.internetdownloadmanager.com/) optionally.
 - Supports streaming with [`mpv`](https://github.com/mpv-player/mpv/), an incredibly efficient, fast and light-weight dependency.
 
 ### Usage
