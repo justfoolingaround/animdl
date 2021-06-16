@@ -1,3 +1,4 @@
+import os
 from pathlib import Path
 
 import click
@@ -10,6 +11,7 @@ from ...downloader import *
 from ..helpers import *
 from .constants import SESSION_FILE
 
+
 @click.command(name='download', help="Download your favorite anime by query.")
 @click.option('-q', '--query', required=True)
 @click.option('-a', '--anonymous', is_flag=True, default=False, help='Avoid writing session files for this session.')
@@ -21,7 +23,8 @@ from .constants import SESSION_FILE
 @click.option('--filler', is_flag=True, default=True, help="Auto-skip fillers (If filler list is configured).")
 @click.option('--mixed', is_flag=True, default=True, help="Auto-skip mixed fillers/canons (If filler list is configured).")
 @click.option('--canon', is_flag=True, default=True, help="Auto-skip canons (If filler list is configured).")
-def animdl_download(query, anonymous, start, end, title, filler_list, offset, filler, mixed, canon):
+@click.option('--idm', is_flag=True, default=False, help="Download anime using Internet Download Manager")
+def animdl_download(query, anonymous, start, end, title, filler_list, offset, filler, mixed, canon, idm):
     """
     Download call.
     """
@@ -61,14 +64,15 @@ def animdl_download(query, anonymous, start, end, title, filler_list, offset, fi
     base.mkdir(exist_ok=True)
     
     streams = [*anime_associator.raw_fetch_using_check(lambda x: check(x) and end >= x >= start)]
-    ts("Starting download session [%02d -> %s]" % (start, ('%02d' % end if isinstance(end, int) else (start + len(streams) - 1) if not raw_episodes else len(raw_episodes))))
+    end_str = '%02d' % end if isinstance(end, int) else (start + len(streams) - 1) if not raw_episodes else len(raw_episodes)
+    ts("Starting download session [%02d -> %s]" % (start, end_str))
     ts("Downloads will be done in the folder '%s'" % content_name)
     
     for stream_url_caller, c in streams:
         stream_urls = stream_url_caller()
         
         if not anonymous:
-            sfhandler.save_session(SESSION_FILE, url, c, content_name, filler_list, offset, filler, mixed, canon, t='download', end=end)
+            sfhandler.save_session(SESSION_FILE, url, c, content_name, filler_list, offset, filler, mixed, canon, t='download', end=end, idm=True)
         
         content_title = "E%02d" % c
         if raw_episodes:
@@ -81,10 +85,19 @@ def animdl_download(query, anonymous, start, end, title, filler_list, offset, fi
         content = stream_urls[0]
         
         extension = aed(content.get('stream_url'))
-        download_path = base / Path('%s.%s' % (sanitize_filename(content_title), extension if extension not in ['m3u', 'm3u8'] else 'ts'))
+        file_path = Path('%s.%s' % (sanitize_filename(content_title), aed(content.get('stream_url'))))
+        download_path = base / file_path
                 
         if extension in ['m3u', 'm3u8']:
             hls_download(stream_urls, download_path, content_title)
             continue
         
-        url_download(content.get('stream_url'), base / Path('%s.%s' % (sanitize_filename(content_title), aed(content.get('stream_url')))), lambda r: tqdm(desc=content_title, total=r, unit='B', unit_scale=True, unit_divisor=1024), content.get('headers', {}))
+        if idmanlib.supported and idm:
+            if download_path.exists():
+                download_path.chmod(0x1ff)
+                os.remove(download_path.as_posix())
+            ts("Downloading with Internet Download Manager [%02d/%s]" % (c, end_str))
+            idmanlib.wait_until_download(content.get('stream_url'), headers=content.get('headers', {}), filename=file_path, download_folder=base.absolute())
+            continue
+        
+        url_download(content.get('stream_url'), download_path, lambda r: tqdm(desc=content_title, total=r, unit='B', unit_scale=True, unit_divisor=1024), content.get('headers', {}))

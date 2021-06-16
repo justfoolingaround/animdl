@@ -32,6 +32,7 @@ def generate_download_arguments(session_dict):
             session_dict.get('start', 1), 
             session_dict.get('end', 0), 
             session_dict.get('identifier', ''), 
+            session_dict.get('idm', False), 
             session_dict.get('afl', {}).get('url', ''),
             session_dict.get('afl', {}).get('offset', 0),
             session_dict.get('afl', {}).get('autoskip-filler', False),
@@ -40,7 +41,7 @@ def generate_download_arguments(session_dict):
             )
 
 def generate_stream_arguments(session_dict):
-    u, s, e, i, au, ao, af, ac, am = generate_download_arguments(session_dict)
+    u, s, e, i, idm, au, ao, af, ac, am = generate_download_arguments(session_dict)
     return u, s, i, au, ao, af, ac, am
 
 def search_identifiers(session_file, identifer):
@@ -62,7 +63,7 @@ def update_session_file(session_file, session_dict):
         json.dump([s for s in sessions if (s.get('identifier', '')).lower() != session_dict.get('identifier', '').lower()] + [session_dict], sw, indent=4)
         
 
-def save_session(session_file, url, start, identifier, afl_url, afl_offset, afl_fillers, afl_canon, afl_mixed, *, t='stream', end=0):
+def save_session(session_file, url, start, identifier, afl_url, afl_offset, afl_fillers, afl_canon, afl_mixed, *, t='stream', end=0, idm=False):
     
     if t == 'stream':
         return update_session_file(
@@ -91,6 +92,7 @@ def save_session(session_file, url, start, identifier, afl_url, afl_offset, afl_
                     'start': start,
                     'end': end,
                     'type': 'download',
+                    'idm': idm,
                     'afl': {
                         'offset': afl_offset,
                         'url': afl_url,

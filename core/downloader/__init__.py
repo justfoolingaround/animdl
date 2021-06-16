@@ -5,3 +5,4 @@ from .download import \
         absolute_extension_determination as aed,
         sanitize_filename
     )
+from . import idmanlib

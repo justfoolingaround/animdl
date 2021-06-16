@@ -4,6 +4,8 @@ Internet Download Manager Support.
 This is made strictly for Windows.
 """
 
+import time
+
 import comtypes.client as cc
 import psutil
 
@@ -30,23 +32,14 @@ def idm_process():
 
 within_range = lambda t, t1, t2: t1 <= t <= t2
 
-def get_downloader_hook():
-    """
-    TODO & Coming soon: Inject a hook onto IDM to keep track of downloads so that \
-        download start and end events can be easily detected for proper downloading.
-    """
+def idm_download(url, headers={}, form_data='', auth=(None,  None), filename='', download_folder=DOWNLOAD_FOLDER, lflag=5):    
+    return client.SendLinkToIDM(url, headers.get('referer', ''), headers.get('cookie', ''), form_data, auth[0] or '', auth[1] or '', download_folder, filename, lflag)
 
-def idm_download(url, headers={}, form_data='', auth=(None,  None), filename='', download_folder=DOWNLOAD_FOLDER, lflag=5):
-    """
-    This is unstable due to its incapacity to wait for an existing download to complete.
-    
-    Due to this incapacity, all the episodes (in case of One Piece, all 900~) would download concurrently with IDM without anything to stop them. 
-    Hence, an hook is being developed and this feature is marked as coming soon.
-    """
-    client.SendLinkToIDM(url, headers.get('referer', ''), headers.get('cookie', ''), form_data, auth[0] or '', auth[1] or '', download_folder, filename, lflag)
-    downloader_process = idm_process()
-    
-    if not downloader_process:
-        return 2
-    
-    return 0
+def wait_until_download(url, headers={}, form_data='', auth=(None,  None), filename='', download_folder=DOWNLOAD_FOLDER):
+    idm_download(url, headers, form_data, auth, filename.as_posix(), download_folder.as_posix(), lflag=5)
+    while not (download_folder / filename).exists():
+        """IDM doesn't save the file until download completion."""
+        try:
+            time.sleep(.5)
+        except KeyboardInterrupt:
+            return print("[IDM] Interrupted the wait for current download completion. Continuing with the next in queue.")
