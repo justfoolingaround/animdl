@@ -1,5 +1,6 @@
+click
+comtypes
 lxml
 tqdm
 requests
-click
 pycryptodomex
