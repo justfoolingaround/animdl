@@ -17,7 +17,7 @@ def arrange_template(element_obj):
     
     initial = {}
 
-    for content in element_obj.xpath('//div[@class="schedule-card"]'):
+    for content in sorted(element_obj.xpath('//div[@class="schedule-card"]'), key=lambda c: int(c.xpath('time')[0].get('data-timestamp'))):
         ts = content.xpath('time')[0]
         episode = ts.get('data-label', '0').strip('EP')
         datetime_obj = datetime.fromtimestamp(int(ts.get('data-timestamp', 0)))
