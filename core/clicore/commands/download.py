@@ -89,7 +89,7 @@ def animdl_download(query, anonymous, start, end, title, filler_list, offset, fi
         download_path = base / file_path
                 
         if extension in ['m3u', 'm3u8']:
-            hls_download(stream_urls, download_path, content_title)
+            hls_download(stream_urls, base / ("%s.ts" % sanitize_filename(content_title)), content_title)
             continue
         
         if idmanlib.supported and idm:
