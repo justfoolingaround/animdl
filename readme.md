@@ -33,6 +33,7 @@ Commands:
   continue  Continue your downloads or stream from where t'was left.
   download  Download your favorite anime by query.
   grab      Stream the stream links to the stdout stream for external usage.
+  schedule  Know which animes are going over the air when.
   stream    Stream your favorite anime by query.
 ```
 

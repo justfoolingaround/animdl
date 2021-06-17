@@ -18,3 +18,12 @@ Set preferred quality here. (Only for HLS streams)
 QUALITY = 1080
 
 MPV_EXECUTABLE = "mpv"
+
+"""
+Below is for schedule:
+"""
+
+LIVECHART = "https://www.livechart.me/"
+
+DATE_FORMAT = "%b. %d, %A"
+TIME_FORMAT = "%X"
