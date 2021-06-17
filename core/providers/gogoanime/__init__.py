@@ -1,5 +1,7 @@
-from functools import partial
+import json
 import re
+from functools import partial
+
 import lxml.html as htmlparser
 
 from ...config import GOGOANIME
@@ -35,6 +37,11 @@ def convert_to_anime_page(url):
         return SITE_URL + "/category/%s" % match.group(1)
     return url
 
+def bypass_encrypted_content(session, streaming_url):
+    with session.get('https:%s' % streaming_url.replace('streaming', 'loadserver')) as server_load:
+        for urls in re.finditer(r"(?<=sources:\[{file: ')[^']+", server_load.text):
+            yield urls.group(0)    
+
 def get_stream_url(session, episode_page_url):
     
     with session.get(episode_page_url) as response:
@@ -44,11 +51,13 @@ def get_stream_url(session, episode_page_url):
     
     with session.get('https:%s' % streaming.replace('streaming', 'ajax')) as response:
         content = response.json()
-
+    
+    if content == 404:
+        return [{'quality': 'unknown', 'stream_url': c, 'headers': {'referer': "https:%s" % streaming}} for c in bypass_encrypted_content(session, streaming)]
+        
     s1, l1, t1, s2, l2, t2 =  ajax_parse(content)
     
     return [{'quality': "%s [%s]" % (l1, t1), 'stream_url': s1}] + ([{'quality': "%s [%s]" % (l2, t2), 'stream_url': s2}] if s2 else [])
-    
 
 def fetcher(session, url, check):
     """
