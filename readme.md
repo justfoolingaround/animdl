@@ -8,6 +8,25 @@
 
 **AnimDL** is an incredibly powerful tool for downloading and streaming anime.
 
+### Installation
+
+AnimDL has two versions that can be used, a [stable version](https://github.com/justfoolingaround/animdl-install) that can be installed via Python PIP and an unstable version that gets code modification almost daily for immediate bug fixing.
+
+The stable version can be installed with the following command:
+
+```
+pip install git+https://github.com/justfoolingaround/animdl-install
+```
+
+The unstable version can be installed by cloning / downloading the repository with the following command in the working directory:
+
+```
+pip install -r requirements.txt
+```
+
+**Support:** Python 3.6 and higher
+
+
 ### Core features
 
 - Abuses the developer's knowledge of internal streaming mechanisms in various different sites to hunt down high quality stream links.
@@ -83,16 +102,6 @@ Commands:
     ```
 
 **Downloading** is the same as the examples 1-4, except the `download` command is used.
-
-### Installation
-
-Clone / download the repository and simply run the following command in the working directory:
-
-```
-pip install -r requirements.txt
-```
-
-**Support:** Python 3.6 and higher
 
 ### Supported Sites
 
