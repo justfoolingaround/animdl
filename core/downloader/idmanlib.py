@@ -6,9 +6,6 @@ This is made strictly for Windows.
 
 import time
 
-import comtypes.client as cc
-import psutil
-
 IDM_MID = ["{ECF21EAB-3AA8-4355-82BE-F777990001DD}", 1, 0]
 DOWNLOAD_FOLDER = "Downloads"
 
@@ -16,19 +13,13 @@ idmlib, client = None, None
 supported = lambda: bool(idmlib)
 
 try:
+    import comtypes.client as cc
     import comtypes.gen.IDManLib as idmlib
+    
     cc.GetModule(IDM_MID)
     client = cc.CreateObject(idmlib.CIDMLinkTransmitter, None, None, idmlib.ICIDMLinkTransmitter2)
 except:
     pass
-
-def idm_process():
-    """
-    Get the active Internet Download Manager process.
-    """
-    for process in psutil.process_iter():
-        if process.name().lower() == 'idman.exe':
-            return process
 
 within_range = lambda t, t1, t2: t1 <= t <= t2
 
