@@ -92,7 +92,7 @@ def animdl_download(query, anonymous, start, end, title, filler_list, offset, fi
             hls_download(stream_urls, base / ("%s.ts" % sanitize_filename(content_title)), content_title)
             continue
         
-        if idmanlib.supported and idm:
+        if idmanlib.supported() and idm:
             if download_path.exists():
                 download_path.chmod(0x1ff)
                 os.remove(download_path.as_posix())
