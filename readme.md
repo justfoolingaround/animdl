@@ -105,7 +105,7 @@ Commands:
 
 ### Supported Sites
 
-<!-->Working: https://i.imgur.com/tG9nb8s.png, !Not working: https://i.imgur.com/bTLO7LJ.png</!-->
+<!--Working: https://i.imgur.com/tG9nb8s.png, !Not working: https://i.imgur.com/bTLO7LJ.png !-->
 
 | Website | Searcher Prefix | Available Qualities | Status | Content Fetch Speed <br> (Per Episode) | Content Extension |
 | ------- | ---------------- | ------------------- | ------ | ------------------ | ----------------- |
