@@ -5,7 +5,7 @@ import requests
 from ...config import ANIMEPAHE
 from ...helper import construct_site_based_regex
 
-from functools import partial
+from functools import partial, lru_cache
 
 API_URL = ANIMEPAHE + "api"
 SITE_URL = ANIMEPAHE
@@ -14,6 +14,7 @@ PLAYER_RE = construct_site_based_regex(ANIMEPAHE, extra_regex=r'/play/([^?&/]+)'
 ID_RE = re.compile(r"/api\?m=release&id=([^&]+)")
 KWIK_RE = re.compile(r"Plyr\|querySelector\|document\|([^\\']+)")
 
+@lru_cache()
 def get_session_page(session, page, release_id):
     with session.get(API_URL, params={'m': 'release', 'id': release_id, 'sort': 'episode_desc', 'page': page}) as response:
         return response.json()
@@ -37,8 +38,8 @@ def get_stream_url(session, release_id, stream_session):
         for quality, data in d.items():
             yield {'quality': quality, 'headers': {'referer': data.get('kwik')}, 'stream_url': get_m3u8_from_kwik(session, data.get('kwik'))}
     
-
-def get_stream_urls_from_data(session, release_id, data, check):
+def get_stream_urls_from_page(session, release_id, page, check):
+    data = get_session_page(session, page, release_id).get('data')
     for content in reversed(data):
         if check(content.get('episode', 0)):
             yield partial(lambda session, release_id, content: ([*get_stream_url(session, release_id, content.get('session'))]), session, release_id, content), content.get('episode', 0)
@@ -51,7 +52,6 @@ def predict_pages(total, check):
         if check(x):
             yield (total - x) // 30 + 1
         
-
 def fetcher(session: requests.Session, url, check):
     
     match = PLAYER_RE.search(url)
@@ -64,8 +64,8 @@ def fetcher(session: requests.Session, url, check):
     fpd = get_session_page(session, '1', release_id)
 
     if fpd.get('last_page') == 1:
-        yield from get_stream_urls_from_data(session, release_id, fpd.get('data'), check)
+        yield from get_stream_urls_from_page(session, release_id, '1', check)
         return
-
-    for pages in predict_pages(fpd.get('total'), check):
-        yield from get_stream_urls_from_data(session, release_id, get_session_page(session, str(pages), release_id).get('data'), check)
+    
+    for page in predict_pages(fpd.get('total'), check):
+        yield from get_stream_urls_from_page(session, release_id, page, check)
