@@ -51,7 +51,10 @@ def predict_pages(total, check):
     for x in range(1, total + 1):
         if check(x):
             yield (total - x) // 30 + 1
-        
+
+def page_minimization(page_generator):
+    return sorted(list(dict.fromkeys(page_generator)), reverse=True)
+    
 def fetcher(session: requests.Session, url, check):
     
     match = PLAYER_RE.search(url)
@@ -67,5 +70,5 @@ def fetcher(session: requests.Session, url, check):
         yield from get_stream_urls_from_page(session, release_id, '1', check)
         return
     
-    for page in predict_pages(fpd.get('total'), check):
+    for page in page_minimization(predict_pages(fpd.get('total'), check)):
         yield from get_stream_urls_from_page(session, release_id, page, check)
