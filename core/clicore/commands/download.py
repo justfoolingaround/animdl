@@ -72,7 +72,7 @@ def animdl_download(query, anonymous, start, end, title, filler_list, offset, fi
         stream_urls = stream_url_caller()
         
         if not anonymous:
-            sfhandler.save_session(SESSION_FILE, url, c, content_name, filler_list, offset, filler, mixed, canon, t='download', end=end, idm=True)
+            sfhandler.save_session(SESSION_FILE, url, c, content_name, filler_list, offset, filler, mixed, canon, t='download', end=end, idm=idm)
         
         content_title = "E%02d" % c
         if raw_episodes:

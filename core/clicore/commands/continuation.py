@@ -54,5 +54,5 @@ def animdl_continue(ctx: click.Context, name, v):
         return ctx.invoke(animdl_stream, query=u, start=s, title=i, filler_list=au, offset=ao, filler=af, mixed=ac, canon=am)
     
     if session.get('type') == 'download':
-        u, s, e, i, au, ao, af, ac, am = sfhandler.generate_download_arguments(session)
-        return ctx.invoke(animdl_download, query=u, start=s, end=e, title=i, filler_list=au, offset=ao, filler=af, mixed=ac, canon=am)
+        u, s, e, i, idm, au, ao, af, ac, am = sfhandler.generate_download_arguments(session)
+        return ctx.invoke(animdl_download, query=u, start=s, end=e, title=i, filler_list=au, offset=ao, filler=af, mixed=ac, canon=am, idm=idm)
