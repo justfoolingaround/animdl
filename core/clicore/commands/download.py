@@ -38,11 +38,7 @@ def animdl_download(query, anonymous, start, end, title, filler_list, offset, fi
     content_name = title or anime.get('name')
     if not content_name:
         content_name = choice(create_random_titles())
-        ts("Could not get the folder to download to, generating a cool random folder name: %s" % content_name)    
-    
-    if not start:
-        start = click.prompt("Episode number to intiate downloading from (defaults to 1)", default=1, show_default=False) or 1
-    
+        ts("Could not get the folder to download to, generating a cool random folder name: %s" % content_name)
     ts("Initializing download session [%02d -> %s]" % (start, '%02d' % end if isinstance(end, int) else '?'))    
     url = anime.get('anime_url')
     anime_associator = Associator(url, session=session)    
