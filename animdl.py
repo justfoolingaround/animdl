@@ -6,7 +6,7 @@ import shutil
 
 import click
 
-from core.clicore.commands import download, stream, continuation, grab, schedule
+from core.cli.commands import download, stream, continuation, grab, schedule
 from core.config import MPV_EXECUTABLE
 
 commands = {

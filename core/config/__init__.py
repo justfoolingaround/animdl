@@ -15,6 +15,8 @@ def merge_dicts(dict1, dict2):
 CONFIGURATION_FILE_PATH = Path(os.getenv('ANIMDL_CONFIG') or './animdl_config.json')
 
 DEFAULT_CONFIG = {
+    'session_file': 'cli_session_animdl.json',
+    'default_provider': '9anime',
     'site_urls': {
         '4anime': 'https://4anime.to/',
         '9anime': 'https://9anime.to/',
@@ -58,3 +60,6 @@ LIVECHART   = CONFIG.get('schedule', {}).get('site_url')
 
 DATE_FORMAT = CONFIG.get('schedule', {}).get('date_format')
 TIME_FORMAT = CONFIG.get('schedule', {}).get('time_format')
+
+SESSION_FILE = CONFIG.get('session_file')
+DEFAULT_PROVIDER = CONFIG.get('default_provider')
