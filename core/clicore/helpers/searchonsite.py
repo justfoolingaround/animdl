@@ -21,6 +21,8 @@ ANIMEFREAK_URL_CONTENT = ANIMEFREAK + "watch/%s"
 ANIMEPAHE_URL_CONTENT = ANIMEPAHE + "anime/%s"
 ANIMEPAHE_URL_SEARCH_AJAX = ANIMEPAHE + "api"
 
+ANIMIX_URL_SEARCH_API = "https://cdn.animixplay.to/api/search"
+
 ANIMIX_URL_SEARCH_POST = "https://v1.zv5vxk4uogwdp7jzbh6ku.workers.dev/"
 ANIMIX_URL_CONTENT = ANIMIXPLAY.rstrip('/')
 
@@ -71,6 +73,13 @@ def search_animepahe(session, query):
         yield {'anime_url': ANIMEPAHE_URL_CONTENT % results.get('session'), 'name': results.get('title')}
 
 def search_animixplay(session, query):
+    if len(query) < 4:
+        result = session.post(ANIMIX_URL_SEARCH_API, data={'qfast': query}).json().get('result')
+        if not result:
+            return []
+        yield from [{'anime_url': ANIMIX_URL_CONTENT + result.get('href'), 'name': result.get('title')} for result in htmlparser.fromstring(result).xpath('//p[@class="name"]/a')]
+        return 
+    
     with session.post(ANIMIX_URL_SEARCH_POST, data={'q2': query, 'origin': '1', 'root': 'animixplay.to'}) as animix_results:
         content = htmlparser.fromstring(animix_results.json().get('result'))
 
