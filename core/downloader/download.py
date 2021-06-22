@@ -1,6 +1,5 @@
 import re
 import time
-from pathlib import Path
 
 import requests
 from tqdm import tqdm
@@ -22,34 +21,19 @@ def absolute_extension_determination(url):
         return '' if url_end.rfind('.') == -1 else url_end[url_end.rfind('.') + 1:]
     return ''
 
-def generate_appropriate_header(url, *, headers, verify):
-    """
-    Combat against annoying responses that contain location in the headers but \
-        doesn't redirect properly.
-    """
-    c = requests.head(url, headers=headers, verify=verify)
-    semi_url = c.headers.get('location')
-    while semi_url:
-        c = requests.head(semi_url, headers=headers, verify=verify)
-        semi_url = c.headers.get('location')
-    return c.headers, semi_url or url
-
-def _download(url, _path, tqdm_bar_init, headers):
-    
+def single_threaded_download(url, _path, tqdm_bar_init, headers):
+    session = requests.Session()
     verify = headers.pop('ssl_verification', True)
-    header, url = generate_appropriate_header(url, headers=headers, verify=verify)
-    
-    r = int(header.get('content-length', 0) or 0)    
-    d = 0
-    
-    tqdm_bar = tqdm_bar_init(r)
+    response_headers = session.head(url, allow_redirects=True, verify=verify, headers=headers)
+    content_length = int(response_headers.headers.get('content-length') or 0)    
+    tqdm_bar = tqdm_bar_init(content_length)
     
     with open(_path, 'ab') as sw:
         d = sw.tell()
         tqdm_bar.update(d)
-        while r > d:
+        while content_length > d:
             try:
-                for chunks in requests.get(url, stream=True, headers={'Range': 'bytes=%d-' % d, **(headers or {})}, verify=verify).iter_content(0x4000):
+                for chunks in session.get(url, allow_redirects=True, stream=True, headers={'Range': 'bytes=%d-' % d, **(headers or {})}, verify=verify, timeout=3).iter_content(0x4000):
                     size = len(chunks)
                     d += size
                     tqdm_bar.update(size)
@@ -59,38 +43,8 @@ def _download(url, _path, tqdm_bar_init, headers):
                 A delay to avoid rate-limit(s).
                 """
                 time.sleep(.3)
-            
     tqdm_bar.close()
 
-def internal_download_v1(base_folder, episodes):
-    """
-    Toss a list of Episodes (fetch those from the Anime class or construct it yourself.)
-    """
-    base = Path('./%s/' % sanitize_filename(base_folder))
-    base.mkdir(exist_ok=True)
-    
-    for episode in episodes:
-        url = episode.get_url()
-        
-        if not url:
-            continue
-        
-        r = int(requests.head(url).headers.get('content-length', 0))        
-        progress = tqdm(desc='Episode %02d, %s' % (episode.number, episode.name), total=r, unit='B', unit_scale=True, unit_divisor=1024)
-        
-        with open(base / (Path('E%02d - %s.mp4' % (episode.number, sanitize_filename(episode.name)))), 'ab') as sw:
-            offset = sw.tell()
-            
-            if offset == r:
-                progress.close()
-                continue
-            
-            for chunks in requests.get(url, stream=True, headers={'Range': 'bytes=%d-' % offset}).iter_content(0x4000):
-                progress.update(len(chunks))
-                sw.write(chunks)
-                
-        progress.close()
-        
 def hls_download(quality_dict, _path, episode_identifier, _tqdm=True):
     
     session = requests.Session()
@@ -106,26 +60,3 @@ def hls_download(quality_dict, _path, episode_identifier, _tqdm=True):
             
     if _tqdm:
         _tqdm_bar.close()
-    
-        
-def internal_download(base_folder, episodes):
-    """
-    v2, currently being used.
-    """
-    base = Path('./%s/' % sanitize_filename(base_folder))
-    base.mkdir(exist_ok=True)
-    
-    for episode in episodes:
-        url, headers = episode.get_url()
-        extension = absolute_extension_determination(url or '')
-        
-        identifier = "Episode {0.number:02d}, {0.name}".format(episode)
-        
-        if extension in ['m3u8', 'm3u']:
-            hls_download(episode.urls, base / (Path('E%02d - %s.ts' % (episode.number, sanitize_filename(episode.name)))), identifier)
-            continue
-
-        if not url:
-            continue
-        
-        _download(url, base / (Path('E%02d - %s.%s' % (episode.number, sanitize_filename(episode.name), extension))), lambda r: tqdm(desc='Episode %02d, %s' % (episode.number, episode.name), total=r, unit='B', unit_scale=True, unit_divisor=1024), headers)
