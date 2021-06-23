@@ -20,7 +20,7 @@ def session_prompt(session_list):
     return session_list[index]
 
 @click.command(name='continue', help="Continue your downloads or stream from where t'was left.")
-@click.option('-n', '--name', help="Name of the session to be continued from.", required=False, default='', show_default=False)
+@click.argument('name', required=False, default='')
 @click.option('-v', is_flag=True, default=False, help="View the sessions that can be continued from.")
 @click.pass_context
 def animdl_continue(ctx: click.Context, name, v):

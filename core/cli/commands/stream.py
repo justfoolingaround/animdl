@@ -22,7 +22,7 @@ def quality_prompt(stream_list, provider):
     return stream_list[index]
 
 @click.command(name='stream', help="Stream your favorite anime by query.")
-@click.option('-q', '--query', help="A search query or anime url string to begin scraping from.", required=True)
+@click.argument('query', required=True)
 @click.option('-a', '--anonymous', is_flag=True, default=False, help='Avoid writing session files for this session.')
 @click.option('-s', '--start', help="An integer that determines where to begin the streaming from.", required=False, default=0, show_default=False, type=int)
 @click.option('-t', '--title', help="Optional title for the anime if the query is a direct URL.", required=False, default='', show_default=False)

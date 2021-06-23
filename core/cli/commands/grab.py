@@ -7,7 +7,7 @@ from ..helpers import *
 import json
 
 @click.command(name='grab', help="Stream the stream links to the stdout stream for external usage.")
-@click.option('-q', '--query', help="A search query or anime url string to begin scraping from.", required=True)
+@click.argument('query', required=True)
 @click.option('-s', '--start', help="An integer that determines where to begin the grabbing from.", required=False, default=1, show_default=False, type=int)
 @click.option('-e', '--end', help="A integer that determines where to end the grabbing at.", required=False, default=0, show_default=False, type=int)
 @click.option('-f', '--file', help="File to write all the grabbed content to.", required=False, default='', show_default=False, type=str)

@@ -12,7 +12,7 @@ from ..helpers import *
 
 
 @click.command(name='download', help="Download your favorite anime by query.")
-@click.option('-q', '--query', required=True)
+@click.argument('query', required=True)
 @click.option('-a', '--anonymous', is_flag=True, default=False, help='Avoid writing session files for this session.')
 @click.option('-s', '--start', help="An integer that determines where to begin the downloading from.", required=False, default=0, show_default=False, type=int)
 @click.option('-e', '--end', help="A integer that determines where to end the downloading at.", required=False, default=0, show_default=False, type=int)
