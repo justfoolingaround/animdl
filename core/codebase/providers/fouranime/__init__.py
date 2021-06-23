@@ -7,7 +7,7 @@ from ....config import FOURANIME
 from ...helper import construct_site_based_regex
 
 EPISODE_RE = construct_site_based_regex(FOURANIME, extra_regex=r"/([^?&/]+)-episode-\d+")
-BASE_URL = "https://4anime.to/anime/{}"
+BASE_URL = FOURANIME + "anime/{}"
 
 def extract_stream_uri(session, episode_url):
     with session.get(episode_url) as episode_page:
