@@ -21,6 +21,8 @@ ANIMEFREAK_URL_CONTENT = ANIMEFREAK + "watch/%s"
 ANIMEPAHE_URL_CONTENT = ANIMEPAHE + "anime/%s"
 ANIMEPAHE_URL_SEARCH_AJAX = ANIMEPAHE + "api"
 
+ANIMEOUT_URL_SEARCH_AJAX = ANIMEOUT + "wp-admin/admin-ajax.php"
+
 ANIMIX_URL_SEARCH_API = "https://cdn.animixplay.to/api/search"
 
 ANIMIX_URL_SEARCH_POST = "https://v1.zv5vxk4uogwdp7jzbh6ku.workers.dev/"
@@ -72,6 +74,13 @@ def search_animepahe(session, query):
     for results in content.get('data'):
         yield {'anime_url': ANIMEPAHE_URL_CONTENT % results.get('session'), 'name': results.get('title')}
 
+def search_animeout(session, query):
+    with session.post(ANIMEOUT_URL_SEARCH_AJAX, data={'s': query, 'action': 'kleo_ajax_search', 'context': 'post'}) as animeout_results:
+        content = htmlparser.fromstring(animeout_results.text)
+        
+    for result in content.xpath('//a'):
+        yield {'anime_url': result.get('href'), 'name': result.text_content()}
+
 def search_animixplay(session, query):
     if len(query) < 4:
         result = session.post(ANIMIX_URL_SEARCH_API, data={'qfast': query}).json().get('result')
@@ -116,6 +125,7 @@ link = {
     'anime1': search_anime1,
     'animefreak': search_animefreak,
     'animepahe': search_animepahe,
+    'animeout': search_animeout,
     'animixplay': search_animixplay,
     'gogoanime': search_gogoanime,
     'twist': search_twist,
