@@ -62,7 +62,7 @@ Commands:
 
 -
     ```
-    animdl.py stream -q "one piece" -s 1
+    animdl.py stream "one piece" -s 1
     ```
 
 
@@ -70,21 +70,21 @@ Commands:
 
 -
     ```
-    animdl.py stream -q "4anime:one piece" -s 1
+    animdl.py stream "4anime:one piece" -s 1
     ```
 
 3. Streaming **One Piece** on [**9Anime**](https://9anime.to/) with anime url from episode 1.
 
 -
     ```
-    animdl.py stream -q "https://9anime.to/watch/one-piece.ov8" -s 1
+    animdl.py stream "https://9anime.to/watch/one-piece.ov8" -s 1
     ```
 
 4. Streaming with the setting of **3** with **AnimeFillerList** integration that filters out fillers.
 
 - 
     ```
-    animdl.py stream -q "https://9anime.to/watch/one-piece.ov8" -s 1 -fl "https://animefillerlist.com/shows/one-piece" --fillers
+    animdl.py stream "https://9anime.to/watch/one-piece.ov8" -s 1 -fl "https://animefillerlist.com/shows/one-piece" --fillers
     ```
     
 5. Continuing a previous stream / download session without worrying about the command.
@@ -98,7 +98,7 @@ Commands:
 
 - 
     ```
-    animdl.py grab -q "https://9anime.to/watch/one-piece.ov8" -s 1
+    animdl.py grab "https://9anime.to/watch/one-piece.ov8" -s 1
     ```
 
 **Downloading** is the same as the examples 1-4, except the `download` command is used.
