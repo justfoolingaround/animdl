@@ -30,9 +30,9 @@ def index_by_url(url):
     
     index.update({'name': '-'.join(anime)})
     
-    pe = pe.strip().removesuffix('v2')
-    if pe.isdigit():
-        index.update({'episode': int(pe)})
+    pe_match = re.search(r"(\d+).+?", pe)
+    if pe_match:
+        index.update({'episode': int(pe_match.group(1))})
     
     index.update({'extra': pe})
     return index
