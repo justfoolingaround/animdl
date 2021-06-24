@@ -25,7 +25,7 @@ def index_by_url(url):
         index.update({'quality': int(fallback.group(1))})
 
     fn = PARENTHESIS_REGEX.sub('', fn)
-    *anime, pe = re.split(r'(?=[VS]?\d+.*?-)', fn, 1, re.I)
+    *anime, pe = re.split(r'(?=-\s*?[VS]?\d+)', fn, 1, re.I)
     index.update({'name': '-'.join(anime)})
     
     pe_match = re.search(r"(?<![VS])(\d+).*?", pe, re.I)
