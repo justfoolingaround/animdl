@@ -75,10 +75,10 @@ def search_animepahe(session, query):
         yield {'anime_url': ANIMEPAHE_URL_CONTENT % results.get('session'), 'name': results.get('title')}
 
 def search_animeout(session, query):
-    with session.post(ANIMEOUT_URL_SEARCH_AJAX, data={'s': query, 'action': 'kleo_ajax_search', 'context': 'post'}) as animeout_results:
+    with session.get(ANIMEOUT, params={'s': query}) as animeout_results:
         content = htmlparser.fromstring(animeout_results.text)
         
-    for result in content.xpath('//a'):
+    for result in content.xpath('//h3[@class="post-title entry-title"]/a'):
         yield {'anime_url': result.get('href'), 'name': result.text_content()}
 
 def search_animixplay(session, query):
