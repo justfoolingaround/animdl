@@ -1,6 +1,6 @@
 import re
 
-SUFFIX_REGEX = re.compile(r'([^?&/.]+)\.(?:[^?&/.]+)(?:\?.+)?$')
+SUFFIX_REGEX = re.compile(r'([^?&/]+)(?:\?.+)?$')
 
 BRACE_PAIRS = [
     ('{', '}'),
@@ -16,21 +16,19 @@ def index_by_url(url):
     fn_match = SUFFIX_REGEX.search(url)
     if not fn_match:
         return {}
-    
+
     fn = fn_match.group(1) 
     
-    fallback = re.search('(\d+)pp?', fn)
-    fn = re.sub('(\d+)pp?', '', fn)
+    fallback = re.search(r'(\d+)pp?', fn)
+    fn = re.sub(r'((\d+)pp?|x\.?26[45])', '', fn)
     if fallback:
         index.update({'quality': int(fallback.group(1))})
 
     fn = PARENTHESIS_REGEX.sub('', fn)
-    
-    *anime, pe = fn.rsplit('-', 1)
-    
+    *anime, pe = re.split(r'(?=[VS]?\d+.*?-)', fn, 1, re.I)
     index.update({'name': '-'.join(anime)})
     
-    pe_match = re.search(r"(\d+).+?", pe)
+    pe_match = re.search(r"(?<![VS])(\d+).*?", pe, re.I)
     if pe_match:
         index.update({'episode': int(pe_match.group(1))})
     
