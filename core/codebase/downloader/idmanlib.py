@@ -14,9 +14,9 @@ supported = lambda: bool(idmlib)
 
 try:
     import comtypes.client as cc
-    import comtypes.gen.IDManLib as idmlib
-    
     cc.GetModule(IDM_MID)
+    
+    import comtypes.gen.IDManLib as idmlib
     client = cc.CreateObject(idmlib.CIDMLinkTransmitter, None, None, idmlib.ICIDMLinkTransmitter2)
 except:
     pass
