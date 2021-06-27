@@ -8,7 +8,17 @@
 
 **AnimDL** is an incredibly powerful tool for downloading and streaming anime.
 
-### Installation
+## Installation
+### Note:
+>> _Before installing [AnimeDl](https://github.com/justfoolingaround/animdl),it is recommended that  [mpv](https://github.com/mpv-player/mpv) is installed.streaming  with vlc media player **DOES** not and **WILL** not work with **some** [known](https://github.com/Justaus3r/animdl/blob/master/uncomp_server_vlc.md) servers_
+
+### Installing mpv:
+- The easiest way to install mpv is by using [chocolatey](https://chocolatey.org/) package manager,if you dont have chocolatey installed then install 
+chocolatey by following their [official documentation](https://chocolatey.org/install).
+- After chocolatey is installed,open an administrative cmd or powershell and type ```choco install mpv```,Enter A to confirm installing mpv.
+- And HURRAY!!.you have installed mpv,now you can proceed with installation of animdl.  
+
+### Installing animdl:
 
 AnimDL has two versions that can be used, a [stable version](https://github.com/justfoolingaround/animdl-install) that can be installed via Python PIP and an unstable version that gets code modification almost daily for immediate bug fixing.
 
@@ -18,10 +28,14 @@ The stable version can be installed with the following command:
 pip install git+https://github.com/justfoolingaround/animdl-install
 ```
 
-The unstable version can be installed by cloning / downloading the repository with the following command in the working directory:
+The unstable version can be installed by cloning / downloading the repository with the following command in the working directory(if you are on windows then be sure that you have [git](https://gitforwindows.org/) installed):
 
 ```
-pip install -r requirements.txt
+# Clone the repo
+git clone https://github.com/justfoolingaround/animdl 
+
+# Install all the dependencies
+pip install -r requirements.txt 
 ```
 
 **Support:** Python 3.6 and higher
@@ -38,7 +52,7 @@ pip install -r requirements.txt
 - Only tool in existence to bypass [9Anime](https://9anime.to)'s cloudflare protection.
 - Operates with full efficiency and speed by using Python's generator functions to their full capacity.
 - Supports downloading with [Internet Download Manager](https://www.internetdownloadmanager.com/) optionally.
-- Supports streaming with [`mpv`](https://github.com/mpv-player/mpv/), an incredibly efficient, fast and light-weight dependency.
+- Supports streaming with [`mpv`](https://github.com/mpv-player/mpv/), an incredibly efficient, fast and light-weight dependency,and if mpv is not installed animedl automatically searches for [`vlc media player`](https://www.videolan.org/vlc/) in most common installation places and adds it to PATH,allowing you to stream your favourite anime with vlc player.
 
 ### Usage
 
@@ -128,8 +142,8 @@ Currently, there are no plans to add more sites as **AnimDL** supports top sites
 ### Streaming
 
 Streaming needs an additional dependency known as `mpv`, you can download it from [here.](https://github.com/mpv-player/mpv/releases/)
-
-If you're having issues with the installation of mpv, you can make an issue to recieve full help on its installation and usage.
+If you're having issues with the installation of mpv, you can make an issue to recieve full help on its installation and usage._**also** please note that
+streaming anime with vlc may not work for some [servers](https://github.com/Justaus3r/animdl/blob/master/uncomp_server_vlc.md),don't worry just change the site(i.e from 9anime to 4anime) and it should work_.
 
 ### Disclaimer
 
