@@ -77,12 +77,12 @@ def animdl_stream(query, anonymous, start, title, filler_list, offset, filler, m
             headers = selection.get('headers', {})
             _ = headers.pop('ssl_verification', True)
             ts("Active stream session @ [%02d/%02d]" % (c, (start + len(streams) - 1) if not raw_episodes else len(raw_episodes)))
-            mpv_process = start_streaming(selection.get('stream_url'), headers=headers, window_title=title)
-            mpv_process.wait()
+            player_process = start_streaming(selection.get('stream_url'), headers=headers, window_title=title)
+            player_process.wait()
             
             playing = False
             
-            if mpv_process.returncode:
-                ts("Detected a non-zero return code. [%d]" % mpv_process.returncode)
+            if player_process.returncode:
+                ts("Detected a non-zero return code. [%d]" % player_process.returncode)
                 ts("If there was an error or a crash during playback. Don't sweat it, you're going to be prompted for this instance.")
                 playing = click.confirm("[\x1b[33m%s\x1b[39m] Would you like to repeat '%s'? " % ('animdl-%s-streamer-core' % provider, title))
