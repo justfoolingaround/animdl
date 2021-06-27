@@ -6,14 +6,15 @@ import shutil
 
 import click
 
-from core.cli.commands import download, stream, continuation, grab, schedule
+from core.cli.commands import download, stream, continuation, grab, schedule, test
 from core.config import MPV_EXECUTABLE
 
 commands = {
     'download': download.animdl_download,
     'continue': continuation.animdl_continue,
     'grab': grab.animdl_grab,
-    'schedule': schedule.animdl_schedule
+    'schedule': schedule.animdl_schedule,
+    'test': test.animdl_test
 }
 
 mpv = bool(shutil.which(MPV_EXECUTABLE))
