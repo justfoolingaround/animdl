@@ -62,7 +62,7 @@ if executable:
 elif os.name == 'nt' and vlc_exists and "VideoLAN\\VLC" not in os.environ["Path_HKLM"]:
     
     with open('C:\\sys_path_bak.txt','w') as write_path_backup:
-        write_path_backup.write(os.environ["Path_HKLM"])
+        write_path_backup.write(os.environ["PATH"])
     
     with open('add_to_path_temp.ps1','w') as write_add_to_path_script:
         write_add_to_path_script.write(add_to_path_snippet)
@@ -81,14 +81,4 @@ def __animdl_cli__():
 if __name__  == '__main__':
     print(f"[purple]{banner}[/purple]")
     __animdl_cli__()
-
-
-
-
-
-
-
-
-
-
 
