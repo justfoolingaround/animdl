@@ -28,10 +28,10 @@ def start_streaming_vlc(executable, stream_url, *, headers=None, **kwargs):
     
     if headers:
         if headers.get('referer'):
-            args.append('--http-referrer={referer}'.format_map(headers))
+            args.append('--http-referrer={}'.format(headers.get('referer')))
         
         if headers.get('user-agent'):
-            args.append('--http-user-agent={user-agent}'.format_map(headers))
+            args.append('--http-user-agent={}'.format(headers.get('user-agent')))
     
     return subprocess.Popen(args)
 
