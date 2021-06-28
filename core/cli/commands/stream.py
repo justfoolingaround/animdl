@@ -28,14 +28,21 @@ def quality_prompt(stream_list, provider):
 @click.option('-t', '--title', help="Optional title for the anime if the query is a direct URL.", required=False, default='', show_default=False)
 @click.option('-fl', '--filler-list', help="Filler list associated with the content enqueued for the stream.", required=False, default='', show_default=False)
 @click.option('-o', '--offset', help="Offset (If the E1 of your anime is marked as E27 on AnimeFillerList, this value should be 26s).", required=False, default=0, show_default=False)
+@click.option('--mpv', is_flag=True, default=True, help="Force mpv (defaults to True) for streaming.")
+@click.option('--vlc', is_flag=True, default=False, help="Force vlc for streaming.")
 @click.option('--filler', is_flag=True, default=True, help="Auto-skip fillers (If filler list is configured).")
 @click.option('--mixed', is_flag=True, default=True, help="Auto-skip mixed fillers/canons (If filler list is configured).")
 @click.option('--canon', is_flag=True, default=True, help="Auto-skip canons (If filler list is configured).")
-def animdl_stream(query, anonymous, start, title, filler_list, offset, filler, mixed, canon):
+def animdl_stream(query, anonymous, start, title, filler_list, offset, 
+                  mpv, vlc, filler, mixed, canon):
     """
     Streamer call for animdl streaming session.
     """    
     session = requests.Session()
+    
+    streamer = handle_streamer(vlc=vlc, mpv=mpv)
+    if streamer == -107977:
+        return to_stdout('Streaming failed due to selection of a unsupported streamer; please configure the streamer in the config to use it.', caller='animdl-stream-failure')
     
     anime, provider = process_query(session, query)
     ts = lambda x: to_stdout(x, 'animdl-%s-streamer-core' % provider)
@@ -77,9 +84,9 @@ def animdl_stream(query, anonymous, start, title, filler_list, offset, filler, m
             headers = selection.get('headers', {})
             _ = headers.pop('ssl_verification', True)
             ts("Active stream session @ [%02d/%02d]" % (c, (start + len(streams) - 1) if not raw_episodes else len(raw_episodes)))
-            player_process = start_streaming(selection.get('stream_url'), headers=headers, window_title=title)
-            player_process.wait()
             
+            player_process = streamer(selection.get('stream_url'), headers=headers, content_title=title)
+            player_process.wait()
             playing = False
             
             if player_process.returncode:

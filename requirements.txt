@@ -4,4 +4,3 @@ lxml
 tqdm
 requests
 pycryptodomex
-rich

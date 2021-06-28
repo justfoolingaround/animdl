@@ -14,13 +14,6 @@ def merge_dicts(dict1, dict2):
         
 CONFIGURATION_FILE_PATH = Path(os.getenv('ANIMDL_CONFIG') or './animdl_config.json')
 
-if bool(shutil.which('mpv')):
-    player_executable = 'mpv'
-elif bool(shutil.which('vlc')):
-    player_executable = 'vlc'
-else:
-    player_executable = '_never gonna give you up,never gonna let you down_' # GARBAGE VALUE,Since i had to assign a string,then why not rickroll everyone 
-
 DEFAULT_CONFIG = {
     'session_file': 'cli_session_animdl.json',
     'default_provider': '9anime',
@@ -36,15 +29,16 @@ DEFAULT_CONFIG = {
         'twist': 'https://twist.moe/',
     },
     'preferred_quality': 1080,
-    'player_executable':f"{player_executable}",
+    'players': {
+        'mpv': 'mpv.exe',
+        'vlc': 'C:\\Program Files\\VideoLAN\\VLC\\vlc.exe'    
+    },
     'schedule': {
         'site_url': 'https://www.livechart.me/',
         'date_format': '%b. %d, %A',
         'time_format': '%X'
     }
 }
-
-
 
 CONFIG = DEFAULT_CONFIG
 
@@ -64,10 +58,9 @@ ANIMIXPLAY = SITE_URLS.get('animixplay')
 GOGOANIME  = SITE_URLS.get('gogoanime')
 TWIST      = SITE_URLS.get('twist')
 
-QUALITY        = CONFIG.get('preferred_quality')
+QUALITY    = CONFIG.get('preferred_quality')
 
-PLAYER_EXECUTABLE = CONFIG.get('player_executable')
-
+PLAYERS = CONFIG.get('players')
 
 LIVECHART   = CONFIG.get('schedule', {}).get('site_url')
 
