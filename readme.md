@@ -49,7 +49,7 @@ pip install -r requirements.txt
 - Operates with full efficiency and speed by using Python's generator functions to their full capacity.
 - Supports downloading with [Internet Download Manager](https://www.internetdownloadmanager.com/) optionally.
 - Supports streaming with [`mpv`](https://github.com/mpv-player/mpv/), an incredibly efficient, fast and light-weight dependency.
-- Supports streaming with `vlc`, which might require some easy configurations to make it work.
+- Supports streaming with [`vlc`](https://www.videolan.org/vlc/), which might require some configurations to make it work.
 
 ### Usage
 
@@ -144,7 +144,7 @@ Streaming will require either `mpv` or `vlc`. You will require these to be in yo
 {
     "players": {
         "vlc": "<Path to vlc>",
-        "mpv": "<Path to mpv>".    
+        "mpv": "<Path to mpv>"    
     }
 }
 ```
