@@ -29,6 +29,7 @@ DEFAULT_CONFIG = {
         'twist': 'https://twist.moe/',
     },
     'preferred_quality': 1080,
+    'default_player': 'mpv',
     'players': {
         'mpv': 'mpv.exe',
         'vlc': 'C:\\Program Files\\VideoLAN\\VLC\\vlc.exe'    
@@ -60,6 +61,7 @@ TWIST      = SITE_URLS.get('twist')
 
 QUALITY    = CONFIG.get('preferred_quality')
 
+DEFAULT_PLAYER = CONFIG.get('default_player')
 PLAYERS = CONFIG.get('players')
 
 LIVECHART   = CONFIG.get('schedule', {}).get('site_url')
