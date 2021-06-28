@@ -6,11 +6,9 @@
 <p align="center"><a href="https://github.com/justfoolingaround/animdl"><img src="https://forthebadge.com/images/badges/makes-people-smile.svg" height="30px"><img src="https://forthebadge.com/images/badges/made-with-python.svg" height="30px"><img src="https://forthebadge.com/images/badges/powered-by-black-magic.svg" height="30px"></a></p>
 </h1>
 
-**AnimDL** is an incredibly powerful tool for downloading and streaming anime.
-
 ## Installation
 
-### Installing animdl:
+### Installing [animdl](https://github.com/justfoolingaround/animdl)
 
 AnimDL has two versions that can be used, a [stable version](https://github.com/justfoolingaround/animdl-install) that can be installed via Python PIP and an unstable version that gets code modification almost daily for immediate bug fixing.
 
@@ -20,7 +18,7 @@ The stable version can be installed with the following command:
 pip install git+https://github.com/justfoolingaround/animdl-install
 ```
 
-The unstable version can be installed by cloning / downloading the repository with the following command in the working directory (if you are on windows then be sure that you have [git](https://gitforwindows.org/) installed):
+The unstable version can be installed by cloning / downloading the repository with the following command in the working directory (if you are on Windows then make sure that you have [git](https://gitforwindows.org/) installed):
 
 ```
 # Clone the repo
@@ -32,16 +30,18 @@ pip install -r requirements.txt
 
 **Support:** Python 3.6 and higher
 
-### Installing mpv:
+### Installing [`mpv`](https://github.com/mpv-player/mpv/)
+
 #### Windows:
 - The easiest way to install mpv is by using [chocolatey](https://chocolatey.org/) package manager, it's an amazing tool can that be installed by following their [official documentation](https://chocolatey.org/install).
 - After chocolatey is installed, `mpv` can be installed through a console window (For example: cmd) with an **admininstrator** priviledge by the command: `choco install animdl`.
 
 #### Linux:
-- For users using a debian based distro,[`mpv`](https://github.com/mpv-player/mpv/) can be installed using ```sudo apt install mpv```.user's using an arch based distro can simply install mpv using ```sudo pacman -S mpv```.
+- For users using a Debian-based distro, `mpv` can be installed using `sudo apt install mpv`. 
+- For users using an Arch-based distro, `mpv` can be installed using `sudo pacman -S mpv`.
 
 #### Mac:
-- Mac users can simply install mpv using ```brew install mpv```.
+-  `mpv` can be installed using `brew install mpv`.
 
 ### Core features
 
