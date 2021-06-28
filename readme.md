@@ -33,9 +33,15 @@ pip install -r requirements.txt
 **Support:** Python 3.6 and higher
 
 ### Installing mpv:
-
+#### Windows:
 - The easiest way to install mpv is by using [chocolatey](https://chocolatey.org/) package manager, it's an amazing tool can that be installed by following their [official documentation](https://chocolatey.org/install).
 - After chocolatey is installed, `mpv` can be installed through a console window (For example: cmd) with an **admininstrator** priviledge by the command: `choco install animdl`.
+
+#### Linux:
+- For users using a debian based distro,[`mpv`](https://github.com/mpv-player/mpv/) can be installed using ```sudo apt install mpv```.user's using an arch based distro can simply install mpv using ```sudo pacman -S mpv```.
+
+#### Mac:
+- Mac users can simply install mpv using ```brew install mpv```.
 
 ### Core features
 
