@@ -28,7 +28,7 @@ def quality_prompt(stream_list, provider):
 @click.option('-t', '--title', help="Optional title for the anime if the query is a direct URL.", required=False, default='', show_default=False)
 @click.option('-fl', '--filler-list', help="Filler list associated with the content enqueued for the stream.", required=False, default='', show_default=False)
 @click.option('-o', '--offset', help="Offset (If the E1 of your anime is marked as E27 on AnimeFillerList, this value should be 26s).", required=False, default=0, show_default=False)
-@click.option('--mpv', is_flag=True, default=True, help="Force mpv (defaults to True) for streaming.")
+@click.option('--mpv', is_flag=True, default=True, flag_value=True, help="Force mpv (defaults to True) for streaming.")
 @click.option('--vlc', is_flag=True, default=False, help="Force vlc for streaming.")
 @click.option('--filler', is_flag=True, default=True, help="Auto-skip fillers (If filler list is configured).")
 @click.option('--mixed', is_flag=True, default=True, help="Auto-skip mixed fillers/canons (If filler list is configured).")

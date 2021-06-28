@@ -15,7 +15,7 @@ def start_streaming_mpv(executable, stream_url, *, headers=None, **kwargs):
     
     if headers:
         args.append('--http-header-fields=%s' % '\r\n'.join('{}:{}'.format(k, v) for k, v in headers.items()))        
-    
+
     content_title = kwargs.pop('content_title', '')
     
     if content_title:
@@ -51,4 +51,4 @@ def handle_streamer(**kwargs):
     return lambda *a, **k: start_streaming(player, PLAYERS.get(player), *a, **k)
 
 def start_streaming(player, executable, stream_url, *, headers=None, **kwargs):
-    return PLAYER_MAPPING.get(player, lambda *args, **kwargs: False)(executable, stream_url, headers=headers, kwargs=kwargs)
+    return PLAYER_MAPPING.get(player, lambda *args, **kwargs: False)(executable, stream_url, headers=headers, **kwargs)
