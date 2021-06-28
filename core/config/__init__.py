@@ -1,7 +1,7 @@
 import json
 import os
 from pathlib import Path
-
+import shutil
 
 def merge_dicts(dict1, dict2):
     for k, v in dict1.items():
@@ -29,7 +29,10 @@ DEFAULT_CONFIG = {
         'twist': 'https://twist.moe/',
     },
     'preferred_quality': 1080,
-    'mpv_executable': 'mpv',
+    'players': {
+        'mpv': 'mpv.exe',
+        'vlc': 'C:\\Program Files\\VideoLAN\\VLC\\vlc.exe'    
+    },
     'schedule': {
         'site_url': 'https://www.livechart.me/',
         'date_format': '%b. %d, %A',
@@ -55,8 +58,9 @@ ANIMIXPLAY = SITE_URLS.get('animixplay')
 GOGOANIME  = SITE_URLS.get('gogoanime')
 TWIST      = SITE_URLS.get('twist')
 
-QUALITY        = CONFIG.get('preferred_quality')
-MPV_EXECUTABLE = CONFIG.get('mpv_executable')
+QUALITY    = CONFIG.get('preferred_quality')
+
+PLAYERS = CONFIG.get('players')
 
 LIVECHART   = CONFIG.get('schedule', {}).get('site_url')
 

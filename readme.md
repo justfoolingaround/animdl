@@ -8,7 +8,9 @@
 
 **AnimDL** is an incredibly powerful tool for downloading and streaming anime.
 
-### Installation
+## Installation
+
+### Installing animdl:
 
 AnimDL has two versions that can be used, a [stable version](https://github.com/justfoolingaround/animdl-install) that can be installed via Python PIP and an unstable version that gets code modification almost daily for immediate bug fixing.
 
@@ -18,14 +20,22 @@ The stable version can be installed with the following command:
 pip install git+https://github.com/justfoolingaround/animdl-install
 ```
 
-The unstable version can be installed by cloning / downloading the repository with the following command in the working directory:
+The unstable version can be installed by cloning / downloading the repository with the following command in the working directory (if you are on windows then be sure that you have [git](https://gitforwindows.org/) installed):
 
 ```
-pip install -r requirements.txt
+# Clone the repo
+git clone https://github.com/justfoolingaround/animdl 
+
+# Install all the dependencies
+pip install -r requirements.txt 
 ```
 
 **Support:** Python 3.6 and higher
 
+### Installing mpv:
+
+- The easiest way to install mpv is by using [chocolatey](https://chocolatey.org/) package manager, it's an amazing tool can that be installed by following their [official documentation](https://chocolatey.org/install).
+- After chocolatey is installed, `mpv` can be installed through a console window (For example: cmd) with an **admininstrator** priviledge by the command: `choco install animdl`.
 
 ### Core features
 
@@ -39,6 +49,7 @@ pip install -r requirements.txt
 - Operates with full efficiency and speed by using Python's generator functions to their full capacity.
 - Supports downloading with [Internet Download Manager](https://www.internetdownloadmanager.com/) optionally.
 - Supports streaming with [`mpv`](https://github.com/mpv-player/mpv/), an incredibly efficient, fast and light-weight dependency.
+- Supports streaming with [`vlc`](https://www.videolan.org/vlc/), which might require some configurations to make it work.
 
 ### Usage
 
@@ -127,9 +138,16 @@ Currently, there are no plans to add more sites as **AnimDL** supports top sites
 
 ### Streaming
 
-Streaming needs an additional dependency known as `mpv`, you can download it from [here.](https://github.com/mpv-player/mpv/releases/)
+Streaming will require either `mpv` or `vlc`. You will require these to be in your `PATH`, if not, simply make a `animdl_config.json` on the working directory and add these configurations appropriately:
 
-If you're having issues with the installation of mpv, you can make an issue to recieve full help on its installation and usage.
+```json
+{
+    "players": {
+        "vlc": "<Path to vlc>",
+        "mpv": "<Path to mpv>"    
+    }
+}
+```
 
 ### Disclaimer
 
