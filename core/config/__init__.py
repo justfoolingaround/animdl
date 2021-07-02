@@ -31,7 +31,7 @@ DEFAULT_CONFIG = {
     'preferred_quality': 1080,
     'default_player': 'mpv',
     'players': {
-        'mpv': 'mpv.exe',
+        'mpv': 'mpv',
         'vlc': 'C:\\Program Files\\VideoLAN\\VLC\\vlc.exe'    
     },
     'schedule': {
