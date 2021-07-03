@@ -31,8 +31,14 @@ DEFAULT_CONFIG = {
     'preferred_quality': 1080,
     'default_player': 'mpv',
     'players': {
-        'mpv': 'mpv',
-        'vlc': 'C:\\Program Files\\VideoLAN\\VLC\\vlc.exe'    
+        'mpv': {
+            'executable': 'mpv',
+            'opts': [],
+            },
+        'vlc': {
+            'executable': 'C:\\Program Files\\VideoLAN\\VLC\\vlc.exe',
+            'opts': [],
+            },
     },
     'schedule': {
         'site_url': 'https://www.livechart.me/',

@@ -149,8 +149,13 @@ Streaming will require either `mpv` or `vlc`. You will require these to be in yo
 ```json
 {
     "players": {
-        "vlc": "<Path to vlc>",
-        "mpv": "<Path to mpv>"    
+        "vlc": {
+            "executable": "<path-to-vlc>",
+        },
+        "mpv": {
+            "executable": "<path-to-mpv>",
+            "opts": [],
+        },   
     }
 }
 ```

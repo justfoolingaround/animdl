@@ -6,12 +6,12 @@ from ...config import PLAYERS
 
 
 def supported_streamers():
-    for player, path in PLAYERS.items():
-        if Path(path).exists() or shutil.which(path):
+    for player, player_info in PLAYERS.items():
+        if Path(player_info.get('executable')).exists() or shutil.which(player_info.get('executable')):
             yield player
             
-def start_streaming_mpv(executable, stream_url, *, headers=None, **kwargs):
-    args = [executable, stream_url, '--force-window=immediate']
+def start_streaming_mpv(executable, stream_url, opts, *, headers=None, **kwargs):
+    args = [executable, stream_url, '--force-window=immediate'] + (opts or [])
     
     if headers:
         args.append('--http-header-fields=%s' % '\r\n'.join('{}:{}'.format(k, v) for k, v in headers.items()))        
@@ -23,8 +23,8 @@ def start_streaming_mpv(executable, stream_url, *, headers=None, **kwargs):
         
     return subprocess.Popen(args)
 
-def start_streaming_vlc(executable, stream_url, *, headers=None, **kwargs):
-    args = [executable, stream_url]
+def start_streaming_vlc(executable, stream_url, opts, *, headers=None, **kwargs):
+    args = [executable, stream_url] + (opts or [])
     
     if headers:
         if headers.get('referer'):
@@ -48,7 +48,8 @@ def handle_streamer(**kwargs):
         return -107977
 
     player = user_selection.pop(0)
-    return lambda *a, **k: start_streaming(player, PLAYERS.get(player), *a, **k)
+    player_info = PLAYERS.get(player, {})
+    return lambda *a, **k: start_streaming(player, player_info.get('executable'), opts=player_info.get('opts', []), *a, **k)
 
 def start_streaming(player, executable, stream_url, *, headers=None, **kwargs):
     return PLAYER_MAPPING.get(player, lambda *args, **kwargs: False)(executable, stream_url, headers=headers, **kwargs)
