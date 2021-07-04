@@ -41,7 +41,7 @@ def animdl_stream(query, anonymous, start, title, filler_list, offset,
     """    
     session = requests.Session()
     
-    streamer = handle_streamer(player_opts, vlc=vlc, mpv=mpv)
+    streamer = handle_streamer([*player_opts], vlc=vlc, mpv=mpv)
     if streamer == -107977:
         return to_stdout('Streaming failed due to selection of a unsupported streamer; please configure the streamer in the config to use it.', caller='animdl-stream-failure')
     
