@@ -26,7 +26,7 @@ def generate_download_arguments(session_dict):
 
 def generate_stream_arguments(session_dict):
     u, s, e, i, idm, au, ao, af, ac, am = generate_download_arguments(session_dict)
-    return u, s, i, au, ao, True, False, af, ac, am
+    return u, s, i, au, ao, [], True, False, af, ac, am
 
 def search_identifiers(session_file, identifer):
     for session in load_sessions(session_file):
