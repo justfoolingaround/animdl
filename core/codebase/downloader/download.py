@@ -4,6 +4,7 @@ import time
 import requests
 from tqdm import tqdm
 
+from ...config import AUTO_RETRY
 from .hls_download import hls_yield
 
 URL_REGEX = re.compile(r"(?:https?://)?(?:\S+\.)+(?:[^/]+/)+(?P<url_end>[^?/]+)")
@@ -38,11 +39,12 @@ def single_threaded_download(url, _path, tqdm_bar_init, headers):
                     d += size
                     tqdm_bar.update(size)
                     sw.write(chunks)
-            except requests.RequestException:
+            except requests.RequestException as e:
                 """
                 A delay to avoid rate-limit(s).
                 """
-                time.sleep(.3)
+                print("[\x1b[31manimdl-download-exception\x1b[39m] {}".format('Downloading error due to "{!r}", retrying.'.format(e)))
+                time.sleep(AUTO_RETRY)
     tqdm_bar.close()
 
 def hls_download(quality_dict, _path, episode_identifier, _tqdm=True):

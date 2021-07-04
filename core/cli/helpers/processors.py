@@ -21,7 +21,7 @@ def prompt_user(anime_list_genexp, provider_name):
         r.append(anime)
     
     if not r:
-        print("\x1b[31manimdl-{}-{}\x1b[39m {}".format(provider_name, 'searcher', 'Cannot find anything of that query.'))
+        print("[\x1b[31manimdl-{}-{}\x1b[39m] {}".format(provider_name, 'searcher', 'Cannot find anything of that query.'))
         return {}, None
     
     index = prompt("Select by the index (defaults to 1)", default=1, type=int, show_default=False) - 1
