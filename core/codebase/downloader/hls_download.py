@@ -1,8 +1,10 @@
 import re
+import time
 
+import requests
 from Cryptodome.Cipher import AES
 
-from ...config import QUALITY
+from ...config import QUALITY, AUTO_RETRY
 
 ENCRYPTION_DETECTION_REGEX = re.compile(r"#EXT-X-KEY:METHOD=([^,]+),")
 ENCRYPTION_URL_IV_REGEX = re.compile(r"#EXT-X-KEY:METHOD=(?P<method>[^,]+),URI=\"(?P<key_uri>[^\"]+)\"(?:,IV=(?P<iv>.*))?")
@@ -80,12 +82,20 @@ def hls_yield(session, q_dicts, preferred_quality=QUALITY):
             encryption_data = encryption_key_response.content
 
     all_ts = TS_EXTENSION_REGEX.findall(m3u8_data)
+    last_yield = 0
 
     for c, ts_uris in enumerate(all_ts, 1):
         if not re.search(r'\S+://', ts_uris):
             ts_uris = "%s/%s" % (REL_URL_REGEX.search(second_selection.get('stream_url')).group('url_base'), ts_uris)
-        with session.get(ts_uris, headers=headers, verify=ssl_verification) as ts_response:
-            ts_data = ts_response.content
-            if encryption_state:
-                ts_data = get_decrypter(encryption_data, iv=encryption_iv or b'')(ts_data)
-            yield {'bytes': ts_data, 'total': len(all_ts), 'current': c}
+
+        while last_yield != c:
+            try:
+                with session.get(ts_uris, headers=headers, verify=ssl_verification) as ts_response:
+                    ts_data = ts_response.content
+                    if encryption_state:
+                        ts_data = get_decrypter(encryption_data, iv=encryption_iv or b'')(ts_data)
+                    yield {'bytes': ts_data, 'total': len(all_ts), 'current': c}
+                last_yield = c
+            except requests.RequestException as e:
+                print("[\x1b[31manimdl-hls-exception\x1b[39m] {}".format('Downloading error due to "{!r}", retrying.'.format(e)))
+                time.sleep(AUTO_RETRY)
