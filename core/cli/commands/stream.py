@@ -64,8 +64,11 @@ def animdl_stream(query, anonymous, start, title, filler_list, offset,
     if not anonymous:
         sessions.save_session(SESSION_FILE, url, start, content_name, filler_list, offset, filler, mixed, canon)
     
-    streams = [*anime_associator.raw_fetch_using_check(lambda x: check(x) and x >= start)]
-    
+    streams = [*anime_associator.raw_fetch_using_check(lambda x: check(x) and x >= (start if start >= 0 else 0))]
+    if start < 0:
+        start += len(streams) + 1
+        streams = [(_, __) for _, __ in streams if __ >= start]
+
     for stream_urls_caller, c in streams:
         if not anonymous:
             sessions.save_session(SESSION_FILE, url, c, content_name, filler_list, offset, filler, mixed, canon)
