@@ -55,7 +55,7 @@ def animdl_download(query, anonymous, start, end, title, filler_list, offset, fi
     if not anonymous:
         sessions.save_session(SESSION_FILE, url, start, content_name, filler_list, offset, filler, mixed, canon, t='download', end=end)
     
-    base = Path('./%s/' % sanitize_filename(content_name))
+    base = Path('./%s/' % sanitize_filename(content_name.strip()))
     base.mkdir(exist_ok=True)
     
     streams = [*anime_associator.raw_fetch_using_check(lambda x: check(x) and end >= x >= start)]
@@ -71,7 +71,7 @@ def animdl_download(query, anonymous, start, end, title, filler_list, offset, fi
         
         content_title = "E%02d" % c
         if raw_episodes:
-            content_title += " - %s" % raw_episodes[c - 1].title
+            content_title += " - %s" % raw_episodes[c - 1].title.strip()
                 
         if not stream_urls:
             ts("Failed to download '%s' due to lack of stream urls." % content_title)
