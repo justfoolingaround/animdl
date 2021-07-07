@@ -1,41 +1,47 @@
-from core.cli.helpers.fun import bannerify
+from datetime import datetime
+
 import click
 import requests
 
-import lxml.html as htmlparser
-from datetime import datetime
+from ...config import ANICHART, DATE_FORMAT, TIME_FORMAT
+from ..helpers import bannerify
 
-from ...config import (
-    DATE_FORMAT,
-    TIME_FORMAT,
-    LIVECHART,
-)
+gql = "query (\n\t$weekStart: Int,\n\t$weekEnd: Int,\n\t$page: Int,\n){\n\tPage(page: $page) {\n\t\tpageInfo {\n\t\t\thasNextPage\n\t\t\ttotal\n\t\t}\n\t\tairingSchedules(\n\t\t\tairingAt_greater: $weekStart\n\t\t\tairingAt_lesser: $weekEnd\n\t\t) {\n\t\t\tid\n\t\t\tepisode\n\t\t\tairingAt\n\t\t\tmedia {\n\t\t\t\t\nid\nidMal\ntitle {\n\tromaji\n\tnative\n\tenglish\n}\nstartDate {\n\tyear\n\tmonth\n\tday\n}\nendDate {\n\tyear\n\tmonth\n\tday\n}\nstatus\nseason\nformat\ngenres\nsynonyms\nduration\npopularity\nepisodes\nsource(version: 2)\ncountryOfOrigin\nhashtag\naverageScore\nsiteUrl\ndescription\nbannerImage\nisAdult\ncoverImage {\n\textraLarge\n\tcolor\n}\ntrailer {\n\tid\n\tsite\n\tthumbnail\n}\nexternalLinks {\n\tsite\n\turl\n}\nrankings {\n\trank\n\ttype\n\tseason\n\tallTime\n}\nstudios(isMain: true) {\n\tnodes {\n\t\tid\n\t\tname\n\t\tsiteUrl\n\t}\n}\nrelations {\n\tedges {\n\t\trelationType(version: 2)\n\t\tnode {\n\t\t\tid\n\t\t\ttitle {\n\t\t\t\tromaji\n\t\t\t\tnative\n\t\t\t\tenglish\n\t\t\t}\n\t\t\tsiteUrl\n\t\t}\n\t}\n}\n\n\n\t\t\t}\n\t\t}\n\t}\n}"
 
-
-def arrange_template(element_obj):
+def arrange_template(data):
     def merge_dicts(dict1, dict2):
         return {**dict2, **{k: (v if not (k in dict2) else (v + dict2.get(k)) if isinstance(v, list) else merge_dicts(v, dict2.get(k))) for k, v in dict1.items()}}
     
-    initial = {}
+    content = {}
 
-    for content in sorted(element_obj.xpath('//div[@class="schedule-card"]'), key=lambda c: int(c.xpath('time')[0].get('data-timestamp'))):
-        ts = content.xpath('time')[0]
-        episode = ts.get('data-label', '0').strip('EP')
-        datetime_obj = datetime.fromtimestamp(int(ts.get('data-timestamp', 0)))
-        initial = merge_dicts(initial, {datetime_obj.strftime(DATE_FORMAT): {datetime_obj.strftime(TIME_FORMAT): [{'anime': content.get('data-title'), 'episode': episode, 'datetime_object': datetime_obj}]}})
+    for airing in data:
+        dtobj = datetime.fromtimestamp(airing.get('airingAt', 0))
+        titles = airing.get('media', {}).get('title', {})
+        title = titles.get('english') or titles.get('romanji') or titles.get('native')
+        content = merge_dicts(content, {dtobj.strftime(DATE_FORMAT): {dtobj.strftime(TIME_FORMAT): [{'anime': title, 'episode': airing.get('episode', 0), 'datetime_object': dtobj}]}})
 
-    return initial
-
+    return content
 
 @click.command(name='schedule', help="Know which animes are going over the air when.")
 @click.option('--quiet', help='A flag to silence all the announcements.', is_flag=True, flag_value=True)
 @bannerify
 def animdl_schedule(quiet):    
     
-    with requests.get(LIVECHART + 'schedule/tv', allow_redirects=True, headers={'user-agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.102 Safari/537.36'}) as livechart_page:
-        content = arrange_template(htmlparser.fromstring(livechart_page.text))
-    
-    for date, _content in content.items():
+    has_next_page, page = True, 1
+    schedules = []
+    session = requests.Session()
+
+    unix_time = int((datetime.utcnow() - datetime(1970, 1, 1)).total_seconds())
+
+    while has_next_page:
+        with session.post(ANICHART, json={'query': gql, 'variables': {'weekStart': unix_time, 'weekEnd': unix_time + 24*7*60*60, 'page': page}}) as schedule_data:
+            data = schedule_data.json()
+            schedules.extend(data.get('data', {}).get('Page', {}).get('airingSchedules', []))
+            has_next_page = data.get('data', {}).get('Page', {}).get('pageInfo', {}).get('hasNextPage', False)
+            page += 1
+            
+
+    for date, _content in arrange_template(schedules).items():
         print("On \x1b[33m{}\x1b[39m,".format(date))
         for time, __content in _content.items():
             print("\t\x1b[95m{}\x1b[39m - {}".format(time, ', '.join("{anime} [\x1b[94mE{episode}\x1b[39m]".format_map(___content) for ___content in __content)))

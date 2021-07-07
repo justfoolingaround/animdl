@@ -41,7 +41,7 @@ DEFAULT_CONFIG = {
             },
     },
     'schedule': {
-        'site_url': 'https://www.livechart.me/',
+        'site_url': 'https://graphql.anilist.co/',
         'date_format': '%b. %d, %A',
         'time_format': '%X'
     },
@@ -71,7 +71,7 @@ QUALITY    = CONFIG.get('preferred_quality')
 DEFAULT_PLAYER = CONFIG.get('default_player')
 PLAYERS = CONFIG.get('players')
 
-LIVECHART   = CONFIG.get('schedule', {}).get('site_url')
+ANICHART = CONFIG.get('schedule', {}).get('site_url')
 
 DATE_FORMAT = CONFIG.get('schedule', {}).get('date_format')
 TIME_FORMAT = CONFIG.get('schedule', {}).get('time_format')
