@@ -1,3 +1,4 @@
+from core.cli.helpers.fun import bannerify
 import os
 from pathlib import Path
 
@@ -23,7 +24,9 @@ from ..helpers import *
 @click.option('--mixed', is_flag=True, default=True, help="Auto-skip mixed fillers/canons (If filler list is configured).")
 @click.option('--canon', is_flag=True, default=True, help="Auto-skip canons (If filler list is configured).")
 @click.option('--idm', is_flag=True, default=False, help="Download anime using Internet Download Manager")
-def animdl_download(query, anonymous, start, end, title, filler_list, offset, filler, mixed, canon, idm):
+@click.option('--quiet', help='A flag to silence all the announcements.', is_flag=True, flag_value=True)
+@bannerify
+def animdl_download(query, anonymous, start, end, title, filler_list, offset, filler, mixed, canon, idm, quiet):
     """
     Download call.
     """
@@ -32,8 +35,7 @@ def animdl_download(query, anonymous, start, end, title, filler_list, offset, fi
     session = requests.Session()
     
     anime, provider = process_query(session, query)
-    ts = lambda x: to_stdout(x, 'animdl-%s-downloader-core' % provider)
-    tx = lambda x: to_stdout(x, 'animdl-protip')
+    ts = lambda x: to_stdout(x, 'animdl-%s-downloader-core' % provider) if not quiet else None
     content_name = title or anime.get('name')
     if not content_name:
         content_name = choice(create_random_titles())

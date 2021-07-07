@@ -1,3 +1,4 @@
+from core.cli.helpers.fun import bannerify
 import click
 import requests
 
@@ -19,7 +20,9 @@ SITE_LIST = {
 @click.command(name='test', help="Test the scrapability power.")
 @click.option('-x', help='A list of certain sites (full anime url) to be explicity used for testing.', default=[], required=False, multiple=True)
 @click.option('-e', help='Episode number to bestow the testing upon', default=1, required=False, type=int)
-def animdl_test(x, e):
+@click.option('--quiet', help='A flag to silence all the announcements.', is_flag=True, flag_value=True)
+@bannerify
+def animdl_test(x, e, quiet):
     if not x:
         x = SITE_LIST.values()
         

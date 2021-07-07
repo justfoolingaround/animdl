@@ -1,3 +1,4 @@
+from core.cli.helpers.fun import bannerify
 import click
 import requests
 
@@ -27,7 +28,9 @@ def arrange_template(element_obj):
 
 
 @click.command(name='schedule', help="Know which animes are going over the air when.")
-def animdl_schedule():    
+@click.option('--quiet', help='A flag to silence all the announcements.', is_flag=True, flag_value=True)
+@bannerify
+def animdl_schedule(quiet):    
     
     with requests.get(LIVECHART + 'schedule/tv', allow_redirects=True, headers={'user-agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.102 Safari/537.36'}) as livechart_page:
         content = arrange_template(htmlparser.fromstring(livechart_page.text))

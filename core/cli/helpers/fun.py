@@ -8,6 +8,18 @@ Credits for the functions:
 import re
 from random import choice
 
+from ...__version__ import __core__
+
+package_banner = """\
+░█████╗░███╗░░██╗██╗███╗░░░███╗██████╗░██╗░░░░░
+██╔══██╗████╗░██║██║████╗░████║██╔══██╗██║░░░░░
+███████║██╔██╗██║██║██╔████╔██║██║░░██║██║░░░░░
+██╔══██║██║╚████║██║██║╚██╔╝██║██║░░██║██║░░░░░
+██║░░██║██║░╚███║██║██║░╚═╝░██║██████╔╝███████╗
+╚═╝░░╚═╝╚═╝░░╚══╝╚═╝╚═╝░░░░░╚═╝╚═════╝░╚══════╝v{}
+A highly efficient anime downloader and streamer
+""".format(__core__)
+
 URL_REGEX = re.compile(r"(?:https?://)?(?P<base>(?:\S+\.)+[^/]+)/(?:(?:[^/])+/)*(?P<url_end>[^?/]+)")
 
 LANGUAGE = {
@@ -34,8 +46,10 @@ def create_random_titles():
         "%s-in-the-%s" % (choice(noun), choice(noun)),
     ]
 
-def to_stdout(message, caller='animdl'):
-    return print("[\x1b[36m%s\x1b[39m] %s" % (caller, message))
+def to_stdout(message, caller='animdl', *, color_index=36):
+    if caller:
+        message = "[\x1b[{}m{}\x1b[39m] ".format(color_index, caller) + message
+    return print(message)
 
 def stream_judiciary(url):
     """
@@ -47,3 +61,11 @@ def stream_judiciary(url):
     
     base, url_end = match.group('base', 'url_end')
     return "'%s' from %s" % (url_end, LABELS.get(base, base))
+
+def bannerify(f):
+    def internal(*args, **kwargs):
+        quiet_state = kwargs.get('quiet')
+        if quiet_state is not None and not quiet_state:
+            print("\x1b[35m{}\x1b[39m".format(package_banner))
+        return f(*args, **kwargs)
+    return internal

@@ -1,3 +1,4 @@
+from core.cli.helpers.fun import bannerify
 import click
 import requests
 
@@ -34,8 +35,10 @@ def quality_prompt(stream_list, provider):
 @click.option('--filler', is_flag=True, default=True, help="Auto-skip fillers (If filler list is configured).")
 @click.option('--mixed', is_flag=True, default=True, help="Auto-skip mixed fillers/canons (If filler list is configured).")
 @click.option('--canon', is_flag=True, default=True, help="Auto-skip canons (If filler list is configured).")
+@click.option('--quiet', help='A flag to silence all the announcements.', is_flag=True, flag_value=True)
+@bannerify
 def animdl_stream(query, anonymous, start, title, filler_list, offset, 
-                  player_opts, mpv, vlc, filler, mixed, canon):
+                  player_opts, mpv, vlc, filler, mixed, canon, quiet):
     """
     Streamer call for animdl streaming session.
     """    
@@ -46,7 +49,7 @@ def animdl_stream(query, anonymous, start, title, filler_list, offset,
         return to_stdout('Streaming failed due to selection of a unsupported streamer; please configure the streamer in the config to use it.', caller='animdl-stream-failure')
     
     anime, provider = process_query(session, query)
-    ts = lambda x: to_stdout(x, 'animdl-%s-streamer-core' % provider)
+    ts = lambda x: to_stdout(x, 'animdl-%s-streamer-core' % provider) if not quiet else None
     ts('Now initiating your stream session')
     content_name = title or anime.get('name') or choice(create_random_titles())
     ts("Starting stream session @ [%02d/?]" % start)
