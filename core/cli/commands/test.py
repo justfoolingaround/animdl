@@ -1,9 +1,8 @@
-from core.cli.helpers.fun import bannerify
 import click
 import requests
 
 from ...codebase import Associator
-from ..helpers import to_stdout
+from ..helpers import to_stdout, bannerify
 
 SITE_LIST = {
     '4anime': 'https://4anime.to/anime/one-piece',
