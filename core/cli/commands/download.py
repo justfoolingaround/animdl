@@ -24,9 +24,11 @@ from ..helpers import *
 @click.option('--mixed', is_flag=True, default=True, help="Auto-skip mixed fillers/canons (If filler list is configured).")
 @click.option('--canon', is_flag=True, default=True, help="Auto-skip canons (If filler list is configured).")
 @click.option('--idm', is_flag=True, default=False, help="Download anime using Internet Download Manager")
+@click.option('--auto', is_flag=True, default=False, help="Select the first given index without asking for prompts.")
+@click.option('-i', '--index', required=False, default=0, show_default=False, type=int, help="Index for the auto flag.")
 @click.option('--quiet', help='A flag to silence all the announcements.', is_flag=True, flag_value=True)
 @bannerify
-def animdl_download(query, anonymous, start, end, title, filler_list, offset, filler, mixed, canon, idm, quiet):
+def animdl_download(query, anonymous, start, end, title, filler_list, offset, filler, mixed, canon, idm, auto, index, quiet):
     """
     Download call.
     """
@@ -34,7 +36,7 @@ def animdl_download(query, anonymous, start, end, title, filler_list, offset, fi
     
     session = requests.Session()
     
-    anime, provider = process_query(session, query)
+    anime, provider = process_query(session, query, auto=auto, auto_index=index)
     ts = lambda x: to_stdout(x, 'animdl-%s-downloader-core' % provider) if not quiet else None
     content_name = title or anime.get('name')
     if not content_name:

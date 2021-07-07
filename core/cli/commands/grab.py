@@ -11,12 +11,14 @@ import json
 @click.option('-s', '--start', help="An integer that determines where to begin the grabbing from.", required=False, default=1, show_default=False, type=int)
 @click.option('-e', '--end', help="A integer that determines where to end the grabbing at.", required=False, default=0, show_default=False, type=int)
 @click.option('-f', '--file', help="File to write all the grabbed content to.", required=False, default='', show_default=False, type=str)
+@click.option('--auto', is_flag=True, default=False, help="Select the first given index without asking for prompts.")
+@click.option('-i', '--index', required=False, default=0, show_default=False, type=int, help="Index for the auto flag.")
 @click.option('--quiet', help='A flag to silence all the announcements.', is_flag=True, flag_value=True)
 @bannerify
-def animdl_grab(query, start, end, file, quiet):
+def animdl_grab(query, start, end, file, auto, index, quiet):
     end = end or float('inf')
     session = requests.Session()
-    anime, provider = process_query(session, query)
+    anime, provider = process_query(session, query, auto=auto, auto_index=index)
     ts = lambda x: to_stdout(x, 'animdl-%s-grabber-core' % provider) if not quiet else None
     anime_associator = Associator(anime.get('anime_url'))
     ts("Initializing grabbing session.")

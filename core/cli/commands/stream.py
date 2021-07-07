@@ -35,10 +35,12 @@ def quality_prompt(stream_list, provider):
 @click.option('--filler', is_flag=True, default=True, help="Auto-skip fillers (If filler list is configured).")
 @click.option('--mixed', is_flag=True, default=True, help="Auto-skip mixed fillers/canons (If filler list is configured).")
 @click.option('--canon', is_flag=True, default=True, help="Auto-skip canons (If filler list is configured).")
+@click.option('--auto', is_flag=True, default=False, help="Select the first given index without asking for prompts.")
+@click.option('-i', '--index', required=False, default=0, show_default=False, type=int, help="Index for the auto flag.")
 @click.option('--quiet', help='A flag to silence all the announcements.', is_flag=True, flag_value=True)
 @bannerify
 def animdl_stream(query, anonymous, start, title, filler_list, offset, 
-                  player_opts, mpv, vlc, filler, mixed, canon, quiet):
+                  player_opts, mpv, vlc, filler, mixed, canon, auto, index, quiet):
     """
     Streamer call for animdl streaming session.
     """    
@@ -48,7 +50,7 @@ def animdl_stream(query, anonymous, start, title, filler_list, offset,
     if streamer == -107977:
         return to_stdout('Streaming failed due to selection of a unsupported streamer; please configure the streamer in the config to use it.', caller='animdl-stream-failure')
     
-    anime, provider = process_query(session, query)
+    anime, provider = process_query(session, query, auto=auto, auto_index=index)
     ts = lambda x: to_stdout(x, 'animdl-%s-streamer-core' % provider) if not quiet else None
     ts('Now initiating your stream session')
     content_name = title or anime.get('name') or choice(create_random_titles())

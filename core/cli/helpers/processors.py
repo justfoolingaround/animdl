@@ -31,7 +31,7 @@ def prompt_user(anime_list_genexp, provider_name):
     
     return r[index], provider_name
     
-def process_query(session, query, *, provider=DEFAULT_PROVIDER):
+def process_query(session, query, *, provider=DEFAULT_PROVIDER, auto=False, auto_index=0):
     
     for url, matcher_data in URL_MATCHERS.items():
         if matcher_data.get('matcher').search(query):
@@ -46,4 +46,7 @@ def process_query(session, query, *, provider=DEFAULT_PROVIDER):
         query = "%s:%s" % (provider, query)
         provider = DEFAULT_PROVIDER
     
-    return prompt_user(get_searcher(provider)(session, query), provider)
+    searcher = get_searcher(provider)(session, query)
+    if not auto:
+        return prompt_user(searcher, provider)
+    return [*searcher][auto_index], provider

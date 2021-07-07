@@ -22,12 +22,14 @@ def generate_download_arguments(session_dict):
             session_dict.get('afl', {}).get('allow-filler', False),
             session_dict.get('afl', {}).get('allow-canon', False),
             session_dict.get('afl', {}).get('allow-mixed', False),  
-            False          
+            False,
+            False,
+            0    
             )
 
 def generate_stream_arguments(session_dict):
-    u, s, e, i, idm, au, ao, af, ac, am, q = generate_download_arguments(session_dict)
-    return u, s, i, au, ao, [], True, False, af, ac, am, q
+    u, s, e, i, idm, au, ao, af, ac, am, a, ai, q = generate_download_arguments(session_dict)
+    return u, s, i, au, ao, [], True, False, af, ac, am, a, ai, q
 
 def search_identifiers(session_file, identifer):
     for session in load_sessions(session_file):
