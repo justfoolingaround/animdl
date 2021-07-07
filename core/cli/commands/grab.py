@@ -1,4 +1,3 @@
-from core.cli.helpers.fun import bannerify
 import click
 import requests
 
