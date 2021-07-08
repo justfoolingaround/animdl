@@ -9,16 +9,16 @@ from ..helpers import bannerify
 gql = "query (\n\t$weekStart: Int,\n\t$weekEnd: Int,\n\t$page: Int,\n){\n\tPage(page: $page) {\n\t\tpageInfo {\n\t\t\thasNextPage\n\t\t\ttotal\n\t\t}\n\t\tairingSchedules(\n\t\t\tairingAt_greater: $weekStart\n\t\t\tairingAt_lesser: $weekEnd\n\t\t) {\n\t\t\tid\n\t\t\tepisode\n\t\t\tairingAt\n\t\t\tmedia {\n\t\t\t\t\nid\nidMal\ntitle {\n\tromaji\n\tnative\n\tenglish\n}\nstartDate {\n\tyear\n\tmonth\n\tday\n}\nendDate {\n\tyear\n\tmonth\n\tday\n}\nstatus\nseason\nformat\ngenres\nsynonyms\nduration\npopularity\nepisodes\nsource(version: 2)\ncountryOfOrigin\nhashtag\naverageScore\nsiteUrl\ndescription\nbannerImage\nisAdult\ncoverImage {\n\textraLarge\n\tcolor\n}\ntrailer {\n\tid\n\tsite\n\tthumbnail\n}\nexternalLinks {\n\tsite\n\turl\n}\nrankings {\n\trank\n\ttype\n\tseason\n\tallTime\n}\nstudios(isMain: true) {\n\tnodes {\n\t\tid\n\t\tname\n\t\tsiteUrl\n\t}\n}\nrelations {\n\tedges {\n\t\trelationType(version: 2)\n\t\tnode {\n\t\t\tid\n\t\t\ttitle {\n\t\t\t\tromaji\n\t\t\t\tnative\n\t\t\t\tenglish\n\t\t\t}\n\t\t\tsiteUrl\n\t\t}\n\t}\n}\n\n\n\t\t\t}\n\t\t}\n\t}\n}"
 
 def arrange_template(data):
-    def merge_dicts(dict1, dict2):
-        return {**dict2, **{k: (v if not (k in dict2) else (v + dict2.get(k)) if isinstance(v, list) else merge_dicts(v, dict2.get(k))) for k, v in dict1.items()}}
-    
     content = {}
 
     for airing in data:
         dtobj = datetime.fromtimestamp(airing.get('airingAt', 0))
+        d, t = dtobj.strftime(DATE_FORMAT), dtobj.strftime(TIME_FORMAT)
         titles = airing.get('media', {}).get('title', {})
         title = titles.get('english') or titles.get('romanji') or titles.get('native')
-        content = merge_dicts(content, {dtobj.strftime(DATE_FORMAT): {dtobj.strftime(TIME_FORMAT): [{'anime': title, 'episode': airing.get('episode', 0), 'datetime_object': dtobj}]}})
+        content.setdefault(d, {})
+        content[d].setdefault(t, [])
+        content[d][t].append({'anime': title, 'episode': airing.get('episode', 0), 'datetime_object': dtobj})
 
     return content
 
