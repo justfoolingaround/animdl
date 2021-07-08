@@ -12,24 +12,31 @@ def load_sessions(session_file):
         return json.load(sl)
     
 def generate_download_arguments(session_dict):
-    return (session_dict.get('url', ''), 
-            session_dict.get('start', 1), 
-            session_dict.get('end', 0), 
-            session_dict.get('identifier', ''), 
-            session_dict.get('idm', False), 
-            session_dict.get('afl', {}).get('url', ''),
-            session_dict.get('afl', {}).get('offset', 0),
-            session_dict.get('afl', {}).get('allow-filler', False),
-            session_dict.get('afl', {}).get('allow-canon', False),
-            session_dict.get('afl', {}).get('allow-mixed', False),  
-            False,
-            False,
-            0    
-            )
+
+    fl = session_dict.get('afl', {})
+
+    return {
+        'query': session_dict.get('url', ''),
+        'anonymous': False,
+        'start': session_dict.get('start', 1),
+        'end': session_dict.get('end', 0),
+        'title': session_dict.get('identifier', ''),
+        'filler_list': fl.get('url', ''),
+        'offset': fl.get('offset', 0),
+        'filler': fl.get('allow-filler', False),
+        'mixed': fl.get('allow-mixed', False),
+        'canon': fl.get('allow-canon', False),
+        'idm': session_dict.get('idm', False),
+        'auto': False,
+        'index': 0,
+        'quiet': False
+    }
 
 def generate_stream_arguments(session_dict):
-    u, s, e, i, idm, au, ao, af, ac, am, a, ai, q = generate_download_arguments(session_dict)
-    return u, s, i, au, ao, [], True, False, af, ac, am, a, ai, q
+    download_args = generate_download_arguments(session_dict)
+    download_args.pop('end', '')
+    download_args.pop('idm', '')
+    return {**download_args, 'player_opts': [], 'mpv': True, 'vlc': False}
 
 def search_identifiers(session_file, identifer):
     for session in load_sessions(session_file):

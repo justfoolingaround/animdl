@@ -50,9 +50,7 @@ def animdl_continue(ctx: click.Context, name, v):
             return to_stdout("No recent session found in the working directory.", 'animdl-continuation')
     
     if session.get('type') == 'stream':
-        u, s, i, au, ao, af, ac, am, a, ai, q = sessions.generate_stream_arguments(session)
-        return ctx.invoke(animdl_stream, query=u, start=s, anonymous=False, title=i, filler_list=au, offset=ao, filler=af, mixed=ac, canon=am, quiet=q, auto=a, index=ai)
+        return ctx.invoke(animdl_stream, **sessions.generate_stream_arguments(session))
     
     if session.get('type') == 'download':
-        u, s, e, i, idm, au, ao, af, ac, am, a, ai, q = sessions.generate_download_arguments(session)
-        return ctx.invoke(animdl_download, query=u, start=s, anonymous=False, end=e, title=i, filler_list=au, offset=ao, filler=af, mixed=ac, canon=am, idm=idm, quiet=q, auto=a, index=ai)
+        return ctx.invoke(animdl_download, **sessions.generate_download_arguments(session))
