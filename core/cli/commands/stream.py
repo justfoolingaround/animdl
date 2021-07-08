@@ -50,6 +50,8 @@ def animdl_stream(query, anonymous, start, title, filler_list, offset,
         return to_stdout('Streaming failed due to selection of a unsupported streamer; please configure the streamer in the config to use it.', caller='animdl-stream-failure')
     
     anime, provider = process_query(session, query, auto=auto, auto_index=index)
+    if not anime:
+        return
     ts = lambda x: to_stdout(x, 'animdl-%s-streamer-core' % provider) if not quiet else None
     ts('Now initiating your stream session')
     content_name = title or anime.get('name') or choice(create_random_titles())

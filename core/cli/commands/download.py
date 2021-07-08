@@ -36,6 +36,8 @@ def animdl_download(query, anonymous, start, end, title, filler_list, offset, fi
     session = requests.Session()
     
     anime, provider = process_query(session, query, auto=auto, auto_index=index)
+    if not anime:
+        return
     ts = lambda x: to_stdout(x, 'animdl-%s-downloader-core' % provider) if not quiet else None
     content_name = title or anime.get('name')
     if not content_name:

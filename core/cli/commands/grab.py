@@ -19,6 +19,8 @@ def animdl_grab(query, start, end, file, auto, index, quiet):
     end = end or float('inf')
     session = requests.Session()
     anime, provider = process_query(session, query, auto=auto, auto_index=index)
+    if not anime:
+        return
     ts = lambda x: to_stdout(x, 'animdl-%s-grabber-core' % provider) if not quiet else None
     anime_associator = Associator(anime.get('anime_url'))
     ts("Initializing grabbing session.")

@@ -61,7 +61,7 @@ def search_animepahe(session, query):
     with session.get(ANIMEPAHE_URL_SEARCH_AJAX, params={'q': query, 'm': 'search'}) as animepahe_results:
         content = animepahe_results.json()
         
-    for results in content.get('data'):
+    for results in content.get('data', []):
         yield {'anime_url': ANIMEPAHE_URL_CONTENT % results.get('session'), 'name': results.get('title')}
 
 def search_animeout(session, query):
