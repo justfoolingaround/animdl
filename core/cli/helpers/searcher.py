@@ -58,7 +58,7 @@ def search_9anime(session, query):
         parsed = htmlparser.fromstring(nineanime_results.text)
     
     for results in parsed.xpath('//ul[@class="anime-list"]/li/a[@class="name"]'):
-        yield {'anime_url': NINEANIME.rstrip('/') + results.get('href'), 'name': results.get('data-jtitle')}
+        yield {'anime_url': NINEANIME.rstrip('/') + results.get('href'), 'name': results.text_content()}
 
 def search_animefreak(session, query):
     with session.get(ANIMEFREAK_URL_SEARCH_AJAX, params={'q': query}) as animefreak_results:
