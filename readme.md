@@ -129,7 +129,6 @@ Commands:
 | [4Anime](https://4anime.to/) | `4anime` | 720p, 1080p | <p align="center"><code><img height="20" src="https://i.imgur.com/tG9nb8s.png"></code></p> | <p align="center">1.66s</p> | MP4 |
 | [9Anime](https://9anime.to/) | `9anime` | 720p, 1080p | <p align="center"><code><img height="20" src="https://i.imgur.com/tG9nb8s.png"></code></p> | <p align="center">3.27s</p>   | MP4 / TS  | 
 | [Anime1](http://www.anime1.com/) | `anime1` | 480p, 720p | <p align="center"><code><img height="20" src="https://i.imgur.com/tG9nb8s.png"></code></p> | <p align="center">23.29s</p>   | MP4 | 
-| [AnimeFreak](https://www.animefreak.tv/) | `animefreak` | 720p, 1080p | <p align="center"><code><a href="https://api-prod.downfor.cloud/httpcheck/animefreak.tv"><img height="20" src="https://i.imgur.com/bTLO7LJ.png"></a></code>  </p> | Untested  | MP4 | 
 | [AnimePahe](https://www.animepahe.com/) | `animepahe` | 720p, 1080p | <p align="center"><code><img height="20" src="https://i.imgur.com/tG9nb8s.png"></code></p> | <p align="center">4.15s</p>  | TS | 
 | [AnimeOut](https://www.animeout.xyz/) | `animeout` | 720p, 1080p | <p align="center"><code><img height="20" src="https://i.imgur.com/tG9nb8s.png"></code></p> | <p align="center">0s</p>  | MKV | 
 | [Animixplay](https://www.animixplay.to/) | `animixplay` | 480p, 720p, 1080p | <p align="center"><code><img height="20" src="https://i.imgur.com/tG9nb8s.png"></code></p> | <p align="center">4.17s</p>  | MP4 / TS |

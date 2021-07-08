@@ -15,9 +15,6 @@ NINEANIME_URL_SEARCH = NINEANIME + "search"
 
 ANIME1_SEARCH_AJAX = ANIME1 + "/home/default/"
 
-ANIMEFREAK_URL_SEARCH_AJAX = ANIMEFREAK + "search/topSearch"
-ANIMEFREAK_URL_CONTENT = ANIMEFREAK + "watch/%s"
-
 ANIMEPAHE_URL_CONTENT = ANIMEPAHE + "anime/%s"
 ANIMEPAHE_URL_SEARCH_AJAX = ANIMEPAHE + "api"
 
@@ -59,13 +56,6 @@ def search_9anime(session, query):
     
     for results in parsed.xpath('//ul[@class="anime-list"]/li/a[@class="name"]'):
         yield {'anime_url': NINEANIME.rstrip('/') + results.get('href'), 'name': results.text_content()}
-
-def search_animefreak(session, query):
-    with session.get(ANIMEFREAK_URL_SEARCH_AJAX, params={'q': query}) as animefreak_results:
-        content = animefreak_results.json()
-        
-    for results in content.get('data', []):
-        yield {'anime_url': ANIMEFREAK_URL_CONTENT % results.get('seo_name', ''), 'name': results.get('name')}
 
 def search_animepahe(session, query):
     with session.get(ANIMEPAHE_URL_SEARCH_AJAX, params={'q': query, 'm': 'search'}) as animepahe_results:
@@ -123,7 +113,6 @@ link = {
     '4anime': search_4anime,
     '9anime': search_9anime,
     'anime1': search_anime1,
-    'animefreak': search_animefreak,
     'animepahe': search_animepahe,
     'animeout': search_animeout,
     'animixplay': search_animixplay,

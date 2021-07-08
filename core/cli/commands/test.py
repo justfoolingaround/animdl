@@ -8,7 +8,6 @@ SITE_LIST = {
     '4anime': 'https://4anime.to/anime/one-piece',
     '9anime': 'https://9anime.to/watch/one-piece.ov8',
     'anime1': 'https://www.anime1.com/watch/one-piece',
-    'animefreak': 'https://www.animefreak.tv/watch/one-piece',
     'animepahe': requests.get('https://pahe.win/a/4', allow_redirects=False).headers.get('location', ''),
     'animeout': 'https://www.animeout.xyz/download-one-piece-episodes-latest/',
     'animixplay': 'https://animixplay.to/v1/one-piece',
