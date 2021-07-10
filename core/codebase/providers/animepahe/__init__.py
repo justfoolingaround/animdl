@@ -4,6 +4,7 @@ import requests
 
 from ....config import ANIMEPAHE
 from ...helper import construct_site_based_regex
+from .inner import get_stream_url_from_kwik
 
 from functools import partial, lru_cache
 
@@ -21,7 +22,7 @@ def get_session_page(session, page, release_id):
 
 def get_m3u8_from_kwik(session, kwik_url):
     """
-    Better than 99% of those 'kwik_extractor.py' in **most** tools that download from AnimePahe.
+    (Unused at the moment!)
     """
     with session.get(kwik_url, headers={'referer': SITE_URL}) as kwik_page:
         match = KWIK_RE.search(kwik_page.text)
@@ -36,7 +37,7 @@ def get_stream_url(session, release_id, stream_session):
         
     for d in content:
         for quality, data in d.items():
-            yield {'quality': quality, 'headers': {'referer': data.get('kwik')}, 'stream_url': get_m3u8_from_kwik(session, data.get('kwik'))}
+            yield {'quality': quality, 'headers': {'referer': data.get('kwik')}, 'stream_url': get_stream_url_from_kwik(session, data.get('kwik_adfly'))}
     
 def get_stream_urls_from_page(session, release_id, page, check):
     data = get_session_page(session, page, release_id).get('data')
