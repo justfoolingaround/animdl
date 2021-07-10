@@ -7,7 +7,7 @@ from tqdm import tqdm
 
 from ...codebase import (Associator, aed, get_filler_list, hls_download,
                          idmanlib, sanitize_filename, url_download)
-from ...config import SESSION_FILE
+from ...config import SESSION_FILE, QUALITY
 from ..helpers import *
 
 
@@ -16,6 +16,7 @@ from ..helpers import *
 @click.option('-a', '--anonymous', is_flag=True, default=False, help='Avoid writing session files for this session.')
 @click.option('-s', '--start', help="An integer that determines where to begin the downloading from.", required=False, default=0, show_default=False, type=int)
 @click.option('-e', '--end', help="A integer that determines where to end the downloading at.", required=False, default=0, show_default=False, type=int)
+@click.option('-q', '--quality', help='Select a preferred quality if available.', required=False, default=QUALITY, type=int)
 @click.option('-t', '--title', help="Optional title for the anime if the query is a direct URL. This will be used as the download folder name.", required=False, default='', show_default=False)
 @click.option('-fl', '--filler-list', help="Filler list associated with the content enqueued for the download.", required=False, default='', show_default=False)
 @click.option('-o', '--offset', help="Offset (If the E1 of your anime is marked as E27 on AnimeFillerList, this value should be 26).", required=False, default=0, show_default=False)
@@ -27,7 +28,7 @@ from ..helpers import *
 @click.option('-i', '--index', required=False, default=0, show_default=False, type=int, help="Index for the auto flag.")
 @click.option('--quiet', help='A flag to silence all the announcements.', is_flag=True, flag_value=True)
 @bannerify
-def animdl_download(query, anonymous, start, end, title, filler_list, offset, filler, mixed, canon, idm, auto, index, quiet):
+def animdl_download(query, anonymous, start, end, quality, title, filler_list, offset, filler, mixed, canon, idm, auto, index, quiet):
     """
     Download call.
     """
@@ -82,10 +83,20 @@ def animdl_download(query, anonymous, start, end, title, filler_list, offset, fi
             ts("Failed to download '%s' due to lack of stream urls." % content_title)
             continue
         
-        content = stream_urls[0]
-        
+        available_qualities = [*filter_quality(stream_urls, quality)]
+        if not available_qualities:
+            content = stream_urls[0]
+            q = content.get('quality')
+            ts("Can't find the quality '{}' for {!r}; falling back to {}.".format(quality, content_title, q if q != 'unknown' else 'an unknown quality'))
+        else:
+            content = available_qualities.pop(0)
+
+        q = content.get('quality')
+        if q != 'unknown' and int(q or 0) != quality:
+            ts("Fell back to quality '{}' due to unavailability of '{}'.".format(q, quality))
+
         extension = aed(content.get('stream_url'))
-        file_path = Path('%s.%s' % (sanitize_filename(content_title), aed(content.get('stream_url'))))
+        file_path = Path('%s.%s' % (sanitize_filename(content_title), aed(content.get('stream_url')) or 'mp4'))
         download_path = base / file_path
                 
         if extension in ['m3u', 'm3u8']:

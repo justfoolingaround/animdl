@@ -4,6 +4,9 @@ Helper functions to do session file handling with ease.
 import json
 from pathlib import Path
 
+from ...config import QUALITY
+
+
 def load_sessions(session_file):
     if not Path(session_file).exists():
         return []
@@ -29,13 +32,15 @@ def generate_download_arguments(session_dict):
         'idm': session_dict.get('idm', False),
         'auto': False,
         'index': 0,
-        'quiet': False
+        'quiet': False,
+        'quality': QUALITY
     }
 
 def generate_stream_arguments(session_dict):
     download_args = generate_download_arguments(session_dict)
     download_args.pop('end', '')
     download_args.pop('idm', '')
+    download_args.pop('quality', '')
     return {**download_args, 'player_opts': [], 'mpv': True, 'vlc': False}
 
 def search_identifiers(session_file, identifer):
