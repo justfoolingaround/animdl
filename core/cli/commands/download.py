@@ -96,7 +96,9 @@ def animdl_download(query, anonymous, start, end, quality, title, filler_list, o
             ts("Fell back to quality '{}' due to unavailability of '{}'.".format(q, quality))
 
         extension = aed(content.get('stream_url'))
-        file_path = Path('%s.%s' % (sanitize_filename(content_title), aed(content.get('stream_url')) or 'mp4'))
+        if extension in ['php', 'html', '']:
+            extension = 'mp4'
+        file_path = Path('%s.%s' % (sanitize_filename(content_title), extension))
         download_path = base / file_path
                 
         if extension in ['m3u', 'm3u8']:
