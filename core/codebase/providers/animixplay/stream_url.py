@@ -22,11 +22,15 @@ def from_site_url(session, url) -> dict:
 
 def get_stream_url(session, data_url):
     content_id = ID_MATCHER.search(data_url).group(0).encode(errors='ignore')
-    embed_page = session.get(EMBED_URL_BASE.format(b64encode(b"%sLTXs3GrU8we9O%s" % (content_id, b64encode(content_id))).decode(errors='ignore')), allow_redirects=True)
-    video_on_site = EMBED_VIDEO_MATCHER.search(embed_page.text)
-    if video_on_site:
-        return [{'stream_url': video_on_site.group(0)}]
-    return [{'stream_url': b64decode(EMBED_M3U8_MATCHER.search(embed_page.url).group(0).encode(errors='ignore')).decode(errors='ignore')}]
+    while 1:
+        embed_page = session.get(EMBED_URL_BASE.format(b64encode(b"%sLTXs3GrU8we9O%s" % (content_id, b64encode(content_id))).decode(errors='ignore')), allow_redirects=True)
+        video_on_site = EMBED_VIDEO_MATCHER.search(embed_page.text)
+        if video_on_site:
+            return [{'stream_url': video_on_site.group(0)}]
+        embed_m3u8 = EMBED_M3U8_MATCHER.search(embed_page.url)
+        if not embed_m3u8:
+            continue
+        return [{'stream_url': b64decode(EMBED_M3U8_MATCHER.search(embed_page.url).group(0).encode(errors='ignore')).decode(errors='ignore')}]
 
 def gogoanime_parser(session, data: dict, *, check=lambda *args: True):
     for value in range(data.get('eptotal')):
