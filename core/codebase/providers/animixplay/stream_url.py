@@ -1,16 +1,15 @@
-"""
-Currently, only GGA streams are supported.
-"""
-
-from functools import partial
-import lxml.html as htmlparser
-
 import json
 import re
+from base64 import b64decode, b64encode
+from functools import partial
 
-ajax_parse = lambda dt: (
-    dt.get('source', [{}])[0].get('file'), dt.get('source', [{}])[0].get('label'), dt.get('source', [{}])[0].get('type'), 
-    dt.get('source_bk', [{}])[0].get('file'), dt.get('source_bk', [{}])[0].get('label'), dt.get('source_bk', [{}])[0].get('type'))
+import lxml.html as htmlparser
+
+ID_MATCHER = re.compile(r"(?<=\?id=)[^&]+")
+
+EMBED_URL_BASE = "https://animixplay.to/api/live{}"
+EMBED_M3U8_MATCHER = re.compile(r'(?<=player\.html#)[^#]+')
+EMBED_VIDEO_MATCHER = re.compile(r'(?<=video=")[^"]+')
 
 def fetching_chain(f1, f2, session, url, check=lambda *args: True):
     return f2(session, f1(session, url), check=check)
@@ -21,20 +20,13 @@ def from_site_url(session, url) -> dict:
     """
     return json.loads(htmlparser.fromstring(session.get(url).content).xpath('//div[@id="epslistplace"]')[0].text)
 
-def bypass_encrypted_content(session, streaming_url):
-    with session.get('https:%s' % streaming_url.replace('streaming', 'loadserver')) as server_load:
-        for urls in re.finditer(r"(?<=sources:\[{file: ')[^']+", server_load.text):
-            yield urls.group(0)
-
 def get_stream_url(session, data_url):
-    with session.get('https:%s' % data_url.replace('streaming', 'ajax')) as response:
-        content = response.json()
-    
-    if content == 404:
-        return [{'quality': 'unknown', 'stream_url': c, 'headers': {'referer': "https:%s" % data_url}} for c in bypass_encrypted_content(session, data_url)]
-        
-    s1, l1, t1, s2, l2, t2 =  ajax_parse(content)
-    return [{'quality': "%s [%s]" % (l1, t1), 'stream_url': s1}] + ([{'quality': "%s [%s]" % (l2, t2), 'stream_url': s2}] if s2 else [])
+    content_id = ID_MATCHER.search(data_url).group(0).encode(errors='ignore')
+    embed_page = session.get(EMBED_URL_BASE.format(b64encode(b"%sLTXs3GrU8we9O%s" % (content_id, b64encode(content_id))).decode(errors='ignore')), allow_redirects=True)
+    video_on_site = EMBED_VIDEO_MATCHER.search(embed_page.text)
+    if video_on_site:
+        return [{'stream_url': video_on_site.group(0)}]
+    return [{'stream_url': b64decode(EMBED_M3U8_MATCHER.search(embed_page.url).group(0).encode(errors='ignore')).decode(errors='ignore')}]
 
 def gogoanime_parser(session, data: dict, *, check=lambda *args: True):
     for value in range(data.get('eptotal')):

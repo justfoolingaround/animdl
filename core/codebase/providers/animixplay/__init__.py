@@ -1,5 +1,4 @@
 from .stream_url import *
-from .search import *
 
 from ....config import ANIMIXPLAY
 from ...helper import construct_site_based_regex
