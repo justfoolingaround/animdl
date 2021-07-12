@@ -17,6 +17,7 @@ def get_string(content, s1, s2):
     return k or '0'
 
 def decrypt(full_string, key, v1, v2):
+    v1, v2 = int(v1), int(v2)
     r = ""
     i = 0
     while i < len(full_string):

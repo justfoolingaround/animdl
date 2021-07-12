@@ -6,8 +6,8 @@ import requests
 from tqdm import tqdm
 
 from ...codebase import (Associator, aed, get_filler_list, hls_download,
-                         idmanlib, sanitize_filename, url_download)
-from ...config import SESSION_FILE, QUALITY
+                         sanitize_filename, url_download)
+from ...config import QUALITY, SESSION_FILE
 from ..helpers import *
 
 
@@ -107,12 +107,14 @@ def animdl_download(query, anonymous, start, end, quality, title, filler_list, o
             hls_download(stream_urls, base / ("%s.ts" % sanitize_filename(content_title)), content_title, preferred_quality=quality)
             continue
         
-        if idmanlib.supported() and idm:
-            if download_path.exists():
-                download_path.chmod(0x1ff)
-                os.remove(download_path.as_posix())
-            ts("Downloading with Internet Download Manager [%02d/%s]" % (c, end_str))
-            idmanlib.wait_until_download(content.get('stream_url'), headers=content.get('headers', {}), filename=file_path, download_folder=base.absolute())
-            continue
+        if idm:
+            from ...codebase.downloader import idmanlib
+            if idmanlib.supported():
+                if download_path.exists():
+                    download_path.chmod(0x1ff)
+                    os.remove(download_path.as_posix())
+                ts("Downloading with Internet Download Manager [%02d/%s]" % (c, end_str))
+                idmanlib.wait_until_download(content.get('stream_url'), headers=content.get('headers', {}), filename=file_path, download_folder=base.absolute())
+                continue
         
         url_download(content.get('stream_url'), download_path, lambda r: tqdm(desc=content_title, total=r, unit='B', unit_scale=True, unit_divisor=1024), content.get('headers', {}))
