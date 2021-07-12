@@ -34,7 +34,7 @@ pip install -r requirements.txt
 
 #### Windows:
 - The easiest way to install mpv is by using [chocolatey](https://chocolatey.org/) package manager, it's an amazing tool can that be installed by following their [official documentation](https://chocolatey.org/install).
-- After chocolatey is installed, `mpv` can be installed through a console window (For example: cmd) with an **admininstrator** priviledge by the command: `choco install animdl`.
+- After chocolatey is installed, `mpv` can be installed through a console window (For example: cmd) with an **admininstrator** priviledge by the command: `choco install mpv`.
 
 #### Linux:
 - For users using a Debian-based distro, `mpv` can be installed using `sudo apt install mpv`. 
@@ -148,12 +148,12 @@ Streaming will require either `mpv` or `vlc`. You will require these to be in yo
 ```json
 {
     "players": {
-        "vlc": {
-            "executable": "<path-to-vlc>",
-        },
-        "mpv": {
-            "executable": "<path-to-mpv>",
-            "opts": [],
+            "vlc": {
+                "executable": "<path-to-vlc>",
+            },
+            "mpv": {
+                "executable": "<path-to-mpv>",
+                "opts": [],
         },   
     }
 }
