@@ -11,7 +11,6 @@ from ..helpers import to_stdout, bannerify
 @bannerify
 def animdl_test(x, e, quiet):
     SITE_LIST = {
-        '4anime': 'https://4anime.to/anime/one-piece',
         '9anime': 'https://9anime.to/watch/one-piece.ov8',
         'anime1': 'https://www.anime1.com/watch/one-piece',
         'animepahe': requests.get('https://pahe.win/a/4', allow_redirects=False).headers.get('location', ''),

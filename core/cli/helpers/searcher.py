@@ -8,9 +8,6 @@ import lxml.html as htmlparser
 
 from ...config import *
 
-FOURANIME_SEARCH_AJAX = FOURANIME + "wp-admin/admin-ajax.php"
-FOURANIME_URL_SEARCH = FOURANIME + "?s=%s"
-
 NINEANIME_URL_SEARCH = NINEANIME + "search"
 
 ANIME1_SEARCH_AJAX = ANIME1 + "/home/default/"
@@ -32,20 +29,6 @@ TWIST_URL_CONTENT = TWIST + "a/"
 
 WAF_TOKEN = re.compile(r"(\d{64})")
 WAF_SEPARATOR = re.compile(r"\w{2}")
-
-def search_4anime(session, query):
-    
-    with session.post(FOURANIME_SEARCH_AJAX, data={'action': 'ajaxsearchlite_search', 'aslp': query, 'options': 'qtranslate_lang=0&set_intitle=None&customset%5B%5D=anime'}) as fouranime_ajax_results:
-        parsed = htmlparser.fromstring(fouranime_ajax_results.text)
-    
-    for results in parsed.xpath('//a[@class="name"]'):
-        yield {'anime_url': results.get('href'), 'name': results.text_content()}
-    
-    with session.get(FOURANIME_URL_SEARCH % query) as fouranime_results:
-        parsed = htmlparser.fromstring(fouranime_results.text)
-
-    for results in parsed.xpath('//div[@id="headerDIV_2"]/div[@id="headerDIV_95"]/a'):
-        yield {'anime_url': results.get('href'), 'name': ' '.join(_.text_content() for _ in results.xpath('div'))}
 
 def search_9anime(session, query):
     with session.get(NINEANIME) as cloudflare_page:
@@ -110,7 +93,6 @@ def search_anime1(session, query):
         yield {'anime_url': ANIME1 + "watch/" + slug, 'name': name}
 
 link = {
-    '4anime': search_4anime,
     '9anime': search_9anime,
     'anime1': search_anime1,
     'animepahe': search_animepahe,

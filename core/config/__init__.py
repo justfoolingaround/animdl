@@ -1,7 +1,6 @@
 import json
 import os
 from pathlib import Path
-import shutil
 
 def merge_dicts(dict1, dict2):
     for k, v in dict1.items():
@@ -18,7 +17,6 @@ DEFAULT_CONFIG = {
     'session_file': 'cli_session_animdl.json',
     'default_provider': '9anime',
     'site_urls': {
-        '4anime': 'https://4anime.to/',
         '9anime': 'https://9anime.to/',
         'anime1': 'https://www.anime1.com/',
         'animeout': 'https://animeout.xyz/',
@@ -55,7 +53,6 @@ if CONFIGURATION_FILE_PATH.exists():
         
 SITE_URLS = CONFIG.get('site_urls', {})
 
-FOURANIME  = SITE_URLS.get('4anime')
 NINEANIME  = SITE_URLS.get('9anime')
 ANIME1     = SITE_URLS.get('anime1')
 ANIMEOUT   = SITE_URLS.get('animeout')
