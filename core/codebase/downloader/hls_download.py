@@ -9,7 +9,7 @@ from ...config import QUALITY, AUTO_RETRY
 ENCRYPTION_DETECTION_REGEX = re.compile(r"#EXT-X-KEY:METHOD=([^,]+),")
 ENCRYPTION_URL_IV_REGEX = re.compile(r"#EXT-X-KEY:METHOD=(?P<method>[^,]+),URI=\"(?P<key_uri>[^\"]+)\"(?:,IV=(?P<iv>.*))?")
 
-QUALITY_REGEX = re.compile(r'#EXT-X-STREAM-INF:.*RESOLUTION=.*x(?P<quality>.*)\n(?P<content_uri>.*)')
+QUALITY_REGEX = re.compile(r'#EXT-X-STREAM-INF:.*RESOLUTION=\d+x(?P<quality>\d+).*\n(?P<content_uri>.*)')
 M3U8_EXTENSION_REGEX = re.compile(r"(?P<m3u8_url>.*\.m3u8.*)")
 TS_EXTENSION_REGEX = re.compile(r"(?P<ts_url>.*\.ts.*)")
 
@@ -56,7 +56,7 @@ def m3u8_generation(session_init, m3u8_uri, *, is_origin=True):
             yield {'quality': quality, 'stream_url': content_uri}
 
 def select_best(q_dicts, preferred_quality):
-    return (sorted([q for q in q_dicts if absolute_extension_determination(q.get('stream_url')) in ['m3u', 'm3u8'] and q.get('quality').isdigit() and int(q.get('quality')) <= preferred_quality], key=lambda q: int(q.get('quality')), reverse=True) or q_dicts)[0]
+    return (sorted([q for q in q_dicts if absolute_extension_determination(q.get('stream_url')) in ['m3u', 'm3u8'] and q.get('quality', '0').isdigit() and int(q.get('quality', 0)) <= preferred_quality], key=lambda q: int(q.get('quality', 0)), reverse=True) or q_dicts)[0]
 
 
 def hls_yield(session, q_dicts, preferred_quality=QUALITY):
@@ -65,10 +65,14 @@ def hls_yield(session, q_dicts, preferred_quality=QUALITY):
     """
     selected = select_best(q_dicts, preferred_quality)
     
-    headers = selected.get('headers')
+    headers = selected.get('headers', {})
     ssl_verification = headers.get('ssl_verification', True)
     
-    second_selection = select_best([*m3u8_generation(lambda s: session.get(s, headers=headers), selected.get('stream_url'))] or [selected], preferred_quality)
+    streams = [*m3u8_generation(lambda s: session.get(s, headers=headers), selected.get('stream_url'))]
+    second_selection = select_best(streams or [selected], preferred_quality)
+
+    if preferred_quality != second_selection.get('quality'):
+        print("[\x1b[31manimdl-hls-exception\x1b[39m] {}".format('Could not find the quality {}, falling back to {}.'.format(preferred_quality, second_selection.get('quality') or "an unknown quality.")))
 
     with session.get(second_selection.get('stream_url'), headers=headers, verify=ssl_verification) as m3u8_response:
         m3u8_data = m3u8_response.text

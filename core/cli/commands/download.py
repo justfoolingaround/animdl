@@ -87,12 +87,14 @@ def animdl_download(query, anonymous, start, end, quality, title, filler_list, o
         if not available_qualities:
             content = stream_urls[0]
             q = content.get('quality')
-            ts("Can't find the quality '{}' for {!r}; falling back to {}.".format(quality, content_title, q if q != 'unknown' else 'an unknown quality'))
+            if q not in ['multi']:
+                ts("Can't find the quality '{}' for {!r}; falling back to {}.".format(quality, content_title, q if q != 'unknown' else 'an unknown quality'))
         else:
             content = available_qualities.pop(0)
 
         q = content.get('quality')
-        if q != 'unknown' and int(q or 0) != quality:
+
+        if q not in ['unknown', 'multi'] and int(q or 0) != quality:
             ts("Fell back to quality '{}' due to unavailability of '{}'.".format(q, quality))
 
         extension = aed(content.get('stream_url'))
@@ -102,7 +104,7 @@ def animdl_download(query, anonymous, start, end, quality, title, filler_list, o
         download_path = base / file_path
                 
         if extension in ['m3u', 'm3u8']:
-            hls_download(stream_urls, base / ("%s.ts" % sanitize_filename(content_title)), content_title)
+            hls_download(stream_urls, base / ("%s.ts" % sanitize_filename(content_title)), content_title, preferred_quality=quality)
             continue
         
         if idmanlib.supported() and idm:

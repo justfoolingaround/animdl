@@ -30,7 +30,7 @@ def get_stream_url(session, data_url):
         embed_m3u8 = EMBED_M3U8_MATCHER.search(embed_page.url)
         if not embed_m3u8:
             continue
-        return [{'stream_url': b64decode(EMBED_M3U8_MATCHER.search(embed_page.url).group(0).encode(errors='ignore')).decode(errors='ignore')}]
+        return [{'stream_url': b64decode(EMBED_M3U8_MATCHER.search(embed_page.url).group(0).encode(errors='ignore')).decode(errors='ignore'), 'quality': 'multi'}]
 
 def gogoanime_parser(session, data: dict, *, check=lambda *args: True):
     for value in range(data.get('eptotal')):

@@ -4,7 +4,7 @@ import time
 import requests
 from tqdm import tqdm
 
-from ...config import AUTO_RETRY
+from ...config import AUTO_RETRY, QUALITY
 from .hls_download import hls_yield
 
 URL_REGEX = re.compile(r"(?:https?://)?(?:\S+\.)+(?:[^/]+/)+(?P<url_end>[^?/]+)")
@@ -47,13 +47,13 @@ def single_threaded_download(url, _path, tqdm_bar_init, headers):
                 time.sleep(AUTO_RETRY)
     tqdm_bar.close()
 
-def hls_download(quality_dict, _path, episode_identifier, _tqdm=True):
+def hls_download(quality_dict, _path, episode_identifier, _tqdm=True, preferred_quality=QUALITY):
     
     session = requests.Session()
     _tqdm_bar = None
     
     with open(_path, 'ab') as sw:
-        for content in hls_yield(session, quality_dict):
+        for content in hls_yield(session, quality_dict, preferred_quality=preferred_quality):
             if _tqdm and not _tqdm_bar:
                 _tqdm_bar = tqdm(desc="[HLS] %s " % episode_identifier, total=content.get('total', 0), unit='ts')
             sw.write(content.get('bytes'))
