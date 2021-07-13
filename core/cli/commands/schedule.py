@@ -11,7 +11,7 @@ gql = "query (\n\t$weekStart: Int,\n\t$weekEnd: Int,\n\t$page: Int,\n){\n\tPage(
 def arrange_template(data):
     content = {}
 
-    for airing in data:
+    for airing in data[::-1]:
         dtobj = datetime.fromtimestamp(airing.get('airingAt', 0))
         d, t = dtobj.strftime(DATE_FORMAT), dtobj.strftime(TIME_FORMAT)
         titles = airing.get('media', {}).get('title', {})
@@ -43,5 +43,5 @@ def animdl_schedule(quiet):
 
     for date, _content in arrange_template(schedules).items():
         print("On \x1b[33m{}\x1b[39m,".format(date))
-        for time, __content in _content.items():
+        for time, __content in sorted(_content.items(), key=lambda d: d[1][0].get('datetime_object'), reverse=True):
             print("\t\x1b[95m{}\x1b[39m - {}".format(time, ', '.join("{anime} [\x1b[94mE{episode}\x1b[39m]".format_map(___content) for ___content in __content)))
