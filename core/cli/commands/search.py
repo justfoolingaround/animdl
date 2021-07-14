@@ -1,12 +1,11 @@
-import click
+import json as json_
 
+import click
 import requests
-from ..helpers import bannerify, to_stdout
-from ..helpers.searcher import link
 
 from ...config import DEFAULT_PROVIDER
-
-import json as json_
+from ..helpers import bannerify, to_stdout
+from ..helpers.searcher import link
 
 @click.command(name='search', help="Search for an anime in the provider.")
 @click.argument('query', required=True)
