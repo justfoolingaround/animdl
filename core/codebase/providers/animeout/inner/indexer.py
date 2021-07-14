@@ -28,7 +28,7 @@ def index_by_url(url):
     *anime, pe = re.split(r'(?=-\s*?[VS]?\d+)', fn, 1, re.I)
     index.update({'name': '-'.join(anime)})
     
-    pe_match = re.search(r"(?<![VS])(\d+).*?", pe, re.I)
+    pe_match = re.search(r"(?<![VS])(0+\d+).*?", pe, re.I) or re.search(r"(?<![VS])(\d+).*?", pe, re.I)
     if pe_match:
         index.update({'episode': int(pe_match.group(1))})
     
