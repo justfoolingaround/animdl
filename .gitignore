@@ -12,3 +12,6 @@ downloadsdev/
 
 # Tests
 *-test.*
+
+# Cache
+http_cache.sqlite

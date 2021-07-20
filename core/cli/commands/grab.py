@@ -1,5 +1,5 @@
 import click
-import requests
+import requests_cache
 
 from ...codebase import Associator
 from ..helpers import *
@@ -17,12 +17,12 @@ import json
 @bannerify
 def animdl_grab(query, start, end, file, auto, index, quiet):
     end = end or float('inf')
-    session = requests.Session()
+    session = requests_cache.CachedSession()
     anime, provider = process_query(session, query, auto=auto, auto_index=index)
     if not anime:
         return
     ts = lambda x: to_stdout(x, 'animdl-%s-grabber-core' % provider) if not quiet else None
-    anime_associator = Associator(anime.get('anime_url'))
+    anime_associator = Associator(anime.get('anime_url'), session=session)
     ts("Initializing grabbing session.")
     collected_streams = []
 

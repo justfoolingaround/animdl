@@ -2,7 +2,7 @@ import os
 from pathlib import Path
 
 import click
-import requests
+import requests_cache
 from tqdm import tqdm
 
 from ...codebase import (Associator, aed, get_filler_list, hls_download,
@@ -34,7 +34,7 @@ def animdl_download(query, anonymous, start, end, quality, title, filler_list, o
     """
     end = end or float('inf')
     
-    session = requests.Session()
+    session = requests_cache.CachedSession()
     
     anime, provider = process_query(session, query, auto=auto, auto_index=index)
     if not anime:

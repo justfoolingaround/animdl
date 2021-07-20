@@ -1,5 +1,5 @@
 import click
-import requests
+import requests_cache
 
 from ...codebase import Associator
 from ..helpers import to_stdout, bannerify
@@ -10,10 +10,11 @@ from ..helpers import to_stdout, bannerify
 @click.option('--quiet', help='A flag to silence all the announcements.', is_flag=True, flag_value=True)
 @bannerify
 def animdl_test(x, e, quiet):
+    session = requests_cache.CachedSession()
     SITE_LIST = {
         '9anime': 'https://9anime.to/watch/one-piece.ov8',
         'anime1': 'https://www.anime1.com/watch/one-piece',
-        'animepahe': requests.get('https://pahe.win/a/4', allow_redirects=False).headers.get('location', ''),
+        'animepahe': session.get('https://pahe.win/a/4', allow_redirects=False).headers.get('location', ''),
         'animeout': 'https://www.animeout.xyz/download-one-piece-episodes-latest/',
         'animixplay': 'https://animixplay.to/v1/one-piece',
         'gogoanime': 'https://gogoanime.ai/category/one-piece',
@@ -27,7 +28,7 @@ def animdl_test(x, e, quiet):
     
     for site in x:
         ts("Attempting to scrape anime from {!r}.".format(site))
-        anime_associator = Associator(site)
+        anime_associator = Associator(site, session=session)
         
         try:
             links = [*anime_associator.raw_fetch_using_check(lambda r: r == e)]

@@ -1,5 +1,5 @@
 import click
-import requests
+import requests_cache
 
 from ...codebase import Associator, get_filler_list
 from ...config import SESSION_FILE, DEFAULT_PLAYER
@@ -43,7 +43,7 @@ def animdl_stream(query, anonymous, start, title, filler_list, offset,
     """
     Streamer call for animdl streaming session.
     """    
-    session = requests.Session()
+    session = requests_cache.CachedSession()
     
     streamer = handle_streamer(click.parser.split_arg_string(player_opts or '') or [], vlc=vlc, mpv=mpv)
     if streamer == -107977:

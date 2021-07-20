@@ -1,7 +1,7 @@
 from datetime import datetime
 
 import click
-import requests
+import requests_cache
 
 from ...config import ANICHART, DATE_FORMAT, TIME_FORMAT
 from ..helpers import bannerify
@@ -29,7 +29,7 @@ def animdl_schedule(quiet):
     
     has_next_page, page = True, 1
     schedules = []
-    session = requests.Session()
+    session = requests_cache.CachedSession()
 
     unix_time = int((datetime.utcnow() - datetime(1970, 1, 1)).total_seconds())
 

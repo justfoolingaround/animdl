@@ -1,7 +1,7 @@
 import json as json_
 
 import click
-import requests
+import requests_cache
 
 from ...config import DEFAULT_PROVIDER
 from ..helpers import bannerify, to_stdout
@@ -16,7 +16,7 @@ from ..helpers.searcher import link
 def animdl_search(query, json, provider, quiet):
     
     announcer = lambda x: to_stdout(x, 'animdl-searcher') if not quiet else None
-    session = requests.Session()
+    session = requests_cache.CachedSession()
 
     if not provider in link:
         announcer("{!r} is not supported at the moment. Selecting the default {!r}.".format(provider, DEFAULT_PROVIDER))
