@@ -5,6 +5,7 @@ Credits for the functions:
     create_random_titles: (https://www.ruggenberg.nl/titels.html)
 """
 
+import logging
 import re
 from random import choice
 
@@ -64,8 +65,10 @@ def stream_judiciary(url):
 
 def bannerify(f):
     def internal(*args, **kwargs):
-        quiet_state = kwargs.get('quiet')
-        if quiet_state is not None and not quiet_state:
-            print("\x1b[35m{}\x1b[39m".format(package_banner))
+        quiet_state = kwargs.get('log_level')
+        if quiet_state is not None:
+            if quiet_state <= 20:
+                print("\x1b[35m{}\x1b[39m".format(package_banner))
+            logging.basicConfig(level=quiet_state)
         return f(*args, **kwargs)
     return internal

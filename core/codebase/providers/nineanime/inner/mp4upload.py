@@ -1,4 +1,5 @@
 import re
+import logging
 
 MP4UPLOAD_REGEX = re.compile(r"player\|(.*)\|videojs")
 
@@ -18,6 +19,8 @@ def extract(session, mp4upload_uri):
     """
     A curated-random extraction for MP4Upload.
     """
+    logger = logging.getLogger('9anime-mp4upload-extractor')
+
     mp4upload_uri = uri_correction(mp4upload_uri)
     with session.get(mp4upload_uri) as mp4upload_embed_page:
         if mp4upload_embed_page.text == 'File was deleted':
@@ -27,4 +30,6 @@ def extract(session, mp4upload_uri):
         try:
             return [{**(extract_480 if '480' in content else extract_any)(content), 'headers': {'referer': mp4upload_uri, 'ssl_verification': False}}]
         except Exception as e:
-            raise Exception("'%s' occurred when extracting from '%s'." % (e, mp4upload_uri))
+            return logger.error("'%s' occurred when extracting from '%s'." % (e, mp4upload_uri)) or []
+
+extract.site = "mp4upload"

@@ -1,6 +1,7 @@
 from .....config import NINEANIME
 
 import re
+import logging
 
 SKEY_RE = re.compile(r"skey = '(?P<skey>[^']+)';")
 
@@ -17,14 +18,16 @@ def extract(session, mcloud_uri):
     A safe extraction for MyCloud.
     """
     info_ajax, mcloud_uri = uri_correction(mcloud_uri)
-    
+    logger = logging.getLogger('9anime-mycloud-extractor')
+
     with session.get(mcloud_uri, headers={'referer': NINEANIME}) as mcloud_content:
         skey_match = SKEY_RE.search(mcloud_content.text)    
         if not skey_match:
             if mcloud_content.ok:
-                print('[\x1b[31manimdl-warning\x1b[39m] Could not find session key from MyCloud; associated url: "%s" (Include this in your GitHub issue!).' % mcloud_uri)
+                logger.warning('Could not find session key from MyCloud; associated url: "%s" (Include this in your GitHub issue!).' % mcloud_uri)
             return []
             
     with session.get(info_ajax, params={'skey': skey_match.group('skey')}, headers={'referer': mcloud_uri}) as mcloud_info:
         return [{'quality': content.get('label', 'unknown'), 'stream_url': content.get('file', ''), 'headers': {'referer': mcloud_uri}} for content in mcloud_info.json().get('media', {}).get('sources', [])] 
     
+extract.site = "mycloud"

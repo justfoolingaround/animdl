@@ -1,3 +1,4 @@
+import logging
 import os
 from pathlib import Path
 
@@ -26,9 +27,9 @@ from ..helpers import *
 @click.option('--idm', is_flag=True, default=False, help="Download anime using Internet Download Manager")
 @click.option('--auto', is_flag=True, default=False, help="Select the first given index without asking for prompts.")
 @click.option('-i', '--index', required=False, default=0, show_default=False, type=int, help="Index for the auto flag.")
-@click.option('--quiet', help='A flag to silence all the announcements.', is_flag=True, flag_value=True)
+@click.option('-ll', '--log-level', help='Set the integer log level.', type=int, default=20)
 @bannerify
-def animdl_download(query, anonymous, start, end, quality, title, filler_list, offset, filler, mixed, canon, idm, auto, index, quiet):
+def animdl_download(query, anonymous, start, end, quality, title, filler_list, offset, filler, mixed, canon, idm, auto, index, log_level):
     """
     Download call.
     """
@@ -39,12 +40,12 @@ def animdl_download(query, anonymous, start, end, quality, title, filler_list, o
     anime, provider = process_query(session, query, auto=auto, auto_index=index)
     if not anime:
         return
-    ts = lambda x: to_stdout(x, 'animdl-%s-downloader-core' % provider) if not quiet else None
+    logger = logging.getLogger('animdl-%s-downloader-core' % provider)
     content_name = title or anime.get('name')
     if not content_name:
         content_name = choice(create_random_titles())
-        ts("Could not get the folder to download to, generating a cool random folder name: %s" % content_name)
-    ts("Initializing download session [%02d -> %s]" % (start, '%02d' % end if isinstance(end, int) else '?'))    
+        logger.warn("Could not get the folder to download to, generating a cool random folder name: %s" % content_name)
+    logger.info("Initializing download session [%02d -> %s]" % (start, '%02d' % end if isinstance(end, int) else '?'))    
     url = anime.get('anime_url')
     anime_associator = Associator(url, session=session)    
     check = lambda *args, **kwargs: True
@@ -52,7 +53,7 @@ def animdl_download(query, anonymous, start, end, quality, title, filler_list, o
     
     if filler_list:
         raw_episodes = get_filler_list(session, filler_list, fillers=True)
-        ts("Succesfully loaded the filler list from '%s'." % filler_list)
+        logger.info("Succesfully loaded the filler list from '%s'." % filler_list)
         start += offset
         if not isinstance(end, int):
             end = len(raw_episodes)
@@ -66,8 +67,8 @@ def animdl_download(query, anonymous, start, end, quality, title, filler_list, o
     
     streams = [*anime_associator.raw_fetch_using_check(lambda x: check(x) and end >= x >= start)]
     end_str = '%02d' % end if isinstance(end, int) else (start + len(streams) - 1) if not raw_episodes else len(raw_episodes)
-    ts("Starting download session [%02d -> %s]" % (start, end_str))
-    ts("Downloads will be done in the folder '%s'" % content_name)
+    logger.info("Starting download session [%02d -> %s]" % (start, end_str))
+    logger.info("Downloads will be done in the folder '%s'" % content_name)
     
     for stream_url_caller, c in streams:
         stream_urls = stream_url_caller()
@@ -80,7 +81,7 @@ def animdl_download(query, anonymous, start, end, quality, title, filler_list, o
             content_title += " - %s" % raw_episodes[c - 1].title.strip()
                 
         if not stream_urls:
-            ts("Failed to download '%s' due to lack of stream urls." % content_title)
+            logger.error("Failed to download '%s' due to lack of stream urls." % content_title)
             continue
         
         available_qualities = [*filter_quality(stream_urls, quality)]
@@ -88,14 +89,14 @@ def animdl_download(query, anonymous, start, end, quality, title, filler_list, o
             content = stream_urls[0]
             q = content.get('quality')
             if q not in ['multi']:
-                ts("Can't find the quality '{}' for {!r}; falling back to {}.".format(quality, content_title, q if q != 'unknown' else 'an unknown quality'))
+                logger.warn("Can't find the quality '{}' for {!r}; falling back to {}.".format(quality, content_title, q if q != 'unknown' else 'an unknown quality'))
         else:
             content = available_qualities.pop(0)
 
         q = content.get('quality')
 
         if q not in ['unknown', 'multi'] and int(q or 0) != quality:
-            ts("Fell back to quality '{}' due to unavailability of '{}'.".format(q, quality))
+            logger.warn("Fell back to quality '{}' due to unavailability of '{}'.".format(q, quality))
 
         extension = aed(content.get('stream_url'))
         if extension in ['php', 'html']:
@@ -113,7 +114,7 @@ def animdl_download(query, anonymous, start, end, quality, title, filler_list, o
                 if download_path.exists():
                     download_path.chmod(0x1ff)
                     os.remove(download_path.as_posix())
-                ts("Downloading with Internet Download Manager [%02d/%s]" % (c, end_str))
+                logger.info("Downloading with Internet Download Manager [%02d/%s]" % (c, end_str))
                 idmanlib.wait_until_download(content.get('stream_url'), headers=content.get('headers', {}), filename=file_path, download_folder=base.absolute())
                 continue
         

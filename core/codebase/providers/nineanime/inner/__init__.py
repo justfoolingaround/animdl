@@ -11,17 +11,18 @@ This order is made to ensure perfect yield of content.
 (each one fall backs in the order when required)
 """
 
-from .....config import NINEANIME
+import json
+import logging
+import time
 
+from .....config import NINEANIME
 from ..decipher import decipher as decode
 
 from .mp4upload  import extract as extract_1
+from .mycloud    import extract as extract_4
 from .streamtape import extract as extract_2
 from .vidstream  import extract as extract_3
-from .mycloud    import extract as extract_4
 
-import json
-import time
 
 def validate_json_content_yield(session, url, ensurer=lambda *args, **kwargs: True, max_tries=5, **session_kwargs):
     """
@@ -38,11 +39,11 @@ def validate_json_content_yield(session, url, ensurer=lambda *args, **kwargs: Tr
     return json.loads(response.text)
 
 def fallback_handler(f, session, _hash_cb):
+    logger = logging.getLogger('9anime-fallback-handler')
     try:
         return f(session, _hash_cb())
     except Exception as e:
-        print('[\x1b[31manimdl-9anime-warning\x1b[39m] Falling back to mirrors due to an unexpected error: {}.'.format(e))
-        print('[\x1b[31manimdl-9anime-warning\x1b[39m] If the problem persists, feel free to raise an issue with the anime url and episode number immediately.')
+        logger.warning('Falling back to mirrors due to an unexpected error: {} with the provider {}. If the problem persists, make sure to raise an issue!'.format(e, f.site))
     return []
 
 def get_url_by_hash(session, _hash, access_headers):

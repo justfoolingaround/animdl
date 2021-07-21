@@ -7,6 +7,8 @@ from tqdm import tqdm
 from ...config import AUTO_RETRY, QUALITY
 from .hls_download import hls_yield
 
+import logging
+
 URL_REGEX = re.compile(r"(?:https?://)?(?:\S+\.)+(?:[^/]+/)+(?P<url_end>[^?/]+)")
 
 def sanitize_filename(f):
@@ -23,6 +25,8 @@ def absolute_extension_determination(url):
     return ''
 
 def single_threaded_download(url, _path, tqdm_bar_init, headers):
+    logger = logging.getLogger("Download @ ".format(_path.stem))
+
     session = requests.Session()
     verify = headers.pop('ssl_verification', True)
     response_headers = session.head(url, allow_redirects=True, verify=verify, headers=headers)
@@ -43,7 +47,7 @@ def single_threaded_download(url, _path, tqdm_bar_init, headers):
                 """
                 A delay to avoid rate-limit(s).
                 """
-                print("[\x1b[31manimdl-download-exception\x1b[39m] {}".format('Downloading error due to "{!r}", retrying.'.format(e)))
+                logger.error('Downloading error due to "{!r}", retrying.'.format(e))
                 time.sleep(AUTO_RETRY)
     tqdm_bar.close()
 

@@ -1,9 +1,12 @@
+import logging
+
 import click
 
 from ...config import SESSION_FILE
 from ..helpers import sessions, to_stdout
 from .download import animdl_download
 from .stream import animdl_stream
+
 
 def session_prompt(session_list):
     ts = lambda x: to_stdout(x, "animdl-session-search")
@@ -29,28 +32,32 @@ def animdl_continue(ctx: click.Context, name, v):
     
     By default, the most recent stream/download will be handed.
     """
+    logger = logging.getLogger("animdl-continuation")
+
     if v:
         _sessions = sessions.load_sessions(SESSION_FILE)
         for i, session in enumerate(_sessions, 1):
-            to_stdout("[#%02d] %s" % (i, sessions.describe_session_dict(session)), 'animdl-continuation')
+            logger.info("[#%02d] %s" % (i, sessions.describe_session_dict(session)))
         if not _sessions:
-            to_stdout('No active sessions found in the working directory.', 'animdl-continuation')
+            logger.error('No active sessions found in the working directory.')
         return
     
     if name:
         ses = [*sessions.search_identifiers(SESSION_FILE, name)]
         
         if not len(ses):
-            return to_stdout("No sessions of that identifier found.", 'animdl-continuation')
+            return logger.error("No sessions of that identifier found.")
         
         session = session_prompt(ses)if len(ses) > 1 else ses.pop()
     else:
         session = sessions.get_most_recent_session(SESSION_FILE)
         if not session:
-            return to_stdout("No recent session found in the working directory.", 'animdl-continuation')
+            return logger.error("No recent session found in the working directory.")
     
     if session.get('type') == 'stream':
+        logger.debug("Invoking streamer.")
         return ctx.invoke(animdl_stream, **sessions.generate_stream_arguments(session))
     
     if session.get('type') == 'download':
+        logger.debug('Invoking download.')
         return ctx.invoke(animdl_download, **sessions.generate_download_arguments(session))

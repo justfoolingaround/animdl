@@ -1,8 +1,10 @@
+import logging
+
 import click
 import requests_cache
 
 from ...codebase import Associator, get_filler_list
-from ...config import SESSION_FILE, DEFAULT_PLAYER
+from ...config import DEFAULT_PLAYER, SESSION_FILE
 from ..helpers import *
 
 
@@ -36,26 +38,26 @@ def quality_prompt(stream_list, provider):
 @click.option('--canon', is_flag=True, default=True, help="Auto-skip canons (If filler list is configured).")
 @click.option('--auto', is_flag=True, default=False, help="Select the first given index without asking for prompts.")
 @click.option('-i', '--index', required=False, default=0, show_default=False, type=int, help="Index for the auto flag.")
-@click.option('--quiet', help='A flag to silence all the announcements.', is_flag=True, flag_value=True)
+@click.option('-ll', '--log-level', help='Set the integer log level.', type=int, default=20)
 @bannerify
 def animdl_stream(query, anonymous, start, title, filler_list, offset, 
-                  player_opts, mpv, vlc, filler, mixed, canon, auto, index, quiet):
+                  player_opts, mpv, vlc, filler, mixed, canon, auto, index, log_level):
     """
     Streamer call for animdl streaming session.
     """    
     session = requests_cache.CachedSession()
-    
+    logger = logging.getLogger('animdl-streamer-core')
     streamer = handle_streamer(click.parser.split_arg_string(player_opts or '') or [], vlc=vlc, mpv=mpv)
     if streamer == -107977:
-        return to_stdout('Streaming failed due to selection of a unsupported streamer; please configure the streamer in the config to use it.', caller='animdl-stream-failure')
+        return logger.critical('Streaming failed due to selection of a unsupported streamer; please configure the streamer in the config to use it.')
     
     anime, provider = process_query(session, query, auto=auto, auto_index=index)
     if not anime:
         return
-    ts = lambda x: to_stdout(x, 'animdl-%s-streamer-core' % provider) if not quiet else None
-    ts('Now initiating your stream session')
+    logger.name = "animdl-%s-streamer-core" % provider 
+    logger.info('Now initiating your stream session')
     content_name = title or anime.get('name') or choice(create_random_titles())
-    ts("Starting stream session @ [%02d/?]" % start)
+    logger.info("Starting stream session @ [%02d/?]" % start)
     url = anime.get('anime_url')
     anime_associator = Associator(url, session=session)    
     check = lambda *args, **kwargs: True
@@ -63,7 +65,7 @@ def animdl_stream(query, anonymous, start, title, filler_list, offset,
     
     if filler_list:
         raw_episodes = get_filler_list(session, filler_list, fillers=True)
-        ts("Succesfully loaded the filler list from '%s'." % filler_list)
+        logger.debug("Succesfully loaded the filler list from '%s'." % filler_list)
         start += offset
         check = (lambda x: raw_episodes[offset + x - 1].content_type in ((['Filler'] if filler else []) + (['Mixed Canon/Filler'] if mixed else []) + (['Anime Canon', 'Manga Canon'] if canon else [])))
     
@@ -93,13 +95,13 @@ def animdl_stream(query, anonymous, start, title, filler_list, offset,
             selection = quality_prompt(stream_urls, provider) if len(stream_urls) > 1 else stream_urls[0]
             headers = selection.get('headers', {})
             _ = headers.pop('ssl_verification', True)
-            ts("Active stream session @ [%02d/%02d]" % (c, (start + len(streams) - 1) if not raw_episodes else len(raw_episodes)))
+            logger.info("Active stream session @ [%02d/%02d]" % (c, (start + len(streams) - 1) if not raw_episodes else len(raw_episodes)))
             
             player_process = streamer(selection.get('stream_url'), headers=headers, content_title=title)
             player_process.wait()
             playing = False
             
             if player_process.returncode:
-                ts("Detected a non-zero return code. [%d]" % player_process.returncode)
-                ts("If there was an error or a crash during playback. Don't sweat it, you're going to be prompted for this instance.")
+                logger.warning("Detected a non-zero return code. [%d]" % player_process.returncode)
+                logger.error("If there was an error or a crash during playback. Don't sweat it, you're going to be prompted for this instance.")
                 playing = click.confirm("[\x1b[33m%s\x1b[39m] Would you like to repeat '%s'? " % ('animdl-%s-streamer-core' % provider, title))

@@ -23,9 +23,9 @@ def arrange_template(data):
     return content
 
 @click.command(name='schedule', help="Know which animes are going over the air when.")
-@click.option('--quiet', help='A flag to silence all the announcements.', is_flag=True, flag_value=True)
+@click.option('-ll', '--log-level', help='Set the integer log level.', type=int, default=20)
 @bannerify
-def animdl_schedule(quiet):    
+def animdl_schedule(log_level):    
     
     has_next_page, page = True, 1
     schedules = []

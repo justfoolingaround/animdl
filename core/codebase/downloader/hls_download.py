@@ -1,10 +1,11 @@
+import logging
 import re
 import time
 
 import requests
 from Cryptodome.Cipher import AES
 
-from ...config import QUALITY, AUTO_RETRY
+from ...config import AUTO_RETRY, QUALITY
 
 ENCRYPTION_DETECTION_REGEX = re.compile(r"#EXT-X-KEY:METHOD=([^,]+),")
 ENCRYPTION_URL_IV_REGEX = re.compile(r"#EXT-X-KEY:METHOD=(?P<method>[^,]+),URI=\"(?P<key_uri>[^\"]+)\"(?:,IV=(?P<iv>.*))?")
@@ -63,6 +64,8 @@ def hls_yield(session, q_dicts, preferred_quality=QUALITY):
     """
     A fast and efficient HLS content yielder.
     """
+    logger = logging.getLogger("requests.Session @ 0x%16X".format(id(session)))
+
     selected = select_best(q_dicts, preferred_quality)
     
     headers = selected.get('headers', {})
@@ -72,8 +75,8 @@ def hls_yield(session, q_dicts, preferred_quality=QUALITY):
     second_selection = select_best(streams or [selected], preferred_quality)
 
     if preferred_quality != second_selection.get('quality'):
-        print("[\x1b[31manimdl-hls-exception\x1b[39m] {}".format('Could not find the quality {}, falling back to {}.'.format(preferred_quality, second_selection.get('quality') or "an unknown quality.")))
-
+        logging.warning('Could not find the quality {}, falling back to {}.'.format(preferred_quality, second_selection.get('quality') or "an unknown quality."))
+        
     with session.get(second_selection.get('stream_url'), headers=headers, verify=ssl_verification) as m3u8_response:
         m3u8_data = m3u8_response.text
 
@@ -101,5 +104,5 @@ def hls_yield(session, q_dicts, preferred_quality=QUALITY):
                     yield {'bytes': ts_data, 'total': len(all_ts), 'current': c}
                 last_yield = c
             except requests.RequestException as e:
-                print("[\x1b[31manimdl-hls-exception\x1b[39m] {}".format('Downloading error due to "{!r}", retrying.'.format(e)))
+                logger.error('HLS downloading error due to "{!r}", retrying.'.format(e))
                 time.sleep(AUTO_RETRY)
