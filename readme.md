@@ -83,7 +83,7 @@ Commands:
     ```
 
 
-2. Streaming **One Piece** on [**4Anime**](https://4anime.to/) from episode 1 by placing a search forehand.
+2. Streaming **One Piece** on [**AnimeOut**](https://animeout.xyz/) from episode 1 by placing a search forehand.
 
 -
     ```
@@ -126,10 +126,10 @@ Commands:
 
 | Website | Searcher Prefix | Available Qualities | Status | Content Fetch Speed <br> (Per Episode) | Content Extension |
 | ------- | ---------------- | ------------------- | ------ | ------------------ | ----------------- |
-| [9Anime](https://9anime.to/) | `9anime` | 720p, 1080p | <p align="center"><code><img height="20" src="https://i.imgur.com/tG9nb8s.png"></code></p> | <p align="center">3.27s</p>   | MP4 / TS  | 
+| [9Anime](https://9anime.to/) (Recommended) | `9anime` | 720p, 1080p | <p align="center"><code><img height="20" src="https://i.imgur.com/tG9nb8s.png"></code></p> | <p align="center">3.27s</p>   | MP4 / TS  | 
 | [Anime1](http://www.anime1.com/) | `anime1` | 480p, 720p | <p align="center"><code><img height="20" src="https://i.imgur.com/tG9nb8s.png"></code></p> | <p align="center">23.29s</p>   | MP4 | 
 | [AnimePahe](https://www.animepahe.com/) | `animepahe` | 720p, 1080p | <p align="center"><code><img height="20" src="https://i.imgur.com/tG9nb8s.png"></code></p> | <p align="center">4.15s</p>  | MP4 | 
-| [AnimeOut](https://www.animeout.xyz/) | `animeout` | 720p, 1080p | <p align="center"><code><img height="20" src="https://i.imgur.com/tG9nb8s.png"></code></p> | <p align="center">0s</p>  | MKV | 
+| [AnimeOut](https://www.animeout.xyz/) (Recommended) | `animeout` | 720p, 1080p | <p align="center"><code><img height="20" src="https://i.imgur.com/tG9nb8s.png"></code></p> | <p align="center">0s</p>  | MKV | 
 | [Animixplay](https://www.animixplay.to/) | `animixplay` | 480p, 720p, 1080p | <p align="center"><code><img height="20" src="https://i.imgur.com/tG9nb8s.png"></code></p> | <p align="center">4.17s</p>  | MP4 / TS |
 | [GogoAnime](https://www1.gogoanime.ai/) | `gogoanime` | 480p, 720p, 1080p | <p align="center"><code><img height="20" src="https://i.imgur.com/tG9nb8s.png"></code></p> | <p align="center">2.34s</p>   | MP4 / TS |
 | [Twist](https://www.twist.moe/) | `twist` | 720p, 1080p | <p align="center"><code><img height="20" src="https://i.imgur.com/tG9nb8s.png"></code></p> | <p align="center">0s</p> | MP4 |
