@@ -95,7 +95,7 @@ def animdl_stream(query, anonymous, start, title, filler_list, offset,
             selection = quality_prompt(stream_urls, provider) if len(stream_urls) > 1 else stream_urls[0]
             headers = selection.get('headers', {})
             _ = headers.pop('ssl_verification', True)
-            logger.info("Active stream session @ [%02d/%02d]" % (c, (start + len(streams) - 1) if not raw_episodes else len(raw_episodes)))
+            logger.info("Active stream session @ [%02d/%02d]" % (c, len(streams)) if not raw_episodes else len(raw_episodes))
             
             player_process = streamer(selection.get('stream_url'), headers=headers, content_title=title)
             player_process.wait()

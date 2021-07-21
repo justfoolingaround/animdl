@@ -23,6 +23,7 @@ DEFAULT_CONFIG = {
         'animepahe': 'https://animepahe.com/',
         'animixplay': 'https://animixplay.to/',
         'gogoanime': 'https://gogoanime.ai/',   
+        'tenshi': 'https://tenshi.moe/',
         'twist': 'https://twist.moe/',
     },
     'preferred_quality': 1080,
@@ -59,6 +60,7 @@ ANIMEOUT   = SITE_URLS.get('animeout')
 ANIMEPAHE  = SITE_URLS.get('animepahe')
 ANIMIXPLAY = SITE_URLS.get('animixplay')
 GOGOANIME  = SITE_URLS.get('gogoanime')
+TENSHI  = SITE_URLS.get('tenshi')
 TWIST      = SITE_URLS.get('twist')
 
 QUALITY    = CONFIG.get('preferred_quality')

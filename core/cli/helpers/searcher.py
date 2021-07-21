@@ -24,6 +24,8 @@ ANIMIX_URL_CONTENT = ANIMIXPLAY.rstrip('/')
 
 GOGOANIME_URL_SEARCH = GOGOANIME + "/search.html?"
 
+TENSHI_URL_SEARCH_POST = TENSHI + "anime/search"
+
 TWIST_URL_CONTENT_API = "https://api.twist.moe/api/anime"
 TWIST_URL_CONTENT = TWIST + "a/"
 
@@ -92,6 +94,18 @@ def search_anime1(session, query):
     for slug, name in zip(results.get('data'), results.get('suggestions')):
         yield {'anime_url': ANIME1 + "watch/" + slug, 'name': name}
 
+import requests
+def search_tenshi(session: requests.Session, query):
+    with session.get(TENSHI) as tenshi_page:
+        session_id = tenshi_page.cookies.get('tenshimoe_session')
+        token = htmlparser.fromstring(tenshi_page.text).xpath('//meta[@name="csrf-token"]')[0].get('content')
+
+    with session.post(TENSHI_URL_SEARCH_POST, data={'q': query}, headers={'x-requested-with': 'XMLHttpRequest', 'x-csrf-token': token, 'referer': 'https://tenshi.moe/','cookie': 'tenshimoe_session={}'.format(session_id)}) as ajax_content:
+        results = ajax_content.json()
+
+    for result in results:
+        yield {'name': result.get('title'), 'anime_url': result.get('url')}
+
 link = {
     '9anime': search_9anime,
     'anime1': search_anime1,
@@ -99,6 +113,7 @@ link = {
     'animeout': search_animeout,
     'animixplay': search_animixplay,
     'gogoanime': search_gogoanime,
+    'tenshi': search_tenshi,
     'twist': search_twist,
 }
 

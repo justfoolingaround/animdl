@@ -3,5 +3,5 @@ comtypes
 lxml
 tqdm
 requests
-requests-cache==0.7.1
+requests-cache==0.7.2b0
 pycryptodomex

@@ -132,6 +132,7 @@ Commands:
 | [AnimeOut](https://www.animeout.xyz/) | `animeout` | 720p, 1080p | <p align="center"><code><img height="20" src="https://i.imgur.com/tG9nb8s.png"></code></p> | <p align="center">0s</p>  | MKV | 
 | [Animixplay](https://www.animixplay.to/) | `animixplay` | 480p, 720p, 1080p | <p align="center"><code><img height="20" src="https://i.imgur.com/tG9nb8s.png"></code></p> | <p align="center">4.17s</p>  | MP4 / TS |
 | [GogoAnime](https://www1.gogoanime.ai/) | `gogoanime` | 480p, 720p, 1080p | <p align="center"><code><img height="20" src="https://i.imgur.com/tG9nb8s.png"></code></p> | <p align="center">2.34s</p>   | MP4 / TS |
+| [Tenshi](https://www.tenshi.moe/) | `tenshi` | 720p, 1080p | <p align="center"><code><img height="20" src="https://i.imgur.com/tG9nb8s.png"></code></p> | <p align="center">0s</p> | MP4 |
 | [Twist](https://www.twist.moe/) | `twist` | 720p, 1080p | <p align="center"><code><img height="20" src="https://i.imgur.com/tG9nb8s.png"></code></p> | <p align="center">0s</p> | MP4 |
 
 ### More sites?
