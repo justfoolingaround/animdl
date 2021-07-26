@@ -2,7 +2,7 @@ import json as json_
 import logging
 
 import click
-import requests_cache
+import requests
 
 from ...config import DEFAULT_PROVIDER
 from ..helpers import bannerify, to_stdout
@@ -17,7 +17,7 @@ from ..helpers.searcher import link
 @bannerify
 def animdl_search(query, json, provider, log_level):
     logger = logging.getLogger('animdl-searcher')    
-    session = requests_cache.CachedSession()
+    session = requests.Session()
 
     if not provider in link:
         logger.critical("{!r} is not supported at the moment. Selecting the default {!r}.".format(provider, DEFAULT_PROVIDER))

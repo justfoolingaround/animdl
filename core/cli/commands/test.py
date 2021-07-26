@@ -1,7 +1,7 @@
 import logging
 
 import click
-import requests_cache
+import requests
 
 from ...codebase import Associator
 from ..helpers import bannerify, to_stdout
@@ -12,7 +12,7 @@ from ..helpers import bannerify, to_stdout
 @click.option('-ll', '--log-level', help='Set the integer log level.', type=int, default=20)
 @bannerify
 def animdl_test(x, e, log_level):
-    session = requests_cache.CachedSession()
+    session = requests.Session()
     SITE_LIST = {
         '9anime': 'https://9anime.to/watch/one-piece.ov8',
         'anime1': 'https://www.anime1.com/watch/one-piece',
