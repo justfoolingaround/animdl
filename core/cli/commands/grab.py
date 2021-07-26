@@ -42,5 +42,5 @@ def animdl_grab(query, start, end, file, auto, index, log_level):
             except WindowsError:
                 logger.error("Failed to attempt I/O on the file at the moment; the unwritten values will be written in the next I/O.")
         else:
-            to_stdout(json.dumps({'episode': episode, 'streams': stream_url}), ('E%02d' % episode) if log_level > 10 else '')
+            to_stdout(json.dumps({'episode': episode, 'streams': stream_url}), ('E%02d' % episode) if log_level <= 20 else '')
     logger.info("Grabbing session complete.")
