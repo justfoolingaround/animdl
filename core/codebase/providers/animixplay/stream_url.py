@@ -24,6 +24,8 @@ def get_stream_url(session, data_url):
     content_id = ID_MATCHER.search(data_url).group(0).encode(errors='ignore')
     while 1:
         embed_page = session.get(EMBED_URL_BASE.format(b64encode(b"%sLTXs3GrU8we9O%s" % (content_id, b64encode(content_id))).decode(errors='ignore')), allow_redirects=True)
+        if embed_page.status_code == 429:
+            continue
         video_on_site = EMBED_VIDEO_MATCHER.search(embed_page.text)
         if video_on_site:
             return [{'stream_url': video_on_site.group(0)}]
