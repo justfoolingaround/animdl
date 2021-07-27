@@ -57,18 +57,11 @@ def search_animeout(session, query):
         yield {'anime_url': result.get('href'), 'name': result.text_content()}
 
 def search_animixplay(session, query):
-    if len(query) < 4:
-        result = session.post(ANIMIX_URL_SEARCH_API, data={'qfast': query}).json().get('result')
-        if not result:
-            return []
-        yield from [{'anime_url': ANIMIX_URL_CONTENT + result.get('href'), 'name': result.get('title')} for result in htmlparser.fromstring(result).xpath('//p[@class="name"]/a')]
-        return 
-    
-    with session.post(ANIMIX_URL_SEARCH_POST, data={'q2': query, 'origin': '1', 'root': 'animixplay.to'}) as animix_results:
-        content = htmlparser.fromstring(animix_results.json().get('result'))
-
-    for results in content.xpath('//p[@class="name"]/a'):
-        yield {'anime_url': ANIMIX_URL_CONTENT + results.get('href'), 'name': results.get('title')}
+    with session.get(GOGOANIME_URL_SEARCH, params={'keyword': query}) as gogoanime_results:
+        parsed = htmlparser.fromstring(gogoanime_results.text)
+        
+    for results in parsed.xpath('//p[@class="name"]/a'):
+        yield {'anime_url': ANIMIXPLAY + "v1" + results.get('href')[9:], 'name': results.get('title')}
 
 def search_gogoanime(session, query):
     with session.get(GOGOANIME_URL_SEARCH, params={'keyword': query}) as gogoanime_results:
@@ -94,8 +87,7 @@ def search_anime1(session, query):
     for slug, name in zip(results.get('data'), results.get('suggestions')):
         yield {'anime_url': ANIME1 + "watch/" + slug, 'name': name}
 
-import requests
-def search_tenshi(session: requests.Session, query):
+def search_tenshi(session, query):
     with session.get(TENSHI) as tenshi_page:
         session_id = tenshi_page.cookies.get('tenshimoe_session')
         token = htmlparser.fromstring(tenshi_page.text).xpath('//meta[@name="csrf-token"]')[0].get('content')
