@@ -18,12 +18,12 @@ def from_site_url(session, url) -> dict:
     """
     Keep in mind that the return of this function will vary from stream to stream. (Gogo Anime streams and 4Anime streams will vary.)
     """
-    return json.loads(htmlparser.fromstring(session.get(url).content).xpath('//div[@id="epslistplace"]')[0].text)
+    return json.loads(htmlparser.fromstring(session.get(url, headers={'user-agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.166 Safari/537.36'}).content).xpath('//div[@id="epslistplace"]')[0].text)
 
 def get_stream_url(session, data_url):
     content_id = ID_MATCHER.search(data_url).group(0).encode(errors='ignore')
     while 1:
-        embed_page = session.get(EMBED_URL_BASE.format(b64encode(b"%sLTXs3GrU8we9O%s" % (content_id, b64encode(content_id))).decode(errors='ignore')), allow_redirects=True)
+        embed_page = session.get(EMBED_URL_BASE.format(b64encode(b"%sLTXs3GrU8we9O%s" % (content_id, b64encode(content_id))).decode(errors='ignore')), headers={'user-agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.166 Safari/537.36'}, allow_redirects=True)
         if embed_page.status_code == 429:
             continue
         video_on_site = EMBED_VIDEO_MATCHER.search(embed_page.text)
