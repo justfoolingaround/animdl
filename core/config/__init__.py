@@ -2,16 +2,19 @@ import json
 import os
 from pathlib import Path
 
+
 def merge_dicts(dict1, dict2):
     for k, v in dict1.items():
         if isinstance(v, dict):
             merge_dicts(v, dict2.setdefault(k, {}))
         else:
-            if not k in dict2:
+            if k not in dict2:
                 dict2[k] = v
     return dict2
-        
-CONFIGURATION_FILE_PATH = Path(os.getenv('ANIMDL_CONFIG') or './animdl_config.json')
+
+
+CONFIGURATION_FILE_PATH = Path(
+    os.getenv('ANIMDL_CONFIG') or './animdl_config.json')
 
 DEFAULT_CONFIG = {
     'session_file': 'cli_session_animdl.json',
@@ -22,7 +25,7 @@ DEFAULT_CONFIG = {
         'animeout': 'https://animeout.xyz/',
         'animepahe': 'https://animepahe.com/',
         'animixplay': 'https://animixplay.to/',
-        'gogoanime': 'https://gogoanime.ai/',   
+        'gogoanime': 'https://gogoanime.ai/',
         'tenshi': 'https://tenshi.moe/',
         'twist': 'https://twist.moe/',
     },
@@ -32,11 +35,11 @@ DEFAULT_CONFIG = {
         'mpv': {
             'executable': 'mpv',
             'opts': [],
-            },
+        },
         'vlc': {
             'executable': 'C:\\Program Files\\VideoLAN\\VLC\\vlc.exe',
             'opts': [],
-            },
+        },
     },
     'schedule': {
         'site_url': 'https://graphql.anilist.co/',
@@ -51,19 +54,19 @@ CONFIG = DEFAULT_CONFIG
 if CONFIGURATION_FILE_PATH.exists():
     with open(CONFIGURATION_FILE_PATH, 'r') as conf:
         CONFIG = merge_dicts(DEFAULT_CONFIG, json.load(conf))
-        
+
 SITE_URLS = CONFIG.get('site_urls', {})
 
-NINEANIME  = SITE_URLS.get('9anime')
-ANIME1     = SITE_URLS.get('anime1')
-ANIMEOUT   = SITE_URLS.get('animeout')
-ANIMEPAHE  = SITE_URLS.get('animepahe')
+NINEANIME = SITE_URLS.get('9anime')
+ANIME1 = SITE_URLS.get('anime1')
+ANIMEOUT = SITE_URLS.get('animeout')
+ANIMEPAHE = SITE_URLS.get('animepahe')
 ANIMIXPLAY = SITE_URLS.get('animixplay')
-GOGOANIME  = SITE_URLS.get('gogoanime')
-TENSHI  = SITE_URLS.get('tenshi')
-TWIST      = SITE_URLS.get('twist')
+GOGOANIME = SITE_URLS.get('gogoanime')
+TENSHI = SITE_URLS.get('tenshi')
+TWIST = SITE_URLS.get('twist')
 
-QUALITY    = CONFIG.get('preferred_quality')
+QUALITY = CONFIG.get('preferred_quality')
 
 DEFAULT_PLAYER = CONFIG.get('default_player')
 PLAYERS = CONFIG.get('players')

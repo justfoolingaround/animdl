@@ -16,25 +16,31 @@ from .inner import fallback_extraction
 WAF_TOKEN = re.compile(r"(\d{64})")
 WAF_SEPARATOR = re.compile(r"\w{2}")
 
-ANIME_SLUG = construct_site_based_regex(NINEANIME, extra_regex=r'/watch/[^&?/]+\.(?P<slug>[^&?/]+)')
+ANIME_SLUG = construct_site_based_regex(
+    NINEANIME, extra_regex=r'/watch/[^&?/]+\.(?P<slug>[^&?/]+)')
+
 
 def get_waf_token(session):
     with session.get(NINEANIME) as cloudflare_page:
-        return ''.join(chr(int(c, 16)) for c in WAF_SEPARATOR.findall(WAF_TOKEN.search(cloudflare_page.text).group(1)))
-    
+        return ''.join(chr(int(c, 16)) for c in WAF_SEPARATOR.findall(
+            WAF_TOKEN.search(cloudflare_page.text).group(1)))
+
+
 def fetcher(session, url, check):
-    
+
     waf = get_waf_token(session)
     slug = ANIME_SLUG.search(url).group("slug")
-    
+
     access_headers = {
         'cookie': 'waf_cv=%s' % waf,
         'referer': NINEANIME,
     }
-    
+
     with session.get(NINEANIME + "ajax/anime/servers", params={'id': slug}, headers=access_headers) as ajax_server_response:
-        data = htmlparser.fromstring(ajax_server_response.json().get('html', ''))
-        
+        data = htmlparser.fromstring(
+            ajax_server_response.json().get(
+                'html', ''))
+
     for el in data.xpath('//li/a'):
         en = int(el.get('data-base', 0))
         if check(en):

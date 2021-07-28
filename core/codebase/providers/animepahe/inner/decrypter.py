@@ -1,6 +1,7 @@
 
 CHARACTER_MAP = "0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ+/"
 
+
 def get_string(content, s1, s2):
 
     slice_2 = CHARACTER_MAP[0:s2]
@@ -15,6 +16,7 @@ def get_string(content, s1, s2):
         acc = (acc - (acc % s2)) / s2
 
     return k or '0'
+
 
 def decrypt(full_string, key, v1, v2):
     v1, v2 = int(v1), int(v2)

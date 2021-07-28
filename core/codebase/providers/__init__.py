@@ -19,38 +19,55 @@ from .twistmoe import fetcher as twist_fetcher
 
 current_providers = {
     'animixplay': {
-        'matcher': construct_site_based_regex(ANIMIXPLAY, extra_regex=r'/v\d+/([^?&/]+)'),
+        'matcher': construct_site_based_regex(
+            ANIMIXPLAY,
+            extra_regex=r'/v\d+/([^?&/]+)'),
         'fetcher': animix_fetcher,
     },
     'twist': {
-        'matcher': construct_site_based_regex(TWIST, extra_regex=r'/a/([^?&/]+)'),
+        'matcher': construct_site_based_regex(
+            TWIST,
+            extra_regex=r'/a/([^?&/]+)'),
         'fetcher': twist_fetcher,
     },
     'animepahe': {
-        'matcher': construct_site_based_regex(ANIMEPAHE, extra_regex=r'/(?:anime|play)/([^?&/]+)'),
+        'matcher': construct_site_based_regex(
+            ANIMEPAHE,
+            extra_regex=r'/(?:anime|play)/([^?&/]+)'),
         'fetcher': animepahe_fetcher,
     },
     'gogoanime': {
-        'matcher': construct_site_based_regex(GOGOANIME, extra_regex=r'/(?:([^&?/]+)-episode-\d+|category/([^&?/]+))'),
+        'matcher': construct_site_based_regex(
+            GOGOANIME,
+            extra_regex=r'/(?:([^&?/]+)-episode-\d+|category/([^&?/]+))'),
         'fetcher': gogoanime_fetcher,
     },
     '9anime': {
-        'matcher': construct_site_based_regex(NINEANIME, extra_regex=r'/watch/[^&?/]+\.([^&?/]+)'),
+        'matcher': construct_site_based_regex(
+            NINEANIME,
+            extra_regex=r'/watch/[^&?/]+\.([^&?/]+)'),
         'fetcher': nineanime_fetcher,
     },
     'anime1': {
-        'matcher': construct_site_based_regex(ANIME1, extra_regex=r'/watch/([^?&/]+)'),
+        'matcher': construct_site_based_regex(
+            ANIME1,
+            extra_regex=r'/watch/([^?&/]+)'),
         'fetcher': anime1_fetcher,
     },
     'animeout': {
-        'matcher': construct_site_based_regex(ANIMEOUT, extra_regex=r'/([^?&/]+)'),
+        'matcher': construct_site_based_regex(
+            ANIMEOUT,
+            extra_regex=r'/([^?&/]+)'),
         'fetcher': animeout_fetcher,
     },
     'tenshi': {
-        'matcher': construct_site_based_regex(TENSHI, extra_regex=r'/anime/([^?&/]+)'),
+        'matcher': construct_site_based_regex(
+            TENSHI,
+            extra_regex=r'/anime/([^?&/]+)'),
         'fetcher': tenshi_fetcher,
     },
 }
+
 
 def get_provider(url):
     for provider, provider_data in current_providers.items():

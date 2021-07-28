@@ -8,6 +8,7 @@ COLORS = {
     'ERROR': '\x1b[31m'
 }
 
+
 class LoggingFormatter(logging.Formatter):
 
     use_color = True
@@ -23,8 +24,9 @@ class LoggingFormatter(logging.Formatter):
             record.levelname = "{}{}\x1b[39m".format(color, record.levelname)
             if record.name:
                 record.name = "{}{}\x1b[39m".format(color, record.name)
-        
+
         return super().format(record)
+
 
 class Logger(logging.Logger):
     def __init__(self, name):
@@ -33,5 +35,6 @@ class Logger(logging.Logger):
         console = logging.StreamHandler()
         console.setFormatter(LoggingFormatter())
         self.addHandler(console)
+
 
 logging.setLoggerClass(Logger)
