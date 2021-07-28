@@ -33,7 +33,7 @@ def generate_download_arguments(session_dict):
         'idm': session_dict.get('idm', False),
         'auto': False,
         'index': 0,
-        'quiet': False,
+        'log_level': 20,
         'quality': QUALITY
     }
 
