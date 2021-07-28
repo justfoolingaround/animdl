@@ -8,6 +8,8 @@ from core import logger
 from core.cli.commands import download, stream, continuation, grab, schedule, test, search
 from core.cli.helpers.player import supported_streamers
 
+logger.configure_logger()
+
 commands = {
     'download': download.animdl_download,
     'continue': continuation.animdl_continue,
