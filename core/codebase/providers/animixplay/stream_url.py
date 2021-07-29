@@ -59,7 +59,7 @@ def get_stream_url(session, data_url):
             return [{'stream_url': video_on_site.group(0)}]
         url = url.url
     return [{'stream_url': b64decode(EMBED_M3U8_MATCHER.search(url).group(
-        0).encode(errors='ignore')).decode(errors='ignore'), 'quality': 'multi'}]
+        0).encode(errors='ignore')).decode(errors='ignore').replace('bestanimescdn', 'omega.kawaiifucdn.xyz/anime3'), 'quality': 'multi'}]
 
 
 def gogoanime_parser(session, data: dict, *, check=lambda *args: True):
