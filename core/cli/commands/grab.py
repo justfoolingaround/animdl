@@ -62,7 +62,7 @@ def animdl_grab(query, start, end, file, auto, index, log_level):
         stream_url = stream_url_caller()
         collected_streams.append({'episode': episode, 'streams': stream_url})
         if file:
-            logger.info('Write -> "%s"' % file, 'E%02d' % episode)
+            logger.info('{} => {!r}'.format('E%02d' % episode, file))
             try:
                 with open(file, 'w') as json_file_writer:
                     json.dump(collected_streams, json_file_writer, indent=4)
