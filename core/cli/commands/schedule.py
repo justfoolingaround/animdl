@@ -6,7 +6,104 @@ import requests
 from ...config import ANICHART, DATE_FORMAT, TIME_FORMAT
 from ..helpers import bannerify
 
-gql = "query (\n\t$weekStart: Int,\n\t$weekEnd: Int,\n\t$page: Int,\n){\n\tPage(page: $page) {\n\t\tpageInfo {\n\t\t\thasNextPage\n\t\t\ttotal\n\t\t}\n\t\tairingSchedules(\n\t\t\tairingAt_greater: $weekStart\n\t\t\tairingAt_lesser: $weekEnd\n\t\t) {\n\t\t\tid\n\t\t\tepisode\n\t\t\tairingAt\n\t\t\tmedia {\n\t\t\t\t\nid\nidMal\ntitle {\n\tromaji\n\tnative\n\tenglish\n}\nstartDate {\n\tyear\n\tmonth\n\tday\n}\nendDate {\n\tyear\n\tmonth\n\tday\n}\nstatus\nseason\nformat\ngenres\nsynonyms\nduration\npopularity\nepisodes\nsource(version: 2)\ncountryOfOrigin\nhashtag\naverageScore\nsiteUrl\ndescription\nbannerImage\nisAdult\ncoverImage {\n\textraLarge\n\tcolor\n}\ntrailer {\n\tid\n\tsite\n\tthumbnail\n}\nexternalLinks {\n\tsite\n\turl\n}\nrankings {\n\trank\n\ttype\n\tseason\n\tallTime\n}\nstudios(isMain: true) {\n\tnodes {\n\t\tid\n\t\tname\n\t\tsiteUrl\n\t}\n}\nrelations {\n\tedges {\n\t\trelationType(version: 2)\n\t\tnode {\n\t\t\tid\n\t\t\ttitle {\n\t\t\t\tromaji\n\t\t\t\tnative\n\t\t\t\tenglish\n\t\t\t}\n\t\t\tsiteUrl\n\t\t}\n\t}\n}\n\n\n\t\t\t}\n\t\t}\n\t}\n}"
+gql = """query (
+        $weekStart: Int,
+        $weekEnd: Int,
+        $page: Int,
+){
+        Page(page: $page) {
+                pageInfo {
+                        hasNextPage
+                        total
+                }
+                airingSchedules(
+                        airingAt_greater: $weekStart
+                        airingAt_lesser: $weekEnd
+                ) {
+                        id
+                        episode
+                        airingAt
+                        media {
+
+id
+idMal
+title {
+        romaji
+        native
+        english
+}
+startDate {
+        year
+        month
+        day
+}
+endDate {
+        year
+        month
+        day
+}
+status
+season
+format
+genres
+synonyms
+duration
+popularity
+episodes
+source(version: 2)
+countryOfOrigin
+hashtag
+averageScore
+siteUrl
+description
+bannerImage
+isAdult
+coverImage {
+        extraLarge
+        color
+}
+trailer {
+        id
+        site
+        thumbnail
+}
+externalLinks {
+        site
+        url
+}
+rankings {
+        rank
+        type
+        season
+        allTime
+}
+studios(isMain: true) {
+        nodes {
+                id
+                name
+                siteUrl
+        }
+}
+relations {
+        edges {
+                relationType(version: 2)
+                node {
+                        id
+                        title {
+                                romaji
+                                native
+                                english
+                        }
+                        siteUrl
+                }
+        }
+}
+
+
+                        }
+                }
+        }
+}"""
 
 
 def arrange_template(data):
