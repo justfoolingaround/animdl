@@ -59,11 +59,17 @@ def get_stream_url_from_kwik(session, adfly_url):
             2,
             3,
             4))
-    return session.post(
-        KWIK_D_URL.search(decrypted).group(1),
-        allow_redirects=False,
-        data={
-            '_token': KWIK_D_TOKEN.search(decrypted).group(1)},
-        headers={
-            'referer': f_content.url,
-            'cookie': f_content.headers.get('set-cookie')}).headers.get('location')
+
+    code = 419
+    while code != 302:
+        content = session.post(
+            KWIK_D_URL.search(decrypted).group(1),
+            allow_redirects=False,
+            data={
+                '_token': KWIK_D_TOKEN.search(decrypted).group(1)},
+            headers={
+                'referer': f_content.url,
+                'cookie': f_content.headers.get('set-cookie')})
+        code = content.status_code
+        
+    return content.headers.get('location')
