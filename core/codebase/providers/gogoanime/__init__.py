@@ -56,9 +56,6 @@ def get_stream_url(session, episode_page_url):
                             server_load.text)]
 
 def fetcher(session, url, check):
-    """
-    Fetching algorithm from [here.](https://github.com/justfoolingaround/anime-radar/blob/master/radar/datacaller/gogoanime.py)
-    """
     url = convert_to_anime_page(url)
 
     with session.get(url) as anime_page:
