@@ -25,6 +25,7 @@ DEFAULT_CONFIG = {
         'animeout': 'https://animeout.xyz/',
         'animepahe': 'https://animepahe.com/',
         'animixplay': 'https://animixplay.to/',
+        'animtime': 'https://animtime.com/',
         'gogoanime': 'https://gogoanime.ai/',
         'tenshi': 'https://tenshi.moe/',
         'twist': 'https://twist.moe/',
@@ -62,6 +63,7 @@ ANIME1 = SITE_URLS.get('anime1')
 ANIMEOUT = SITE_URLS.get('animeout')
 ANIMEPAHE = SITE_URLS.get('animepahe')
 ANIMIXPLAY = SITE_URLS.get('animixplay')
+ANIMTIME = SITE_URLS.get('animtime')
 GOGOANIME = SITE_URLS.get('gogoanime')
 TENSHI = SITE_URLS.get('tenshi')
 TWIST = SITE_URLS.get('twist')
