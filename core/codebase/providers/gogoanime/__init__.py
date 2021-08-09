@@ -50,8 +50,7 @@ def get_stream_url(session, episode_page_url):
     url = content.xpath('//li[@data-provider="serverwithtoken"]')[0].get('data-video')
 
     with session.get(url) as server_load:
-        return [{'quality': 'unknown', 'stream_url': urls.group(0), 'headers': {
-            'referer': url}} for urls in re.finditer(
+        return [{'stream_url': urls.group(0)} for urls in re.finditer(
                         r"(?<=sources:\[{file: ')[^']+",
                             server_load.text)]
 

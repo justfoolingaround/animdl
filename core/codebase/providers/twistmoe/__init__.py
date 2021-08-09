@@ -14,4 +14,4 @@ def fetcher(session, url, check):
             get_twistmoe_anime_uri(
             session, anime_name), 1):
         if check(index):
-            yield partial(lambda u: ([{'quality': 'unknown', 'stream_url': u, 'headers': {'referer': 'https://twist.moe'}}]), data.get('stream_url')), index
+            yield partial(lambda u: ([{'stream_url': u, 'headers': {'referer': 'https://twist.moe'}}]), data.get('stream_url')), index

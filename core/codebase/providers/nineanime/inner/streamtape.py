@@ -27,8 +27,7 @@ def extract(session, streamtape_uri):
         content_get_uri = "https://%s" % ''.join(regex_match.group(1, 2))
 
     with session.get(content_get_uri, allow_redirects=False, headers={'referer': streamtape_uri}) as streamtape_redirect:
-        return [{'quality': 'unknown',
-                 'stream_url': streamtape_redirect.headers.get('location')}]
+        return [{'stream_url': streamtape_redirect.headers.get('location')}]
 
 
 extract.site = "streamtape"

@@ -47,8 +47,7 @@ def extract(session, vidstream_uri):
     with session.get(info_ajax, params={'skey': skey_match.group('skey')}, headers={'referer': vidstream_uri}) as vidstream_info:
         return [
             {
-                'quality': content.get(
-                    'label', 'unknown'), 'stream_url': content.get(
+                'stream_url': content.get(
                     'file', ''), 'headers': {
                     'referer': vidstream_uri}} for content in vidstream_info.json().get(
                         'media', {}).get(

@@ -14,14 +14,14 @@ def uri_correction(mp4upload_uri):
 
 def extract_480(splitted_values):
     return {
-        'quality': splitted_values[50],
+        'quality': int(splitted_values[50]),
         'stream_url': "{4}://{18}.{3}.{1}:{70}/d/{69}/{68}.{67}".format(
             *splitted_values)}
 
 
 def extract_any(splitted_values):
     return {
-        'quality': splitted_values[53],
+        'quality': int(splitted_values[53]),
         'stream_url': "{3}://{18}.{1}.{0}:{73}/d/{72}/{71}.{70}".format(
             *splitted_values)}
 

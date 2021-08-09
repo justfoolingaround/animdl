@@ -33,8 +33,7 @@ def extract(session, mcloud_uri):
     with session.get(info_ajax, params={'skey': skey_match.group('skey')}, headers={'referer': mcloud_uri}) as mcloud_info:
         return [
             {
-                'quality': content.get(
-                    'label', 'unknown'), 'stream_url': content.get(
+                'stream_url': content.get(
                     'file', ''), 'headers': {
                     'referer': mcloud_uri}} for content in mcloud_info.json().get(
                         'media', {}).get(
