@@ -1,7 +1,7 @@
 import re
 import logging
 
-STREAMTAPE_REGEX = re.compile(r"innerHTML = \"//([^\"]+)\" \+ '([^']+)'")
+STREAMTAPE_REGEX = re.compile(r"innerHTML = \"//([^\"]+)\" \+ 'c([^']+)'")
 
 
 def uri_correction(streamtape_uri):
