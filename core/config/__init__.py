@@ -38,7 +38,7 @@ DEFAULT_CONFIG = {
             'opts': [],
         },
         'vlc': {
-            'executable': 'C:\\Program Files\\VideoLAN\\VLC\\vlc.exe',
+            'executable': 'vlc',
             'opts': [],
         },
     },
