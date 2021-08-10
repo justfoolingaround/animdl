@@ -10,7 +10,7 @@ def supported_streamers():
         if Path(
                 player_info.get('executable')).exists() or shutil.which(
                 player_info.get('executable')):
-            yield player
+            yield player, player_info
 
 
 def start_streaming_mpv(
@@ -72,8 +72,7 @@ def handle_streamer(player_opts, **kwargs):
     if not user_selection:
         return -107977
 
-    player = user_selection.pop(0)
-    player_info = PLAYERS.get(player, {})
+    player, player_info = user_selection.pop(0)
     return lambda *a, **k: start_streaming(player, player_info.get(
         'executable'), opts=player_info.get('opts', []) + (player_opts or []), *a, **k)
 
@@ -82,6 +81,6 @@ def start_streaming(player, executable, stream_url, *, headers=None, **kwargs):
     return PLAYER_MAPPING.get(player,
                               lambda *args,
                               **kwargs: False)(executable,
-                                               stream_url,
-                                               headers=headers,
+                                                stream_url,
+                                                headers=headers,
                                                **kwargs)
