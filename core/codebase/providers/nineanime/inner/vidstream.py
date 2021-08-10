@@ -3,36 +3,13 @@ from .....config import NINEANIME
 import re
 import logging
 
-
-VIDSTREAM_REGEXES = {
-    'online': {
-        'matcher': re.compile(r"(?:https?://)?(?:\S+\.)?vidstreamz\.online/(?:e|embed)/(?P<id>[A-Z0-9]+)"),
-        'info_ajax': 'https://vidstreamz.online/info/%s',
-    },
-    'pro': {
-        'matcher': re.compile(r"(?:https?://)?(?:\S+\.)?vidstream\.pro/(?:e|embed)/(?P<id>[A-Z0-9]+)"),
-        'info_ajax': 'https://vidstream.pro/info/%s',
-    },
-}
 SKEY_RE = re.compile(r"skey = '(?P<skey>[^']+)';")
-
-
-def uri_correction(vidstream_uri):
-    """
-    Compensation for the inaccuracy with url decode that occurs internally in **animdl**.
-    """
-    for content, data in VIDSTREAM_REGEXES.items():
-        match = data.get('matcher').search(vidstream_uri)
-        if match:
-            return data.get('info_ajax', '') % match.group(
-                'id'), "https://vidstream.pro/e/%s" % match.group('id')
-
 
 def extract(session, vidstream_uri):
     """
     A safe extraction for VidStream.
     """
-    info_ajax, vidstream_uri = uri_correction(vidstream_uri)
+    info_ajax = "{}/info/{}".format(*re.search('(.+)/(?:embed|e)/(.+)', vidstream_uri).group(1, 2))
     logger = logging.getLogger('9anime-vidstream-extractor')
 
     with session.get(vidstream_uri, headers={'referer': NINEANIME}) as vidstream_content:

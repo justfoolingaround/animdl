@@ -18,10 +18,10 @@ import time
 from .....config import NINEANIME
 from ..decipher import decipher as decode
 
-from .mp4upload import extract as extract_1
+from .mp4upload import extract as extract_2
 from .mycloud import extract as extract_4
-from .streamtape import extract as extract_2
-from .vidstream import extract as extract_3
+from .streamtape import extract as extract_3
+from .vidstream import extract as extract_1
 
 
 def validate_json_content_yield(
@@ -59,7 +59,8 @@ def fallback_handler(f, session, _hash_cb):
 
 
 def get_url_by_hash(session, _hash, access_headers):
-    return decode(
+    return ''.join(
+        decode(
         validate_json_content_yield(
             session,
             NINEANIME +
@@ -70,7 +71,7 @@ def get_url_by_hash(session, _hash, access_headers):
                 'id': _hash},
             headers=access_headers).get(
             'url',
-            ''))
+            '')))
 
 
 def fallback_extraction(session, content_json, access_headers):
@@ -80,19 +81,19 @@ def fallback_extraction(session, content_json, access_headers):
         session,
         lambda: get_url_by_hash(
             session,
-            content_json.get('35'),
+            content_json.get('41'),
             access_headers)) or fallback_handler(
         extract_2,
         session,
         lambda: get_url_by_hash(
             session,
-            content_json.get('40'),
+            content_json.get('35'),
             access_headers)) or fallback_handler(
         extract_3,
         session,
         lambda: get_url_by_hash(
             session,
-            content_json.get('41'),
+            content_json.get('40'),
             access_headers)) or fallback_handler(
         extract_4,
         session,
