@@ -26,7 +26,7 @@ DEFAULT_CONFIG = {
         'animepahe': 'https://animepahe.com/',
         'animixplay': 'https://animixplay.to/',
         'animtime': 'https://animtime.com/',
-        'gogoanime': 'https://gogoanime.ai/',
+        'gogoanime': 'https://gogoanime.pe/',
         'tenshi': 'https://tenshi.moe/',
         'twist': 'https://twist.moe/',
     },
