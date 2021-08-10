@@ -28,7 +28,7 @@ def extract(session, vidstream_uri):
                     'file', ''), 'headers': {
                     'referer': vidstream_uri}} for content in vidstream_info.json().get(
                         'media', {}).get(
-                            'sources', [])]
+                            'sources', []) if not content.get('file', '').endswith('m3u8')]
 
 
 extract.site = "vidstream"
