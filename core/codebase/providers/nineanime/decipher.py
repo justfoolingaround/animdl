@@ -3,7 +3,7 @@ import base64
 
 def decipher(encrypted_url: str):
 
-    s1, s2 = encrypted_url[:9], encrypted_url[9:]
+    s1, s2 = encrypted_url[:16], encrypted_url[16:]
     
     decrypted = unquote(''.join(chr(x) for x in base64.b64decode(s2)))
     mapper = {byte_index: byte_index for byte_index in range(0x100)}
