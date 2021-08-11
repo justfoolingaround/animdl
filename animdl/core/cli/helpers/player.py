@@ -81,6 +81,6 @@ def start_streaming(player, executable, stream_url, *, headers=None, **kwargs):
     return PLAYER_MAPPING.get(player,
                               lambda *args,
                               **kwargs: False)(executable,
-                                                stream_url,
-                                                headers=headers,
+                                               stream_url,
+                                               headers=headers,
                                                **kwargs)

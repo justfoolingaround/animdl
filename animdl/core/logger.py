@@ -36,5 +36,6 @@ class Logger(logging.Logger):
         console.setFormatter(LoggingFormatter())
         self.addHandler(console)
 
+
 def configure_logger(logger_class=Logger):
     logging.setLoggerClass(logger_class)

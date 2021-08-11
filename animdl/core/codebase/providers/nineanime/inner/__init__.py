@@ -61,17 +61,17 @@ def fallback_handler(f, session, _hash_cb):
 def get_url_by_hash(session, _hash, access_headers):
     return ''.join(
         decode(
-        validate_json_content_yield(
-            session,
-            NINEANIME +
-            "ajax/anime/episode",
-            ensurer=lambda r: json.loads(
-                r.text).get('url'),
-            params={
-                'id': _hash},
-            headers=access_headers).get(
-            'url',
-            '')))
+            validate_json_content_yield(
+                session,
+                NINEANIME +
+                "ajax/anime/episode",
+                ensurer=lambda r: json.loads(
+                    r.text).get('url'),
+                params={
+                    'id': _hash},
+                headers=access_headers).get(
+                'url',
+                '')))
 
 
 def fallback_extraction(session, content_json, access_headers):

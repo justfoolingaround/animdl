@@ -8,24 +8,20 @@
 
 ## Installation
 
-### Installing [animdl](https://github.com/justfoolingaround/animdl)
+Installing [**animdl**] can be done using:
 
-AnimDL has 3 versions that can be used, a [stable version](https://github.com/justfoolingaround/animdl-install) that can be installed via Python PIP, the release version which is much standalone and an unstable version that gets code modification almost daily for immediate bug fixing.
+```sh
 
-The stable version can be installed with the following command:
-
-```
-pip install git+https://github.com/justfoolingaround/animdl-install
-```
-
-The unstable version can be installed by cloning / downloading the repository with the following command in the working directory (if you are on Windows then make sure that you have [git](https://gitforwindows.org/) installed):
+py -m pip install git+https://www.github.com/justfoolingaround/animdl
 
 ```
-# Clone the repo
-git clone https://github.com/justfoolingaround/animdl 
 
-# Install all the dependencies
-pip install -r requirements.txt 
+Note that you need to have git installed, else, you would need to download the repository and then, use:
+
+```sh
+
+py -m pip install .
+
 ```
 
 **Support:** Python 3.6 and higher

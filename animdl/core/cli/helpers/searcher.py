@@ -93,6 +93,7 @@ def search_twist(session, query):
         if searcher(query, anime):
             yield {'anime_url': TWIST_URL_CONTENT + anime.get('slug', {}).get('slug'), 'name': anime.get('title', '')}
 
+
 def search_tenshi(session, query):
     with session.get(TENSHI) as tenshi_page:
         session_id = tenshi_page.cookies.get('tenshimoe_session')

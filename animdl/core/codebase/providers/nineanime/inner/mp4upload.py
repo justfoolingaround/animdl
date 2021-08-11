@@ -3,6 +3,7 @@ import logging
 
 MP4UPLOAD_REGEX = re.compile(r"player\|(.*)\|videojs")
 
+
 def extract_480(splitted_values):
     return {
         'quality': int(splitted_values[50]),

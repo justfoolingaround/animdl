@@ -4,9 +4,9 @@ A one cli for all the anime.
 
 import click
 
-from core import logger
-from core.cli.commands import download, stream, continuation, grab, schedule, test, search
-from core.cli.helpers.player import supported_streamers
+from .core import logger
+from .core.cli.commands import download, stream, continuation, grab, schedule, test, search
+from .core.cli.helpers.player import supported_streamers
 
 logger.configure_logger()
 

@@ -18,7 +18,8 @@ def extract(session, mcloud_uri):
     """
     A safe extraction for MyCloud.
     """
-    info_ajax = "{}/info/{}".format(*re.search('(.+)/(?:embed|e)/(.+)', mcloud_uri).group(1, 2))
+    info_ajax = "{}/info/{}".format(*re.search(
+        '(.+)/(?:embed|e)/(.+)', mcloud_uri).group(1, 2))
     logger = logging.getLogger('9anime-mycloud-extractor')
 
     with session.get(mcloud_uri, headers={'referer': NINEANIME}) as mcloud_content:

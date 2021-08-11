@@ -5,11 +5,13 @@ import logging
 
 SKEY_RE = re.compile(r"skey = '(?P<skey>[^']+)';")
 
+
 def extract(session, vidstream_uri):
     """
     A safe extraction for VidStream.
     """
-    info_ajax = "{}/info/{}".format(*re.search('(.+)/(?:embed|e)/(.+)', vidstream_uri).group(1, 2))
+    info_ajax = "{}/info/{}".format(*re.search(
+        '(.+)/(?:embed|e)/(.+)', vidstream_uri).group(1, 2))
     logger = logging.getLogger('9anime-vidstream-extractor')
 
     with session.get(vidstream_uri, headers={'referer': NINEANIME}) as vidstream_content:

@@ -38,15 +38,15 @@ def get_embed(session, data_url):
 
     while resp != 200:
         embed_page = session.get(
-                EMBED_URL_BASE.format(
-                    b64encode(
-                        b"%sLTXs3GrU8we9O%s" %
-                        (content_id,
-                        b64encode(content_id))).decode(
-                        errors='ignore')),
-                headers={
-                    'user-agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.166 Safari/537.36'},
-                allow_redirects=True)
+            EMBED_URL_BASE.format(
+                b64encode(
+                    b"%sLTXs3GrU8we9O%s" %
+                    (content_id,
+                     b64encode(content_id))).decode(
+                    errors='ignore')),
+            headers={
+                'user-agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.166 Safari/537.36'},
+            allow_redirects=True)
         resp = embed_page.status_code
     return embed_page
 

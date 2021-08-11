@@ -3,6 +3,7 @@ import logging
 
 STREAMTAPE_REGEX = re.compile(r"innerHTML = \"//([^\"]+)\" \+ 'c([^']+)'")
 
+
 def extract(session, streamtape_uri):
     """
     A safe extraction for Streamtape.
