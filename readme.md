@@ -8,7 +8,7 @@
 
 ## Installation
 
-Installing [**animdl**] can be done using:
+Installation of [**animdl**](https://www.github.com/justfoolingaround/animdl) can be done using:
 
 ```sh
 
