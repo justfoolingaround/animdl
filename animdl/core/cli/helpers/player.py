@@ -67,12 +67,14 @@ PLAYER_MAPPING = {
 
 def handle_streamer(player_opts, **kwargs):
     supported = [*supported_streamers()]
-    user_selection = [k for k, v in kwargs.items() if v and k in supported]
+    user_selection = [k for k, v in kwargs.items() if v and any(k == p for p, _ in supported)]
 
     if not user_selection:
         return -107977
-
-    player, player_info = user_selection.pop(0)
+    
+    player = user_selection.pop(0)
+    player_info = PLAYERS.get(player)
+    
     return lambda *a, **k: start_streaming(player, player_info.get(
         'executable'), opts=player_info.get('opts', []) + (player_opts or []), *a, **k)
 
