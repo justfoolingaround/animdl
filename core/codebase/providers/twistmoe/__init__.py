@@ -1,5 +1,4 @@
 from functools import partial
-import re
 
 from .stream_url import *
 

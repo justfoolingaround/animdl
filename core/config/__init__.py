@@ -21,7 +21,6 @@ DEFAULT_CONFIG = {
     'default_provider': '9anime',
     'site_urls': {
         '9anime': 'https://9anime.to/',
-        'anime1': 'https://www.anime1.com/',
         'animeout': 'https://animeout.xyz/',
         'animepahe': 'https://animepahe.com/',
         'animixplay': 'https://animixplay.to/',
@@ -59,7 +58,6 @@ if CONFIGURATION_FILE_PATH.exists():
 SITE_URLS = CONFIG.get('site_urls', {})
 
 NINEANIME = SITE_URLS.get('9anime')
-ANIME1 = SITE_URLS.get('anime1')
 ANIMEOUT = SITE_URLS.get('animeout')
 ANIMEPAHE = SITE_URLS.get('animepahe')
 ANIMIXPLAY = SITE_URLS.get('animixplay')

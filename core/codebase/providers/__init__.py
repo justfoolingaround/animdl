@@ -4,11 +4,10 @@ All the current providers that are made available in AnimDL.
 The fetcher function must take session, url and check parameters to work.
 """
 
-from ...config import (ANIME1, ANIMEOUT, ANIMEPAHE, ANIMIXPLAY, ANIMTIME,
+from ...config import (ANIMEOUT, ANIMEPAHE, ANIMIXPLAY, ANIMTIME,
                        GOGOANIME, NINEANIME, TENSHI, TWIST)
 from ..helper import construct_site_based_regex
 
-from .anime1 import fetcher as anime1_fetcher
 from .animepahe import fetcher as animepahe_fetcher
 from .animeout import fetcher as animeout_fetcher
 from .animixplay import fetcher as animix_fetcher
@@ -48,12 +47,6 @@ current_providers = {
             NINEANIME,
             extra_regex=r'/watch/[^&?/]+\.([^&?/]+)'),
         'fetcher': nineanime_fetcher,
-    },
-    'anime1': {
-        'matcher': construct_site_based_regex(
-            ANIME1,
-            extra_regex=r'/watch/([^?&/]+)'),
-        'fetcher': anime1_fetcher,
     },
     'animeout': {
         'matcher': construct_site_based_regex(

@@ -28,7 +28,6 @@ def animdl_test(x, e, log_level):
     session = requests.Session()
     SITE_LIST = {
         '9anime': 'https://9anime.to/watch/one-piece.ov8',
-        'anime1': 'https://www.anime1.com/watch/one-piece',
         'animepahe': session.get(
             'https://pahe.win/a/4',
             allow_redirects=False).headers.get(
@@ -37,7 +36,7 @@ def animdl_test(x, e, log_level):
         'animeout': 'https://www.animeout.xyz/download-one-piece-episodes-latest/',
         'animixplay': 'https://animixplay.to/v1/one-piece',
         'animtime': 'https://animtime.com/title/5',
-        'gogoanime': 'https://gogoanime.ai/category/one-piece',
+        'gogoanime': 'https://gogoanime.pe/category/one-piece',
         'tenshi': 'https://tenshi.moe/anime/kjfrhu3s',
         'twist': 'https://twist.moe/a/one-piece',
     }

@@ -10,8 +10,6 @@ from ...config import *
 
 NINEANIME_URL_SEARCH = NINEANIME + "search"
 
-ANIME1_SEARCH_AJAX = ANIME1 + "/home/default/"
-
 ANIMEPAHE_URL_CONTENT = ANIMEPAHE + "anime/%s"
 ANIMEPAHE_URL_SEARCH_AJAX = ANIMEPAHE + "api"
 
@@ -95,15 +93,6 @@ def search_twist(session, query):
         if searcher(query, anime):
             yield {'anime_url': TWIST_URL_CONTENT + anime.get('slug', {}).get('slug'), 'name': anime.get('title', '')}
 
-
-def search_anime1(session, query):
-    with session.get(ANIME1_SEARCH_AJAX, params={'query': query}, headers={'x-requested-with': 'XMLHttpRequest'}, verify=False) as api_content:
-        results = api_content.json()
-
-    for slug, name in zip(results.get('data'), results.get('suggestions')):
-        yield {'anime_url': ANIME1 + "watch/" + slug, 'name': name}
-
-
 def search_tenshi(session, query):
     with session.get(TENSHI) as tenshi_page:
         session_id = tenshi_page.cookies.get('tenshimoe_session')
@@ -119,7 +108,6 @@ def search_tenshi(session, query):
 
 link = {
     '9anime': search_9anime,
-    'anime1': search_anime1,
     'animepahe': search_animepahe,
     'animeout': search_animeout,
     'animixplay': search_animixplay,
