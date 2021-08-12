@@ -40,7 +40,6 @@ def generate_download_arguments(session_dict):
 
 def generate_stream_arguments(session_dict):
     download_args = generate_download_arguments(session_dict)
-    download_args.pop('end', '')
     download_args.pop('idm', '')
     download_args.pop('quality', '')
     return {**download_args, 'player_opts': [], 'mpv': True, 'vlc': False}

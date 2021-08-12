@@ -40,6 +40,13 @@ def quality_prompt(stream_list, provider):
               default=0,
               show_default=False,
               type=int)
+@click.option('-e',
+              '--end',
+              help="A integer that determines where to end the downloading at.",
+              required=False,
+              default=0,
+              show_default=False,
+              type=int)
 @click.option('-t',
               '--title',
               help="Optional title for the anime if the query is a direct URL.",
@@ -85,6 +92,7 @@ def animdl_stream(
         query,
         anonymous,
         start,
+        end,
         title,
         filler_list,
         offset,
@@ -100,6 +108,8 @@ def animdl_stream(
     """
     Streamer call for animdl streaming session.
     """
+    end = end or float('inf')
+
     session = requests.Session()
     logger = logging.getLogger('animdl-streamer-core')
     streamer = handle_streamer(
@@ -149,7 +159,7 @@ def animdl_stream(
     streams = [
         *
         anime_associator.raw_fetch_using_check(
-            lambda x: check(x) and x >= (
+            lambda x: check(x) and end >= x >= (
                 start if start >= 0 else 0))]
     if start < 0:
         start += len(streams) + 1
