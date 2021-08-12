@@ -42,7 +42,7 @@ def quality_prompt(stream_list, provider):
               type=int)
 @click.option('-e',
               '--end',
-              help="A integer that determines where to end the downloading at.",
+              help="A integer that determines where to end the streaming at.",
               required=False,
               default=0,
               show_default=False,
