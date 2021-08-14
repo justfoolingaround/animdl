@@ -122,7 +122,7 @@ Commands:
 
 | Website | Searcher Prefix | Available Qualities | Status | Content Fetch Speed <br> (Per Episode) | Content Extension |
 | ------- | ---------------- | ------------------- | ------ | ------------------ | ----------------- |
-| [9Anime](https://9anime.to/) | `9anime` | 720p, 1080p | <p align="center"><code><img height="20" src="https://i.imgur.com/tG9nb8s.png"></code></p> | <p align="center">3.27s</p>   | MP4 / TS  | 
+| [9Anime](https://9anime.to/) | `9anime` | 720p, 1080p | <p align="center"><code><img height="20" src="https://i.imgur.com/bTLO7LJ.png"></code></p> | <p align="center">3.27s</p>   | MP4 / TS  | 
 | [AnimePahe](https://www.animepahe.com/) | `animepahe` | 720p, 1080p | <p align="center"><code><img height="20" src="https://i.imgur.com/tG9nb8s.png"></code></p> | <p align="center">4.15s</p>  | MP4 | 
 | [AnimeOut](https://www.animeout.xyz/) | `animeout` | 720p, 1080p | <p align="center"><code><img height="20" src="https://i.imgur.com/tG9nb8s.png"></code></p> | <p align="center">0s</p>  | MKV | 
 | [Animixplay](https://www.animixplay.to/) | `animixplay` | 480p, 720p, 1080p | <p align="center"><a href="javascript:alert('Cloudflare; unlikely to get fixed!')"><code><img height="20" src="https://i.imgur.com/bTLO7LJ.png"></code></a></p> | <p align="center">4.17s</p>  | MP4 / TS |
