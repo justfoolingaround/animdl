@@ -1,4 +1,3 @@
-import json
 import re
 from functools import partial
 
@@ -37,6 +36,11 @@ def convert_to_anime_page(url):
         return SITE_URL + "/category/%s" % match.group(1)
     return url
 
+def get_quality(url_text):
+    match = re.search(r'(\d+)P', url_text)
+    if not match:
+        return None
+    return int(match.group(1))
 
 def get_stream_url(session, episode_page_url):
 
@@ -46,16 +50,11 @@ def get_stream_url(session, episode_page_url):
     streaming = content_parsed.xpath(
         '//div[@class="play-video"]/iframe')[0].get('src')
 
-    with session.get('https:%s' % streaming) as response:
+    with session.get('https:%s' % streaming.replace('streaming.php', 'download'), headers={'referer': "https:{}".format(streaming)}) as response:
         content = htmlparser.fromstring(response.text)
 
-    url = content.xpath(
-        '//li[@data-provider="serverwithtoken"]')[0].get('data-video')
-
-    with session.get(url) as server_load:
-        return [{'stream_url': urls.group(0)} for urls in re.finditer(
-            r"(?<=sources:\[{file: ')[^']+",
-            server_load.text)]
+    return [{'quality': get_quality(url.text_content()), 'stream_url': url.get('href'), 'headers': {'referer': response.url}} for url in content.xpath(
+        '//div[@class="dowload"]/a[@download]')]
 
 
 def fetcher(session, url, check):
