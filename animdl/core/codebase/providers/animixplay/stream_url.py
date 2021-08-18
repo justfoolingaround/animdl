@@ -22,10 +22,7 @@ def from_site_url(session, url) -> dict:
     """
     return json.loads(
         htmlparser.fromstring(
-            session.get(
-                url,
-                headers={
-                    'user-agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.166 Safari/537.36'}).content).xpath('//div[@id="epslistplace"]')[0].text)
+            session.get(url).content).xpath('//div[@id="epslistplace"]')[0].text)
 
 
 def get_embed(session, data_url):
@@ -44,8 +41,6 @@ def get_embed(session, data_url):
                     (content_id,
                      b64encode(content_id))).decode(
                     errors='ignore')),
-            headers={
-                'user-agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.166 Safari/537.36'},
             allow_redirects=True)
         resp = embed_page.status_code
     return embed_page
@@ -58,7 +53,8 @@ def get_stream_url(session, data_url):
         if video_on_site:
             return [{'stream_url': video_on_site.group(0)}]
         url = url.url
-    return [{'stream_url': b64decode(EMBED_M3U8_MATCHER.search(url).group(
+
+    return [{'stream_url': b64decode(EMBED_M3U8_MATCHER.search(str(url)).group(
         0).encode(errors='ignore')).decode(errors='ignore').replace('bestanimescdn', 'omega.kawaiifucdn.xyz/anime3'), 'quality': 'multi'}]
 
 

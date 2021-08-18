@@ -61,16 +61,14 @@ def search_animeout(session, query):
 
 
 def search_animixplay(session, query):
-    with session.get(GOGOANIME_URL_SEARCH, params={'keyword': query}) as gogoanime_results:
-        parsed = htmlparser.fromstring(gogoanime_results.text)
+    parsed = htmlparser.fromstring(session.get(GOGOANIME_URL_SEARCH, params={'keyword': query}).text)
 
     for results in parsed.xpath('//p[@class="name"]/a'):
         yield {'anime_url': ANIMIXPLAY + "v1" + results.get('href')[9:], 'name': results.get('title')}
 
 
 def search_gogoanime(session, query):
-    with session.get(GOGOANIME_URL_SEARCH, params={'keyword': query}) as gogoanime_results:
-        parsed = htmlparser.fromstring(gogoanime_results.text)
+    parsed = htmlparser.fromstring(session.get(GOGOANIME_URL_SEARCH, params={'keyword': query}).text)
 
     for results in parsed.xpath('//p[@class="name"]/a'):
         yield {'anime_url': GOGOANIME.strip('/') + results.get('href'), 'name': results.get('title')}

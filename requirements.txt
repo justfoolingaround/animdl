@@ -1,5 +1,6 @@
 click
 comtypes
+httpx
 lxml
 tqdm
 requests
