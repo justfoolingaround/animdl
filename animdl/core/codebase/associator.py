@@ -1,9 +1,7 @@
-from .providers import get_appropriate
-from .helper import append_protocol
-import requests
-from urllib3.exceptions import InsecureRequestWarning
+import httpx
 
-requests.packages.urllib3.disable_warnings(category=InsecureRequestWarning)
+from .helper import append_protocol
+from .providers import get_appropriate
 
 
 class Associator(object):
@@ -14,7 +12,7 @@ class Associator(object):
     def __init__(self, uri, afl_uri=None, *, session=None):
         self.url = append_protocol(uri)
         self.filler_list = afl_uri
-        self.session = session or requests.Session()
+        self.session = session or httpx.Client()
 
     def raw_fetch_using_check(self, check):
         yield from get_appropriate(self.session, self.url, check=check)

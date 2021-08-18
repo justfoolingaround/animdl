@@ -17,7 +17,6 @@ setup(
         'httpx',
         'lxml',
         'tqdm',
-        'requests',
         'pycryptodomex',
     ],
     entry_points='''

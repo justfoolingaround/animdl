@@ -1,7 +1,7 @@
 import logging
 
 import click
-import requests
+import httpx
 
 from ...codebase import Associator
 from ..helpers import bannerify, to_stdout
@@ -25,7 +25,7 @@ from ..helpers import bannerify, to_stdout
               default=20)
 @bannerify
 def animdl_test(x, e, log_level):
-    session = requests.Session()
+    session = httpx.Client()
     SITE_LIST = {
         '9anime': 'https://9anime.to/watch/one-piece.ov8',
         'animepahe': session.get(

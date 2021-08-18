@@ -2,7 +2,6 @@ from Cryptodome.Cipher import AES
 from hashlib import md5
 
 from base64 import b64decode
-import requests
 
 TWISTMOE_SECRET = b'267041df55ca2b36f2e322d05ee2c9cf'
 
@@ -33,11 +32,11 @@ def decipher(encoded_url: str):
         s1[16:])).decode('utf-8', 'ignore').lstrip(' ')
 
 
-def __internal_get_uri(stream_url):
+def __internal_get_uri(session, stream_url):
     """
     Sadly this has no need but since it references previous algorithm, this shall remain unremoved from the code itself.
     """
-    return requests.get(
+    return session.get(
         stream_url,
         headers={
             'referer': 'https://twist.moe'},

@@ -17,8 +17,8 @@ def get_episode_list(session, anime_id):
     """
     Fetch all the episodes' url from GogoAnime using.
     """
-    with session.get(EPISODE_LOAD_AJAX, params={'ep_start': '0', 'ep_end': '2000', 'id': anime_id, }) as episode_page:
-        content = htmlparser.fromstring(episode_page.text)
+    episode_page = session.get(EPISODE_LOAD_AJAX, params={'ep_start': '0', 'ep_end': '2000', 'id': anime_id, })
+    content = htmlparser.fromstring(episode_page.text)
 
     for episode in content.xpath('//ul[@id="episode_related"]/li/a'):
         yield SITE_URL + episode.get('href', '').strip()
@@ -44,14 +44,14 @@ def get_quality(url_text):
 
 def get_stream_url(session, episode_page_url):
 
-    with session.get(episode_page_url) as response:
-        content_parsed = htmlparser.fromstring(response.text)
+    response = session.get(episode_page_url)
+    content_parsed = htmlparser.fromstring(response.text)
 
     streaming = content_parsed.xpath(
         '//div[@class="play-video"]/iframe')[0].get('src')
 
-    with session.get('https:%s' % streaming.replace('streaming.php', 'download'), headers={'referer': "https:{}".format(streaming)}) as response:
-        content = htmlparser.fromstring(response.text)
+    response = session.get('https:%s' % streaming.replace('streaming.php', 'download'), headers={'referer': "https:{}".format(streaming)})
+    content = htmlparser.fromstring(response.text)
 
     return [{'quality': get_quality(url.text_content()), 'stream_url': url.get('href'), 'headers': {'referer': response.url}} for url in content.xpath(
         '//div[@class="dowload"]/a[@download]')]
@@ -60,8 +60,8 @@ def get_stream_url(session, episode_page_url):
 def fetcher(session, url, check):
     url = convert_to_anime_page(url)
 
-    with session.get(url) as anime_page:
-        content_id = get_anime_id(htmlparser.fromstring(anime_page.text))
+    anime_page = session.get(url)
+    content_id = get_anime_id(htmlparser.fromstring(anime_page.text))
 
     episodes = reversed([*get_episode_list(session, content_id)])
 

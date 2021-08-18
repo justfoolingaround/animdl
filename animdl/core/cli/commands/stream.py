@@ -1,7 +1,7 @@
 import logging
 
 import click
-import requests
+import httpx
 
 from ...codebase import Associator, get_filler_list
 from ...config import DEFAULT_PLAYER, SESSION_FILE
@@ -110,7 +110,7 @@ def animdl_stream(
     """
     end = end or float('inf')
 
-    session = requests.Session()
+    session = httpx.Client()
     logger = logging.getLogger('animdl-streamer-core')
     streamer = handle_streamer(
         click.parser.split_arg_string(

@@ -2,7 +2,7 @@ import json as json_
 import logging
 
 import click
-import requests
+import httpx
 
 from ...config import DEFAULT_PROVIDER
 from ..helpers import bannerify, to_stdout
@@ -26,7 +26,7 @@ from ..helpers.searcher import link
 @bannerify
 def animdl_search(query, json, provider, log_level):
     logger = logging.getLogger('animdl-searcher')
-    session = requests.Session()
+    session = httpx.Client()
 
     if provider not in link:
         logger.critical(

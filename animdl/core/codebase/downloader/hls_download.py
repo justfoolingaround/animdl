@@ -2,7 +2,7 @@ import logging
 import re
 import time
 
-import requests
+import httpx
 from Cryptodome.Cipher import AES
 
 from ...config import AUTO_RETRY, QUALITY
@@ -107,16 +107,16 @@ def hls_yield(session, q_dicts, preferred_quality=QUALITY):
         logging.warning('Could not find the quality {}, falling back to {}.'.format(
             preferred_quality, second_selection.get('quality') or "an unknown quality."))
 
-    with session.get(second_selection.get('stream_url'), headers=headers, verify=ssl_verification) as m3u8_response:
-        m3u8_data = m3u8_response.text
+    m3u8_response = session.get(second_selection.get('stream_url'), headers=headers, verify=ssl_verification)
+    m3u8_data = m3u8_response.text
 
     encryption_uri, encryption_iv, encryption_data = None, None, b''
     encryption_state = not unencrypted(m3u8_data)
 
     if encryption_state:
         encryption_uri, encryption_iv = extract_encryption(m3u8_data)
-        with session.get(encryption_uri, headers=headers, verify=ssl_verification) as encryption_key_response:
-            encryption_data = encryption_key_response.content
+    encryption_key_response = session.get(encryption_uri, headers=headers, verify=ssl_verification)
+    encryption_data = encryption_key_response.content
 
     all_ts = TS_EXTENSION_REGEX.findall(m3u8_data)
     last_yield = 0
@@ -128,14 +128,14 @@ def hls_yield(session, q_dicts, preferred_quality=QUALITY):
 
         while last_yield != c:
             try:
-                with session.get(ts_uris, headers=headers, verify=ssl_verification) as ts_response:
-                    ts_data = ts_response.content
-                    if encryption_state:
-                        ts_data = get_decrypter(
-                            encryption_data, iv=encryption_iv or b'')(ts_data)
-                    yield {'bytes': ts_data, 'total': len(all_ts), 'current': c}
+                ts_response = session.get(ts_uris, headers=headers, verify=ssl_verification)
+                ts_data = ts_response.content
+                if encryption_state:
+                    ts_data = get_decrypter(
+                        encryption_data, iv=encryption_iv or b'')(ts_data)
+                yield {'bytes': ts_data, 'total': len(all_ts), 'current': c}
                 last_yield = c
-            except requests.RequestException as e:
+            except httpx.HTTPError as e:
                 logger.error(
                     'HLS downloading error due to "{!r}", retrying.'.format(e))
                 time.sleep(AUTO_RETRY)

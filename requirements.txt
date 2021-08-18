@@ -3,5 +3,4 @@ comtypes
 httpx
 lxml
 tqdm
-requests
 pycryptodomex

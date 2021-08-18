@@ -37,8 +37,8 @@ def validate_json_content_yield(
     c = False
     while not c:
         time.sleep(.3)
-        with session.get(url, **session_kwargs) as response:
-            c = response.ok and ensurer(response)
+        response = session.get(url, **session_kwargs)
+        c = response.ok and ensurer(response)
         max_tries -= 1
         if not max_tries:
             raise Exception(

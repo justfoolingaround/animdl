@@ -25,14 +25,14 @@ def get_content(url, js_content):
 
 
 def fetcher(session, url, check):
-    with session.get(url) as animtime_page:
-        scripts = htmlparser.fromstring(animtime_page.text).xpath('//script')
+    animtime_page = session.get(url)
+    scripts = htmlparser.fromstring(animtime_page.text).xpath('//script')
 
     main = get_first_item(scripts, lambda e: e.get(
         'src', '').startswith('main')).get('src')
 
-    with session.get(ANIMTIME + main) as mainjs:
-        content = mainjs.text
+    mainjs = session.get(ANIMTIME + main)
+    content = mainjs.text
 
     content = content[content.index('tm=function(t)'):]
 

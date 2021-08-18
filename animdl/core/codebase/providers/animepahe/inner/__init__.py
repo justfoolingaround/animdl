@@ -68,7 +68,7 @@ def get_stream_url_from_kwik(session, adfly_url):
             data={
                 '_token': KWIK_D_TOKEN.search(decrypted).group(1)},
             headers={
-                'referer': f_content.url,
+                'referer': str(f_content.url),
                 'cookie': f_content.headers.get('set-cookie')})
         code = content.status_code
 

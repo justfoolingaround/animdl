@@ -1,7 +1,7 @@
 import re
 import time
 
-import requests
+import httpx
 from tqdm import tqdm
 
 from ...config import AUTO_RETRY, QUALITY
@@ -32,7 +32,7 @@ def absolute_extension_determination(url):
 def single_threaded_download(url, _path, tqdm_bar_init, headers):
     logger = logging.getLogger("Download @ ".format(_path.stem))
 
-    session = requests.Session()
+    session = httpx.Client()
     verify = headers.pop('ssl_verification', True)
     response_headers = session.head(
         url,
@@ -58,7 +58,7 @@ def single_threaded_download(url, _path, tqdm_bar_init, headers):
                     d += size
                     tqdm_bar.update(size)
                     sw.write(chunks)
-            except requests.RequestException as e:
+            except httpx.HTTPError as e:
                 """
                 A delay to avoid rate-limit(s).
                 """
@@ -75,7 +75,7 @@ def hls_download(
         _tqdm=True,
         preferred_quality=QUALITY):
 
-    session = requests.Session()
+    session = httpx.Client()
     _tqdm_bar = None
 
     with open(_path, 'ab') as sw:

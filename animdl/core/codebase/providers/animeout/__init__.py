@@ -15,8 +15,8 @@ def group_episodes(contents):
 
 
 def fetcher(session, url, check):
-    with session.get(url) as animeout_page:
-        parsed = htmlparser.fromstring(animeout_page.text)
+    animeout_page = session.get(url)
+    parsed = htmlparser.fromstring(animeout_page.text)
 
     for episode, content in sorted(group_episodes([index_by_url(unquote(_.get(
             'href'))) for _ in parsed.xpath('//article//a') if "Download" in _.text_content()]).items()):

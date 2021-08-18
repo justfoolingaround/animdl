@@ -32,12 +32,12 @@ WAF_SEPARATOR = re.compile(r"\w{2}")
 
 
 def search_9anime(session, query):
-    with session.get(NINEANIME) as cloudflare_page:
-        waf_token = ''.join(chr(int(c, 16)) for c in WAF_SEPARATOR.findall(
-            WAF_TOKEN.search(cloudflare_page.text).group(1)))
+    cloudflare_page = session.get(NINEANIME)
+    waf_token = ''.join(chr(int(c, 16)) for c in WAF_SEPARATOR.findall(
+                WAF_TOKEN.search(cloudflare_page.text).group(1)))
 
-    with session.get(NINEANIME_URL_SEARCH, params={'keyword': query}, headers={'cookie': 'waf_cv=%s' % waf_token}) as nineanime_results:
-        parsed = htmlparser.fromstring(nineanime_results.text)
+    nineanime_results = session.get(NINEANIME_URL_SEARCH, params={'keyword': query}, headers={'cookie': 'waf_cv=%s' % waf_token})
+    parsed = htmlparser.fromstring(nineanime_results.text)
 
     for results in parsed.xpath(
             '//ul[@class="anime-list"]/li/a[@class="name"]'):
@@ -45,16 +45,16 @@ def search_9anime(session, query):
 
 
 def search_animepahe(session, query):
-    with session.get(ANIMEPAHE_URL_SEARCH_AJAX, params={'q': query, 'm': 'search'}) as animepahe_results:
-        content = animepahe_results.json()
+    animepahe_results = session.get(ANIMEPAHE_URL_SEARCH_AJAX, params={'q': query, 'm': 'search'})
+    content = animepahe_results.json()
 
     for results in content.get('data', []):
         yield {'anime_url': ANIMEPAHE_URL_CONTENT % results.get('session'), 'name': results.get('title')}
 
 
 def search_animeout(session, query):
-    with session.get(ANIMEOUT, params={'s': query}) as animeout_results:
-        content = htmlparser.fromstring(animeout_results.text)
+    animeout_results = session.get(ANIMEOUT, params={'s': query})
+    content = htmlparser.fromstring(animeout_results.text)
 
     for result in content.xpath('//h3[@class="post-title entry-title"]/a'):
         yield {'anime_url': result.get('href'), 'name': result.text_content()}
@@ -75,8 +75,8 @@ def search_gogoanime(session, query):
 
 
 def search_twist(session, query):
-    with session.get(TWIST_URL_CONTENT_API, headers={'x-access-token': '0df14814b9e590a1f26d3071a4ed7974'}) as content:
-        animes = content.json()
+    content = session.get(TWIST_URL_CONTENT_API, headers={'x-access-token': '0df14814b9e590a1f26d3071a4ed7974'})
+    animes = content.json()
 
     def searcher(
         q, content): return any(
@@ -93,13 +93,13 @@ def search_twist(session, query):
 
 
 def search_tenshi(session, query):
-    with session.get(TENSHI) as tenshi_page:
-        session_id = tenshi_page.cookies.get('tenshimoe_session')
-        token = htmlparser.fromstring(tenshi_page.text).xpath(
-            '//meta[@name="csrf-token"]')[0].get('content')
+    tenshi_page = session.get(TENSHI)
+    session_id = tenshi_page.cookies.get('tenshimoe_session')
+    token = htmlparser.fromstring(tenshi_page.text).xpath(
+                '//meta[@name="csrf-token"]')[0].get('content')
 
-    with session.post(TENSHI_URL_SEARCH_POST, data={'q': query}, headers={'x-requested-with': 'XMLHttpRequest', 'x-csrf-token': token, 'referer': 'https://tenshi.moe/', 'cookie': 'tenshimoe_session={}'.format(session_id)}) as ajax_content:
-        results = ajax_content.json()
+    ajax_content = session.post(TENSHI_URL_SEARCH_POST, data={'q': query}, headers={'x-requested-with': 'XMLHttpRequest', 'x-csrf-token': token, 'referer': 'https://tenshi.moe/', 'cookie': 'tenshimoe_session={}'.format(session_id)})
+    results = ajax_content.json()
 
     for result in results:
         yield {'name': result.get('title'), 'anime_url': result.get('url')}

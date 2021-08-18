@@ -22,17 +22,17 @@ def extract(session, mcloud_uri):
         '(.+)/(?:embed|e)/(.+)', mcloud_uri).group(1, 2))
     logger = logging.getLogger('9anime-mycloud-extractor')
 
-    with session.get(mcloud_uri, headers={'referer': NINEANIME}) as mcloud_content:
-        skey_match = SKEY_RE.search(mcloud_content.text)
-        if not skey_match:
-            if mcloud_content.ok:
-                logger.warning(
-                    'Could not find session key from MyCloud; associated url: "%s" (Include this in your GitHub issue!).' %
-                    mcloud_uri)
-            return []
+    mcloud_content = session.get(mcloud_uri, headers={'referer': NINEANIME})
+    skey_match = SKEY_RE.search(mcloud_content.text)
+    if not skey_match:
+        if mcloud_content.ok:
+            logger.warning(
+                'Could not find session key from MyCloud; associated url: "%s" (Include this in your GitHub issue!).' %
+                mcloud_uri)
+        return []
 
-    with session.get(info_ajax, params={'skey': skey_match.group('skey')}, headers={'referer': mcloud_uri}) as mcloud_info:
-        return [
+    mcloud_info = session.get(info_ajax, params={'skey': skey_match.group('skey')}, headers={'referer': mcloud_uri})
+    return [
             {
                 'stream_url': content.get(
                     'file', ''), 'headers': {

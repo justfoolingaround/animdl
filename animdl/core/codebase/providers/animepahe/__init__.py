@@ -1,7 +1,5 @@
 import re
 
-import requests
-
 from ....config import ANIMEPAHE
 from ...helper import construct_site_based_regex
 from .inner import get_stream_url_from_kwik
@@ -19,27 +17,26 @@ KWIK_RE = re.compile(r"Plyr\|querySelector\|document\|([^\\']+)")
 
 @lru_cache()
 def get_session_page(session, page, release_id):
-    with session.get(API_URL, params={'m': 'release', 'id': release_id, 'sort': 'episode_desc', 'page': page}) as response:
-        return response.json()
+    return session.get(API_URL, params={'m': 'release', 'id': release_id, 'sort': 'episode_desc', 'page': page}).json()
 
 
 def get_m3u8_from_kwik(session, kwik_url):
     """
     (Unused at the moment!)
     """
-    with session.get(kwik_url, headers={'referer': SITE_URL}) as kwik_page:
-        match = KWIK_RE.search(kwik_page.text)
-        if match:
-            return "{10}://{9}-{8}-{7}.{6}.{5}/{4}/{3}/{2}/{1}.{0}".format(
-                *match.group(1).split('|'))
-        raise Exception(
-            "Session fetch failure; please recheck and/or retry fetching anime URLs again. If this problem persists, please make an issue immediately.")
+    kwik_page = session.get(kwik_url, headers={'referer': SITE_URL})
+    match = KWIK_RE.search(kwik_page.text)
+    if match:
+        return "{10}://{9}-{8}-{7}.{6}.{5}/{4}/{3}/{2}/{1}.{0}".format(
+            *match.group(1).split('|'))
+    raise Exception(
+        "Session fetch failure; please recheck and/or retry fetching anime URLs again. If this problem persists, please make an issue immediately.")
 
 
 def get_stream_url(session, release_id, stream_session):
 
-    with session.get(API_URL, params={'m': 'links', 'id': release_id, 'session': stream_session, 'p': 'kwik'}) as stream_url_data:
-        content = stream_url_data.json().get('data', [])
+    stream_url_data = session.get(API_URL, params={'m': 'links', 'id': release_id, 'session': stream_session, 'p': 'kwik'})
+    content = stream_url_data.json().get('data', [])
 
     for d in content:
         for quality, data in d.items():
@@ -66,14 +63,14 @@ def page_minimization(page_generator):
     return sorted(list(dict.fromkeys(page_generator)), reverse=True)
 
 
-def fetcher(session: requests.Session, url, check):
+def fetcher(session, url, check):
 
     match = PLAYER_RE.search(url)
     if match:
         url = "https://www.animepahe.com/anime/%s" % match.group(1)
 
-    with session.get(url) as anime_page:
-        release_id = ID_RE.search(anime_page.text).group(1)
+    anime_page = session.get(url)
+    release_id = ID_RE.search(anime_page.text).group(1)
 
     fpd = get_session_page(session, '1', release_id)
 

@@ -1,7 +1,7 @@
 from datetime import datetime
 
 import click
-import requests
+import httpx
 
 from ...config import ANICHART, DATE_FORMAT, TIME_FORMAT
 from ..helpers import bannerify
@@ -135,31 +135,31 @@ def animdl_schedule(log_level):
 
     has_next_page, page = True, 1
     schedules = []
-    session = requests.Session()
+    session = httpx.Client()
 
     unix_time = int((datetime.utcnow() - datetime(1970, 1, 1)).total_seconds())
 
     while has_next_page:
-        with session.post(ANICHART, json={'query': gql, 'variables': {'weekStart': unix_time, 'weekEnd': unix_time + 24 * 7 * 60 * 60, 'page': page}}) as schedule_data:
-            data = schedule_data.json()
-            schedules.extend(
-                data.get(
-                    'data',
-                    {}).get(
-                    'Page',
-                    {}).get(
-                    'airingSchedules',
-                    []))
-            has_next_page = data.get(
+        schedule_data = session.post(ANICHART, json={'query': gql, 'variables': {'weekStart': unix_time, 'weekEnd': unix_time + 24 * 7 * 60 * 60, 'page': page}})
+        data = schedule_data.json()
+        schedules.extend(
+        data.get(
                 'data',
                 {}).get(
                 'Page',
                 {}).get(
-                'pageInfo',
-                {}).get(
-                'hasNextPage',
-                False)
-            page += 1
+                'airingSchedules',
+                []))
+        has_next_page = data.get(
+        'data',
+        {}).get(
+        'Page',
+        {}).get(
+        'pageInfo',
+        {}).get(
+        'hasNextPage',
+        False)
+        page += 1
 
     for date, _content in arrange_template(schedules).items():
         print("On \x1b[33m{}\x1b[39m,".format(date))

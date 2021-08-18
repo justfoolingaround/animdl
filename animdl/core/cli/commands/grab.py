@@ -2,7 +2,7 @@ import json
 import logging
 
 import click
-import requests
+import httpx
 
 from ...codebase import Associator
 from ..helpers import *
@@ -44,7 +44,7 @@ from ..helpers import *
 @bannerify
 def animdl_grab(query, start, end, file, auto, index, log_level):
     end = end or float('inf')
-    session = requests.Session()
+    session = httpx.Client()
     anime, provider = process_query(
         session, query, auto=auto, auto_index=index)
     if not anime:

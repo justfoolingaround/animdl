@@ -3,7 +3,7 @@ import os
 from pathlib import Path
 
 import click
-import requests
+import httpx
 from tqdm import tqdm
 
 from ...codebase import (Associator, aed, get_filler_list, hls_download,
@@ -93,7 +93,7 @@ def animdl_download(
     """
     end = end or float('inf')
 
-    session = requests.Session()
+    session = httpx.Client()
 
     anime, provider = process_query(
         session, query, auto=auto, auto_index=index)
