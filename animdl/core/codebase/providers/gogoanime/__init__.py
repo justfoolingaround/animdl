@@ -53,7 +53,7 @@ def get_stream_url(session, episode_page_url):
     response = session.get('https:%s' % streaming.replace('streaming.php', 'download'), headers={'referer': "https:{}".format(streaming)})
     content = htmlparser.fromstring(response.text)
 
-    return [{'quality': get_quality(url.text_content()), 'stream_url': url.get('href'), 'headers': {'referer': response.url}} for url in content.xpath(
+    return [{'quality': get_quality(url.text_content()), 'stream_url': url.get('href'), 'headers': {'referer': str(response.url)}} for url in content.xpath(
         '//div[@class="dowload"]/a[@download]')]
 
 
