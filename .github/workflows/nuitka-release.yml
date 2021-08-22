@@ -34,7 +34,7 @@ jobs:
       - uses: actions/checkout@v2
       - uses: papeloto/action-zip@v1
         with:
-          files: animdl.dist/*
+          files: animdl.dist/
           dest: animdl.zip
           
       - name: Automatic release
