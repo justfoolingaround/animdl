@@ -20,13 +20,13 @@ jobs:
             pip install -r requirements.txt
             pip install nuitka
 
-      - name: Install MinGW using Conda
-        shell: bash
-        run: $CONDA/Scripts/conda install m2w64-gcc libpython
+      - name: Set up MinGW
+        uses: egor-tensin/setup-mingw@v2
+        with:
+          platform: x64
 
       - name: Build with nuitka
-        shell: bash
-        run: CC=$CONDA/Library/mingw-w64/bin/gcc.exe python -m nuitka --module animdl
+        run: python -m nuitka --module animdl | echo y
 
       - name: Archive Release
         uses: thedoctor0/zip-release@master
