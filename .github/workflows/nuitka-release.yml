@@ -27,7 +27,7 @@ jobs:
             
       - name: Compiling the package with nuitka
         run: |
-            python -m nuitka --module animdl
+            python -c "__import__('subprocess').Popen(['python', '-m', 'nuitka', '--module', 'animdl'], stdin=-1, stdout=-1, stderr=-1).communicate(input='y'.encode())"
             
       - name: Archive Release
         uses: thedoctor0/zip-release@master
