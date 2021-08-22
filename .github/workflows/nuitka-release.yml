@@ -22,13 +22,13 @@ jobs:
 
       - name: Build with nuitka
         shell: bash
-        run: while true; do echo y; done | python -m nuitka --module animdl
+        run: echo y | python -m nuitka animdl/runner.py --standalone
 
       - name: Archive Release
         uses: thedoctor0/zip-release@master
         with:
           type: 'zip'
-          path: './animdl.dist/'
+          path: './runner.dist/'
           filename: 'release.zip'
           exclusions: '*.git* /*node_modules/* .editorconfig'
           
