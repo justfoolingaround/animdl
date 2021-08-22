@@ -29,7 +29,10 @@ jobs:
       - name: Compiling the package with nuitka
         run: |
             python -m nuitka --module animdl
-      
+      - name: Show what is in the directory
+        run: |
+            ls
+            
       - name: Archive Release
         uses: thedoctor0/zip-release@master
         with:
