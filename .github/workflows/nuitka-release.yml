@@ -15,9 +15,8 @@ jobs:
           python-version: '3.6'
         
       - name: Set up GCC for compilation
-        uses: egor-tensin/setup-gcc@v1
+        uses: egor-tensin/setup-mingw@v2
         with:
-          version: latest
           platform: x64
         
       - name: Installing Python packages
