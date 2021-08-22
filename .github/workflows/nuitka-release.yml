@@ -20,13 +20,9 @@ jobs:
             pip install -r requirements.txt
             pip install nuitka
 
-      - name: Set up MinGW
-        uses: egor-tensin/setup-mingw@v2
-        with:
-          platform: x64
-
       - name: Build with nuitka
-        run: echo y | python -m nuitka --module animdl
+        shell: bash
+        run: while true; do echo y; done | python -m nuitka --module animdl
 
       - name: Archive Release
         uses: thedoctor0/zip-release@master
