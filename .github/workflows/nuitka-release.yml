@@ -26,7 +26,7 @@ jobs:
           platform: x64
 
       - name: Build with nuitka
-        run: python -m nuitka --module animdl | echo y
+        run: echo y | python -m nuitka --module animdl
 
       - name: Archive Release
         uses: thedoctor0/zip-release@master
