@@ -3,14 +3,13 @@ import os
 from pathlib import Path
 
 import click
-import httpx
 from tqdm import tqdm
 
 from ...codebase import (Associator, aed, get_filler_list, hls_download,
                          sanitize_filename, url_download)
 from ...config import QUALITY, SESSION_FILE
 from ..helpers import *
-
+from ..http_client import client
 
 @click.command(name='download', help="Download your favorite anime by query.")
 @click.argument('query', required=True)
@@ -93,7 +92,7 @@ def animdl_download(
     """
     end = end or float('inf')
 
-    session = httpx.Client()
+    session = client
 
     anime, provider = process_query(
         session, query, auto=auto, auto_index=index)

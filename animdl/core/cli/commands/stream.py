@@ -1,11 +1,11 @@
 import logging
 
 import click
-import httpx
 
 from ...codebase import Associator, get_filler_list
 from ...config import DEFAULT_PLAYER, SESSION_FILE
 from ..helpers import *
+from ..http_client import client
 
 
 def quality_prompt(stream_list, provider):
@@ -110,7 +110,7 @@ def animdl_stream(
     """
     end = end or float('inf')
 
-    session = httpx.Client()
+    session = client
     logger = logging.getLogger('animdl-streamer-core')
     streamer = handle_streamer(
         click.parser.split_arg_string(

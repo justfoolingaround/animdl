@@ -3,8 +3,6 @@ from .stream_url import *
 from ....config import ANIMIXPLAY
 from ...helper import construct_site_based_regex
 
-from httpx import Client
-
 AVAILABLE_PARSERS = {
     'gogo-anime': {
         'matcher': construct_site_based_regex(
@@ -28,4 +26,4 @@ def get_parser(url):
 
 
 fetcher = lambda session, url, check=lambda *args: True: get_parser(
-    url)(Client(), url, check=check)
+    url)(session, url, check=check)

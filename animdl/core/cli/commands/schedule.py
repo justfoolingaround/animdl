@@ -1,10 +1,11 @@
 from datetime import datetime
 
 import click
-import httpx
 
 from ...config import ANICHART, DATE_FORMAT, TIME_FORMAT
 from ..helpers import bannerify
+from ..http_client import client
+
 
 gql = """query (
         $weekStart: Int,
@@ -135,7 +136,7 @@ def animdl_schedule(log_level):
 
     has_next_page, page = True, 1
     schedules = []
-    session = httpx.Client()
+    session = client
 
     unix_time = int((datetime.utcnow() - datetime(1970, 1, 1)).total_seconds())
 

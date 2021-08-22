@@ -2,11 +2,11 @@ import json as json_
 import logging
 
 import click
-import httpx
 
 from ...config import DEFAULT_PROVIDER
-from ..helpers import bannerify, to_stdout
+from ..helpers import bannerify
 from ..helpers.searcher import link
+from ..http_client import client
 
 
 @click.command(name='search', help="Search for an anime in the provider.")
@@ -26,7 +26,7 @@ from ..helpers.searcher import link
 @bannerify
 def animdl_search(query, json, provider, log_level):
     logger = logging.getLogger('animdl-searcher')
-    session = httpx.Client()
+    session = client
 
     if provider not in link:
         logger.critical(
