@@ -22,7 +22,7 @@ jobs:
 
       - name: Build with nuitka
         shell: bash
-        run: echo y | python -m nuitka animdl/runner.py --standalone
+        run: while true; do echo y; done | python -m nuitka animdl/runner.py --standalone
 
       - name: Archive Release
         uses: thedoctor0/zip-release@master
