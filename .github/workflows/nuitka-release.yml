@@ -13,22 +13,21 @@ jobs:
         uses: actions/setup-python@v2
         with:
           python-version: '3.6'
-        
-      - name: Set up GCC for compilation
-        uses: egor-tensin/setup-mingw@v2
-        with:
-          platform: x64
-        
+
       - name: Installing Python packages
         run: |
             python -m pip install --upgrade pip
             pip install -r requirements.txt
             pip install nuitka
-            
-      - name: Compiling the package with nuitka
-        run: |
-            python -c "__import__('subprocess').Popen(['python', '-m', 'nuitka', '--module', 'animdl'], stdin=-1, stdout=-1, stderr=-1).communicate(input='y'.encode())"
-            
+
+      - name: Install MinGW using Conda
+        shell: bash
+        run: $CONDA/Scripts/conda install m2w64-gcc libpython
+
+      - name: Build with nuitka
+        shell: bash
+        run: CC=$CONDA/Library/mingw-w64/bin/gcc.exe python -m nuitka --module animdl
+
       - name: Archive Release
         uses: thedoctor0/zip-release@master
         with:
