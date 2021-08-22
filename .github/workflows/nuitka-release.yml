@@ -33,15 +33,15 @@ jobs:
       - name: Zip the formed contents
         uses: papeloto/action-zip@v1
         with:
-          files: animdl.dist/
-          dest: animdl.zip
+          files: ./animdl.dist
+          dest: ./animdl.zip
           
       - name: Automatic release
         uses: "marvinpinto/action-automatic-releases@latest"
         with:
           repo_token: "${{ secrets.GITHUB_TOKEN }}"
-          automatic_release_tag: "1.3"
-          title: "Release ${{ github.head_ref }}.${{ github.sha }}"
+          automatic_release_tag: "1.3-pre-release"
+          title: "Automatic Pre-release"
           files: |
             animdl.zip
             
