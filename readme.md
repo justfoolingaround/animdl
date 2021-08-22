@@ -12,7 +12,7 @@ Installation of [**animdl**](https://www.github.com/justfoolingaround/animdl) ca
 
 ```sh
 
-py -m pip install git+https://www.github.com/justfoolingaround/animdl
+python -m pip install git+https://www.github.com/justfoolingaround/animdl
 
 ```
 
@@ -20,7 +20,7 @@ Note that you need to have git installed, else, you would need to download the r
 
 ```sh
 
-py -m pip install .
+python -m pip install .
 
 ```
 
