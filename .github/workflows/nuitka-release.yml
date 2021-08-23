@@ -21,8 +21,7 @@ jobs:
             pip install nuitka
 
       - name: Build with nuitka
-        shell: bash
-        run: while true; do echo y; done | python -m nuitka animdl/runner.py --standalone
+        run: python -m nuitka animdl/runner.py --standalone --assume-yes-for-downloads
 
       - name: Archive Release
         uses: thedoctor0/zip-release@master
