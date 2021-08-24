@@ -37,7 +37,7 @@ def fetcher(session, url, check):
 
     for episode in episode_pages:
         episode_number = 0
-        match = re.search('Episode (\d+)', episode.xpath('span')[0].text_content())
+        match = re.search(r'Episode (\d+)', episode.xpath('span')[0].text_content())
         if match:
             episode_number = int(match.group(1))
         if check(episode_number):

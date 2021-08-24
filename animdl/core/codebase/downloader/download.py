@@ -2,7 +2,6 @@ import logging
 import time
 
 import httpx
-import yarl
 from tqdm import tqdm
 
 from ...config import AUTO_RETRY, QUALITY
@@ -11,13 +10,6 @@ from .hls_download import hls_yield
 def sanitize_filename(f):
     return ''.join(' - ' if _ in '<>:"/\\|?*' else _ for _ in f)
 
-
-def absolute_extension_determination(url):
-    url = yarl.URL(url)
-    position = url.name.find('.')
-    if position == -1:
-        return ''
-    return url.name[position + 1:]
 
 def single_threaded_download(url, _path, tqdm_bar_init, headers):
     logger = logging.getLogger("Download @ ".format(_path.stem))

@@ -375,6 +375,7 @@ LANGUAGE = {
 
 LABELS = {
     'storage.googleapis.com': "Google API Storage",
+    'v.vrv.co': 'VRV'
 }
 
 

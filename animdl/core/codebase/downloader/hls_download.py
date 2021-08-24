@@ -3,6 +3,7 @@ import re
 import time
 
 import httpx
+import yarl
 from Cryptodome.Cipher import AES
 
 from ...config import AUTO_RETRY, QUALITY
@@ -13,25 +14,12 @@ ENCRYPTION_URL_IV_REGEX = re.compile(
 
 QUALITY_REGEX = re.compile(
     r'#EXT-X-STREAM-INF:.*RESOLUTION=\d+x(?P<quality>\d+).*\n(?P<content_uri>.*)')
-M3U8_EXTENSION_REGEX = re.compile(r"(?P<m3u8_url>.*\.m3u8.*)")
 TS_EXTENSION_REGEX = re.compile(r"(?P<ts_url>.*\.ts.*)")
 
-REL_URL_REGEX = re.compile(r"(?P<url_base>(?:https?://)?.*)/")
 
-URL_REGEX = re.compile(
-    r"(?:https?://)?(?:\S+\.)+(?:[^/]+/)+(?P<url_end>[^?/]+)")
-
-
-def absolute_extension_determination(url):
-    """
-    Making use of the best regular expression I've ever seen.
-    """
-    match = URL_REGEX.search(url)
-    if match:
-        url_end = match.group('url_end')
-        return '' if url_end.rfind(
-            '.') == -1 else url_end[url_end.rfind('.') + 1:]
-    return ''
+def get_extension(url):
+    initial, _, extension = yarl.URL(url).name.partition('.')
+    return extension
 
 
 def def_iv(initial=1):
@@ -58,22 +46,23 @@ def extract_encryption(m3u8_content):
     return ENCRYPTION_URL_IV_REGEX.search(m3u8_content).group('key_uri', 'iv')
 
 
-def m3u8_generation(session_init, m3u8_uri, *, is_origin=True):
-    with session_init(m3u8_uri) as response:
-        for quality, content_uri in QUALITY_REGEX.findall(response.text):
-            if M3U8_EXTENSION_REGEX.search(content_uri):
-                if not re.search(r'\S+://', content_uri):
-                    content_uri = "%s/%s" % (REL_URL_REGEX.search(
-                        m3u8_uri).group('url_base'), content_uri)
-                yield from m3u8_generation(session_init, content_uri, is_origin=False)
-            yield {'quality': quality, 'stream_url': content_uri}
+def m3u8_generation(session_init, m3u8_uri):
+    m3u8_uri_parent = yarl.URL(m3u8_uri).parent
+    response = session_init(m3u8_uri)
+    for quality, content_uri in QUALITY_REGEX.findall(response.text):
+        url = yarl.URL(content_uri)
+        if get_extension(url) == 'm3u8':
+            if not url.is_absolute():
+                content_uri = m3u8_uri_parent.join(content_uri)
+            yield from m3u8_generation(session_init, content_uri)
+        yield {'quality': quality, 'stream_url': content_uri}
 
 
 def select_best(q_dicts, preferred_quality):
     return (
         sorted(
             [
-                q for q in q_dicts if absolute_extension_determination(
+                q for q in q_dicts if get_extension(
                     q.get('stream_url')) in [
                     'm3u', 'm3u8'] and q.get(
                         'quality', '0').isdigit() and int(
@@ -103,11 +92,11 @@ def hls_yield(session, q_dicts, preferred_quality=QUALITY):
             selected.get('stream_url'))]
     second_selection = select_best(streams or [selected], preferred_quality)
 
-    if preferred_quality != second_selection.get('quality'):
+    if int(preferred_quality) != (second_selection.get('quality')):
         logging.warning('Could not find the quality {}, falling back to {}.'.format(
             preferred_quality, second_selection.get('quality') or "an unknown quality."))
 
-    m3u8_response = session.get(second_selection.get('stream_url'), headers=headers, verify=ssl_verification)
+    m3u8_response = session.get(second_selection.get('stream_url'), headers=headers)
     m3u8_data = m3u8_response.text
 
     encryption_uri, encryption_iv, encryption_data = None, None, b''
@@ -115,20 +104,22 @@ def hls_yield(session, q_dicts, preferred_quality=QUALITY):
 
     if encryption_state:
         encryption_uri, encryption_iv = extract_encryption(m3u8_data)
-    encryption_key_response = session.get(encryption_uri, headers=headers, verify=ssl_verification)
+    encryption_key_response = session.get(encryption_uri, headers=headers)
     encryption_data = encryption_key_response.content
 
     all_ts = TS_EXTENSION_REGEX.findall(m3u8_data)
     last_yield = 0
 
-    for c, ts_uris in enumerate(all_ts, 1):
-        if not re.search(r'\S+://', ts_uris):
-            ts_uris = "%s/%s" % (REL_URL_REGEX.search(
-                second_selection.get('stream_url')).group('url_base'), ts_uris)
+    relative_url = yarl.URL(second_selection.get('stream_url', '')).parent
 
+    for c, ts_uris in enumerate(all_ts, 1):
+        url = yarl.URL(ts_uris)
+        if not url.is_absolute():
+            ts_uris = relative_url.join(ts_uris)
+        
         while last_yield != c:
             try:
-                ts_response = session.get(ts_uris, headers=headers, verify=ssl_verification)
+                ts_response = session.get(ts_uris, headers=headers)
                 ts_data = ts_response.content
                 if encryption_state:
                     ts_data = get_decrypter(
