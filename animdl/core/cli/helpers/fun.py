@@ -415,6 +415,6 @@ def bannerify(f):
         if quiet_state is not None:
             if quiet_state <= 20:
                 print("\x1b[35m{}\x1b[39m".format(package_banner))
-            logging.basicConfig(level=quiet_state)
+            logging.basicConfig(level=quiet_state, format="[\x1b[35m%(filename)s:%(lineno)d\x1b[39m - %(asctime)s - %(name)s: %(levelname)s] %(message)s")
         return f(*args, **kwargs)
     return internal

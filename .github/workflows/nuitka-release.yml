@@ -36,7 +36,7 @@ jobs:
         with:
           artifacts: "release.zip"
           prerelease: true
-          tag: 1.3-auto
+          tag: 1.3-{{ env.GITHUB_SHA }}
           token: ${{ secrets.GITHUB_TOKEN }}
 
         
