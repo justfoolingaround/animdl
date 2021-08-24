@@ -25,6 +25,7 @@ DEFAULT_CONFIG = {
         'animepahe': 'https://animepahe.com/',
         'animixplay': 'https://animixplay.to/',
         'animtime': 'https://animtime.com/',
+        'crunchyroll': 'http://www.crunchyroll.com/',
         'gogoanime': 'https://gogoanime.pe/',
         'tenshi': 'https://tenshi.moe/',
         'twist': 'https://twist.moe/',
@@ -62,6 +63,7 @@ ANIMEOUT = SITE_URLS.get('animeout')
 ANIMEPAHE = SITE_URLS.get('animepahe')
 ANIMIXPLAY = SITE_URLS.get('animixplay')
 ANIMTIME = SITE_URLS.get('animtime')
+CRUNCHYROLL = SITE_URLS.get('crunchyroll')
 GOGOANIME = SITE_URLS.get('gogoanime')
 TENSHI = SITE_URLS.get('tenshi')
 TWIST = SITE_URLS.get('twist')

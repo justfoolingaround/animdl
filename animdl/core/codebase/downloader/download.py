@@ -1,33 +1,23 @@
-import re
+import logging
 import time
 
 import httpx
+import yarl
 from tqdm import tqdm
 
 from ...config import AUTO_RETRY, QUALITY
 from .hls_download import hls_yield
-
-import logging
-
-URL_REGEX = re.compile(
-    r"(?:https?://)?(?:\S+\.)+(?:[^/]+/)+(?P<url_end>[^?/]+)")
-
 
 def sanitize_filename(f):
     return ''.join(' - ' if _ in '<>:"/\\|?*' else _ for _ in f)
 
 
 def absolute_extension_determination(url):
-    """
-    Making use of the best regular expression I've ever seen.
-    """
-    match = URL_REGEX.search(url)
-    if match:
-        url_end = match.group('url_end')
-        return '' if url_end.rfind(
-            '.') == -1 else url_end[url_end.rfind('.') + 1:]
-    return ''
-
+    url = yarl.URL(url)
+    position = url.name.find('.')
+    if position == -1:
+        return ''
+    return url.name[position + 1:]
 
 def single_threaded_download(url, _path, tqdm_bar_init, headers):
     logger = logging.getLogger("Download @ ".format(_path.stem))

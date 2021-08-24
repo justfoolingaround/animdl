@@ -12,10 +12,16 @@ def quality_prompt(stream_list, provider):
     def ts(x): return to_stdout(x, "animdl-%s-url-selector" % provider)
     ts("Found %d stream(s)" % len(stream_list))
     for n, anime in enumerate(stream_list, 1):
-        q = anime.get('quality')
-        ts("[#%02d]%s %s " % (n, (" [Q.:%s]" % q) if q and not q ==
-           'unknown' else '', stream_judiciary(anime.get('stream_url'))))
 
+        inital = stream_judiciary(anime.get('stream_url'))
+        if anime.get('quality'):
+            inital += " [{0[quality]}]".format(anime)
+        
+        if anime.get('subtitle'):
+            inital += " [CC (Soft-Subbed)]"
+
+        ts("[#{:02d}] {}".format(n, inital))
+        
     index = click.prompt(
         "[\x1b[33m%s\x1b[39m] Select by the index (defaults to 1)" %
         ('animdl-%s-streamer-core' %
@@ -203,7 +209,8 @@ def animdl_stream(
             player_process = streamer(
                 selection.get('stream_url'),
                 headers=headers,
-                content_title=title)
+                content_title=selection.get('title') or title,
+                subtitles=selection.get('subtitle', []))
             player_process.wait()
             playing = False
 

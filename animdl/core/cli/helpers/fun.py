@@ -6,7 +6,7 @@ Credits for the functions:
 """
 
 import logging
-import re
+import yarl
 from random import choice
 
 from ...__version__ import __core__
@@ -20,9 +20,6 @@ package_banner = """\
 ╚═╝░░╚═╝╚═╝░░╚══╝╚═╝╚═╝░░░░░╚═╝╚═════╝░╚══════╝v{}
 A highly efficient anime downloader and streamer
 """.format(__core__)
-
-URL_REGEX = re.compile(
-    r"(?:https?://)?(?P<base>(?:\S+\.)+[^/]+)/(?:(?:[^/])+/)*(?P<url_end>[^?/]+)")
 
 LANGUAGE = {
     'adjective': [
@@ -403,15 +400,13 @@ def to_stdout(message, caller='animdl', *, color_index=36):
 
 
 def stream_judiciary(url):
-    """
-    A fun regex to judge urls.
-    """
-    match = URL_REGEX.search(url)
-    if not match:
+    
+    url = yarl.URL(url)
+
+    if not url.name:
         return "Unknown"
 
-    base, url_end = match.group('base', 'url_end')
-    return "'%s' from %s" % (url_end, LABELS.get(base, base))
+    return "{!r} from {}".format(url.name, LABELS.get(url.host, url.host))
 
 
 def bannerify(f):

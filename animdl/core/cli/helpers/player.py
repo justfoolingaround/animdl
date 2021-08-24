@@ -32,9 +32,12 @@ def start_streaming_mpv(
                 v in headers.items()))
 
     content_title = kwargs.pop('content_title', '')
-
+    subtitles = kwargs.pop('subtitles', []) or []
+    
     if content_title:
         args.append('--title=%s' % content_title)
+
+    args.extend('--sub-file={}'.format(sub) for sub in subtitles)
 
     return subprocess.Popen(args)
 
@@ -55,6 +58,9 @@ def start_streaming_vlc(
         if headers.get('user-agent'):
             args.append(
                 '--http-user-agent={}'.format(headers.get('user-agent')))
+
+    subtitles = kwargs.pop('subtitles', []) or []
+    args.extend('--sub-file={}'.format(sub) for sub in subtitles)
 
     return subprocess.Popen(args)
 

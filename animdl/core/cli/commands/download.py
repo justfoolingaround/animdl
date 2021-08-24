@@ -183,7 +183,7 @@ def animdl_download(
                 content_title)
             continue
 
-        available_qualities = [*filter_quality(stream_urls, quality)]
+        available_qualities = [*filter_quality(stream_urls, quality, download=True)]
         if not available_qualities:
             content = stream_urls[0]
             q = content.get('quality')

@@ -8,6 +8,8 @@ import lxml.html as htmlparser
 
 from ...config import *
 
+from .fuzzysearch import search
+
 NINEANIME_URL_SEARCH = NINEANIME + "search"
 
 ANIMEPAHE_URL_CONTENT = ANIMEPAHE + "anime/%s"
@@ -78,18 +80,14 @@ def search_twist(session, query):
     content = session.get(TWIST_URL_CONTENT_API, headers={'x-access-token': '0df14814b9e590a1f26d3071a4ed7974'})
     animes = content.json()
 
-    def searcher(
-        q, content): return any(
-        [
-            q.lower() in (
-                content.get('title') or '').lower(), q.lower() in (
-                    content.get('alt_title') or '').lower(), q.lower() in (
-                        content.get(
-                            'slug', {}).get('slug') or '').lower(), ])
+    for match, anime in search(query, animes, processor=lambda r: r.get('title') or r.get('alt_title')):
+        yield {'anime_url': TWIST_URL_CONTENT + anime.get('slug', {}).get('slug'), 'name': anime.get('title', '')}
 
-    for anime in animes:
-        if searcher(query, anime):
-            yield {'anime_url': TWIST_URL_CONTENT + anime.get('slug', {}).get('slug'), 'name': anime.get('title', '')}
+def search_crunchyroll(session, query):
+    content = json.loads(session.get(CRUNCHYROLL + "ajax/?req=RpcApiSearch_GetSearchCandidates").text.strip('*/\n -secur'))
+
+    for match, anime in search(query, content.get('data', []), processor=lambda r: r.get('name')):
+        yield {'anime_url': CRUNCHYROLL + anime.get('link', '').strip('/'), 'name': anime.get('name', '')}
 
 
 def search_tenshi(session, query):
@@ -110,6 +108,7 @@ link = {
     'animepahe': search_animepahe,
     'animeout': search_animeout,
     'animixplay': search_animixplay,
+    'crunchyroll': search_crunchyroll,
     'gogoanime': search_gogoanime,
     'tenshi': search_tenshi,
     'twist': search_twist,

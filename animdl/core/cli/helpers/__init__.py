@@ -4,7 +4,7 @@ from .player import *
 from .processors import process_query, get_searcher
 
 
-def filter_quality(stream_urls, preferred_quality):
+def filter_quality(stream_urls, preferred_quality, *, download=False):
     for _ in sorted(
         stream_urls,
         reverse=True,
@@ -12,6 +12,8 @@ def filter_quality(stream_urls, preferred_quality):
             x.get('quality') or 0) if x.get('quality') not in [
             'unknown',
             'multi'] else 0):
+        if download and _.get('download') is False:
+            continue
         q = _.get('quality') or 'unknown'
         if q != 'unknown' and (isinstance(q, int) or q.isdigit()):
             if preferred_quality >= int(q):
