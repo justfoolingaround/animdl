@@ -15,6 +15,7 @@ setup(
         'click',
         'comtypes',
         'httpx',
+        'yarl',
         'lxml',
         'tqdm',
         'pycryptodomex',
