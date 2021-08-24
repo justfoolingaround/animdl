@@ -4,3 +4,4 @@ httpx
 lxml
 tqdm
 pycryptodomex
+yarl
