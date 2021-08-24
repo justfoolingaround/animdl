@@ -8,9 +8,7 @@ from ..helpers import *
 from ..http_client import client
 
 
-def quality_prompt(stream_list, provider):
-    def ts(x): return to_stdout(x, "animdl-%s-url-selector" % provider)
-    ts("Found %d stream(s)" % len(stream_list))
+def quality_prompt(logger, stream_list, provider):
     for n, anime in enumerate(stream_list, 1):
 
         inital = stream_judiciary(anime.get('stream_url'))
@@ -20,7 +18,7 @@ def quality_prompt(stream_list, provider):
         if anime.get('subtitle'):
             inital += " [CC (Soft-Subbed)]"
 
-        ts("[#{:02d}] {}".format(n, inital))
+        logger.info("{:02d}: {}".format(n, inital))
         
     index = click.prompt(
         "[\x1b[33m%s\x1b[39m] Select by the index (defaults to 1)" %
@@ -28,7 +26,7 @@ def quality_prompt(stream_list, provider):
          provider), default=1, type=int, show_default=False) - 1
 
     if (index + 1) > len(stream_list):
-        ts("Applying modulus to get a valid index from incorrect index: #%02d -> #%02d" %
+        logger.debug("Applying modulus to get a valid index from incorrect index: #%02d -> #%02d" %
            (index + 1, index % len(stream_list) + 1))
         index %= len(stream_list)
 
@@ -126,7 +124,7 @@ def animdl_stream(
             'Streaming failed due to selection of a unsupported streamer; please configure the streamer in the config to use it.')
 
     anime, provider = process_query(
-        session, query, auto=auto, auto_index=index)
+        session, query, logger, auto=auto, auto_index=index)
     if not anime:
         return
     logger.name = "animdl-%s-streamer-core" % provider
@@ -198,7 +196,7 @@ def animdl_stream(
                      provider, title))
                 continue
 
-            selection = quality_prompt(stream_urls, provider) if len(
+            selection = quality_prompt(logger, stream_urls, provider) if len(
                 stream_urls) > 1 else stream_urls[0]
             headers = selection.get('headers', {})
             _ = headers.pop('ssl_verification', True)

@@ -45,11 +45,12 @@ from ..http_client import client
 def animdl_grab(query, start, end, file, auto, index, log_level):
     end = end or float('inf')
     session = client
+    logger = logging.getLogger('animdl-grabber-core')
     anime, provider = process_query(
-        session, query, auto=auto, auto_index=index)
+        session, query, logger, auto=auto, auto_index=index)
     if not anime:
         return
-    logger = logging.getLogger('animdl-%s-grabber-core' % provider)
+    logger.name = "animdl-{}-grabber-core".format(provider)
     anime_associator = Associator(anime.get('anime_url'), session=session)
     logger.info("Initializing grabbing session.")
     collected_streams = []

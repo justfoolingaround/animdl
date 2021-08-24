@@ -93,12 +93,13 @@ def animdl_download(
     end = end or float('inf')
 
     session = client
+    logger = logging.getLogger('animdl-downloader-core')
 
     anime, provider = process_query(
-        session, query, auto=auto, auto_index=index)
+        session, query, logger, auto=auto, auto_index=index)
     if not anime:
         return
-    logger = logging.getLogger('animdl-%s-downloader-core' % provider)
+    logger.name = "animdl-{}-downloader-core".format(provider)
     content_name = title or anime.get('name')
     if not content_name:
         content_name = choice(create_random_titles())

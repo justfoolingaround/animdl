@@ -14,16 +14,15 @@ from .searcher import get_searcher
 INCLUDED_PROVIDER = re.compile(r"^(?P<provider>.*):(?P<query>.*)", re.S)
 
 
-def prompt_user(anime_list_genexp, provider_name):
-    def ts(x): return to_stdout(x, "animdl-%s-searcher" % provider_name)
+def prompt_user(logger, anime_list_genexp, provider_name):
     r = []
     for n, anime in enumerate(anime_list_genexp, 1):
-        ts("[#{:02d}] {} \x1b[33m{}\x1b[39m".format(
+        logger.info("{:02d}: {} \x1b[33m{}\x1b[39m".format(
             n, anime.get('name'), anime.get('anime_url')))
         r.append(anime)
 
     if not r:
-        print("[\x1b[31manimdl-{}-{}\x1b[39m] {}".format(provider_name,
+        logger.critical("[\x1b[31manimdl-{}-{}\x1b[39m] {}".format(provider_name,
               'searcher', 'Cannot find anything of that query.'))
         return {}, None
 
@@ -33,7 +32,7 @@ def prompt_user(anime_list_genexp, provider_name):
         type=int,
         show_default=False) - 1
     if (index + 1) > len(r):
-        ts("Applying modulus to get a valid index from incorrect index: #%02d -> #%02d" %
+        logger.debug("Applying modulus to get a valid index from incorrect index: #%02d -> #%02d" %
            (index + 1, index % len(r) + 1))
         index %= len(r)
 
@@ -43,6 +42,7 @@ def prompt_user(anime_list_genexp, provider_name):
 def process_query(
         session,
         query,
+        logger,
         *,
         provider=DEFAULT_PROVIDER,
         auto=False,
@@ -63,5 +63,5 @@ def process_query(
 
     searcher = get_searcher(provider)(session, query)
     if not auto:
-        return prompt_user(searcher, provider)
+        return prompt_user(logger, searcher, provider)
     return [*searcher][auto_index], provider
