@@ -14,6 +14,7 @@ setup(
     install_requires=[
         'click',
         'comtypes',
+        'cssselect',
         'httpx',
         'yarl',
         'lxml',

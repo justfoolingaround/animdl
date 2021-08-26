@@ -47,14 +47,15 @@ def get_stream_url(session, episode_page_url):
     response = session.get(episode_page_url)
     content_parsed = htmlparser.fromstring(response.text)
 
-    streaming = content_parsed.xpath(
-        '//div[@class="play-video"]/iframe')[0].get('src')
+    streaming = content_parsed.cssselect(
+        'iframe')[0].get('src')
 
     response = session.get('https:%s' % streaming.replace('streaming.php', 'download'), headers={'referer': "https:{}".format(streaming)})
     content = htmlparser.fromstring(response.text)
 
-    return [{'quality': get_quality(url.text_content()), 'stream_url': url.get('href'), 'headers': {'referer': str(response.url)}} for url in content.xpath(
-        '//div[@class="dowload"]/a[@download]')]
+    return [{'quality': get_quality(url.text_content()), 'stream_url': url.get('href'), 'headers': {'referer': str(response.url)}} for url in content.cssselect(
+        '.dowload > a[download]'
+    )]
 
 
 def fetcher(session, url, check):

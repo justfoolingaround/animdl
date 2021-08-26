@@ -33,7 +33,7 @@ def fetcher(session, url, check):
 
     url = "http://www.crunchyroll.com/{}".format(CRUNCHYROLL_REGEX.search(url).group(1))
 
-    episode_pages = htmlparser.fromstring(session.get(url).text).xpath('//div[@class="wrapper container-shadow hover-classes"]/a')[::-1]
+    episode_pages = htmlparser.fromstring(session.get(url).text).xpath('.episode')[::-1]
 
     for episode in episode_pages:
         episode_number = 0

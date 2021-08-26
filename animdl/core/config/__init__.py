@@ -18,7 +18,7 @@ CONFIGURATION_FILE_PATH = Path(
 
 DEFAULT_CONFIG = {
     'session_file': 'cli_session_animdl.json',
-    'default_provider': 'animepahe',
+    'default_provider': 'animixplay',
     'site_urls': {
         '9anime': 'https://9anime.to/',
         'animeout': 'https://animeout.xyz/',

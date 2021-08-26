@@ -22,7 +22,7 @@ def from_site_url(session, url) -> dict:
     """
     return json.loads(
         htmlparser.fromstring(
-            session.get(url).content).xpath('//div[@id="epslistplace"]')[0].text)
+            session.get(url).content).cssselect('#epslistplace')[0].text)
 
 
 def get_embed(session, data_url):

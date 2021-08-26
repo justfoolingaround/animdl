@@ -50,7 +50,7 @@ def get_stream_url_from_kwik(session, adfly_url):
     f_content = session.get(
         bypass_adfly(
             session, adfly_url), headers={
-            'referer': 'https://kwik.cx/'})
+            'referer': adfly_url})
     decrypted = decrypt(
         *
         KWIK_PARAMS_RE.search(

@@ -1,5 +1,6 @@
 click
 comtypes
+cssselect
 httpx
 lxml
 tqdm
