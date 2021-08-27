@@ -92,7 +92,7 @@ def hls_yield(session, q_dicts, preferred_quality=QUALITY):
             selected.get('stream_url'))]
     second_selection = select_best(streams or [selected], preferred_quality)
 
-    if int(preferred_quality) != (second_selection.get('quality')):
+    if preferred_quality != int(second_selection.get('quality')):
         logging.warning('Could not find the quality {}, falling back to {}.'.format(
             preferred_quality, second_selection.get('quality') or "an unknown quality."))
 
@@ -104,8 +104,8 @@ def hls_yield(session, q_dicts, preferred_quality=QUALITY):
 
     if encryption_state:
         encryption_uri, encryption_iv = extract_encryption(m3u8_data)
-    encryption_key_response = session.get(encryption_uri, headers=headers)
-    encryption_data = encryption_key_response.content
+        encryption_key_response = session.get(encryption_uri, headers=headers)
+        encryption_data = encryption_key_response.content
 
     all_ts = TS_EXTENSION_REGEX.findall(m3u8_data)
     last_yield = 0
