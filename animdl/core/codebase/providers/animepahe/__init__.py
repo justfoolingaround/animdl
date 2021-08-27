@@ -62,9 +62,15 @@ def predict_pages(total, check):
 def page_minimization(page_generator):
     return sorted(list(dict.fromkeys(page_generator)), reverse=True)
 
+def bypass_ddos_guard(session):
+    js_bypass_uri = re.search(r"'(.*?)'", session.get('https://check.ddos-guard.net/check.js').text).group(1)
+    session.cookies.update(session.get(ANIMEPAHE + js_bypass_uri).cookies)
+
 
 def fetcher(session, url, check):
 
+    bypass_ddos_guard(session)
+    
     match = PLAYER_RE.search(url)
     if match:
         url = "https://www.animepahe.com/anime/%s" % match.group(1)

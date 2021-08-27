@@ -47,6 +47,11 @@ def search_9anime(session, query):
 
 
 def search_animepahe(session, query):
+    def bypass_ddos_guard(session):
+        js_bypass_uri = re.search(r"'(.*?)'", session.get('https://check.ddos-guard.net/check.js').text).group(1)
+        session.cookies.update(session.get(ANIMEPAHE + js_bypass_uri).cookies)
+
+    bypass_ddos_guard(session)
     animepahe_results = session.get(ANIMEPAHE_URL_SEARCH_AJAX, params={'q': query, 'm': 'search'})
     content = animepahe_results.json()
 
