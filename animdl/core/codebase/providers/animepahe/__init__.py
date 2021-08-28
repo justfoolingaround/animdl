@@ -27,7 +27,7 @@ def get_m3u8_from_kwik(session, kwik_url):
     kwik_page = session.get(kwik_url, headers={'referer': SITE_URL})
     match = KWIK_RE.search(kwik_page.text)
     if match:
-        return "{10}://{9}-{8}-{7}.{6}.{5}/{4}/{3}/{2}/{1}.{0}".format(
+        return "{10}://{9}-{8}.{7}.{6}.{5}/{4}/{3}/{2}/{1}.{0}".format(
             *match.group(1).split('|'))
     raise Exception(
         "Session fetch failure; please recheck and/or retry fetching anime URLs again. If this problem persists, please make an issue immediately.")
