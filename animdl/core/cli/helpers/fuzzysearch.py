@@ -1,10 +1,11 @@
 import difflib
 
+
 def search(query, possibilities, cutoff=0.6, *, processor=lambda r: r):
-    
+
     sequence_matcher = difflib.SequenceMatcher()
     sequence_matcher.set_seq2(query)
-    
+
     for search_value in possibilities:
         sequence_matcher.set_seq1(processor(search_value))
         if (query.lower() in processor(search_value).lower()):

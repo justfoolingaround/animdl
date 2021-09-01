@@ -14,12 +14,12 @@ def quality_prompt(logger, stream_list, provider):
         inital = stream_judiciary(anime.get('stream_url'))
         if anime.get('quality'):
             inital += " [{0[quality]}]".format(anime)
-        
+
         if anime.get('subtitle'):
             inital += " [CC (Soft-Subbed)]"
 
         logger.info("{:02d}: {}".format(n, inital))
-        
+
     index = click.prompt(
         "[\x1b[33m%s\x1b[39m] Select by the index (defaults to 1)" %
         ('animdl-%s-streamer-core' %
@@ -27,7 +27,7 @@ def quality_prompt(logger, stream_list, provider):
 
     if (index + 1) > len(stream_list):
         logger.debug("Applying modulus to get a valid index from incorrect index: #%02d -> #%02d" %
-           (index + 1, index % len(stream_list) + 1))
+                     (index + 1, index % len(stream_list) + 1))
         index %= len(stream_list)
 
     return stream_list[index]

@@ -8,7 +8,7 @@ TWISTMOE_SECRET = b'267041df55ca2b36f2e322d05ee2c9cf'
 
 def unpad_content(content):
     return content[:-(content[-1] if isinstance(content[-1],
-                      int) else ord(content[-1]))]
+                                                int) else ord(content[-1]))]
 
 
 def generate_key(salt: bytes, *, output=48):

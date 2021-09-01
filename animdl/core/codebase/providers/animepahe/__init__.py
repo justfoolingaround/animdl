@@ -35,7 +35,8 @@ def get_m3u8_from_kwik(session, kwik_url):
 
 def get_stream_url(session, release_id, stream_session):
 
-    stream_url_data = session.get(API_URL, params={'m': 'links', 'id': release_id, 'session': stream_session, 'p': 'kwik'})
+    stream_url_data = session.get(API_URL, params={
+                                  'm': 'links', 'id': release_id, 'session': stream_session, 'p': 'kwik'})
     content = stream_url_data.json().get('data', [])
 
     for d in content:
@@ -62,15 +63,17 @@ def predict_pages(total, check):
 def page_minimization(page_generator):
     return sorted(list(dict.fromkeys(page_generator)), reverse=True)
 
+
 def bypass_ddos_guard(session):
-    js_bypass_uri = re.search(r"'(.*?)'", session.get('https://check.ddos-guard.net/check.js').text).group(1)
+    js_bypass_uri = re.search(
+        r"'(.*?)'", session.get('https://check.ddos-guard.net/check.js').text).group(1)
     session.cookies.update(session.get(ANIMEPAHE + js_bypass_uri).cookies)
 
 
 def fetcher(session, url, check):
 
     bypass_ddos_guard(session)
-    
+
     match = PLAYER_RE.search(url)
     if match:
         url = "https://www.animepahe.com/anime/%s" % match.group(1)
