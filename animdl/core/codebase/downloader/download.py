@@ -7,6 +7,7 @@ from tqdm import tqdm
 from ...config import AUTO_RETRY, QUALITY
 from .hls_download import hls_yield
 
+
 def sanitize_filename(f):
     return ''.join(' - ' if _ in '<>:"/\\|?*' else _ for _ in f)
 

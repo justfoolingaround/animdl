@@ -40,7 +40,7 @@ def fetcher(session, url, check):
     episodes = int(re.search(
         r'zd.*?\[tm\.{}\]=(\d+)'.format(re.escape(anime.group(1))), content).group(1))
     constructor, end = re.search(
-        '\[tm\.{}\]=function\(t\){{return"([^"]+)\"\+t\+\"([^"]+)'.format(re.escape(anime.group(1))), content).groups()
+        '\\[tm\\.{}\\]=function\\(t\\){{return"([^"]+)\"\\+t\\+\"([^"]+)'.format(re.escape(anime.group(1))), content).groups()
     for episode in range(1, episodes + 1):
         if check(episode):
             yield partial(lambda x: [{'stream_url': x, 'referer': ANIMTIME}], constructor + "{:03d}".format(episode) + end), episode

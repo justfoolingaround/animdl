@@ -14,7 +14,9 @@ def extract(session, vidstream_uri):
         '(.+)/(?:embed|e)/(.+)', vidstream_uri).group(1, 2))
     logger = logging.getLogger('9anime-vidstream-extractor')
 
-    vidstream_content = session.get(vidstream_uri, headers={'referer': NINEANIME})
+    vidstream_content = session.get(
+        vidstream_uri, headers={
+            'referer': NINEANIME})
     skey_match = SKEY_RE.search(vidstream_content.text)
     if not skey_match:
         if vidstream_content.ok:
@@ -23,14 +25,17 @@ def extract(session, vidstream_uri):
                 vidstream_uri)
         return []
 
-    vidstream_info = session.get(info_ajax, params={'skey': skey_match.group('skey')}, headers={'referer': vidstream_uri})
+    vidstream_info = session.get(
+        info_ajax, params={
+            'skey': skey_match.group('skey')}, headers={
+            'referer': vidstream_uri})
     return [
-            {
-                'stream_url': content.get(
-                    'file', ''), 'headers': {
-                    'referer': vidstream_uri}} for content in vidstream_info.json().get(
-                        'media', {}).get(
-                            'sources', []) if not content.get('file', '').endswith('m3u8')]
+        {
+            'stream_url': content.get(
+                'file', ''), 'headers': {
+                'referer': vidstream_uri}} for content in vidstream_info.json().get(
+            'media', {}).get(
+            'sources', []) if not content.get('file', '').endswith('m3u8')]
 
 
 extract.site = "vidstream"

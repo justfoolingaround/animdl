@@ -47,10 +47,9 @@ def bypass_adfly(session, adfly_url):
 
 
 def get_stream_url_from_kwik(session, adfly_url):
-    f_content = session.get(
-        bypass_adfly(
-            session, adfly_url), headers={
-            'referer': adfly_url})
+    url = bypass_adfly(session, adfly_url)
+    f_content = session.get(url.replace('kwik.cx', 'www.kwik.cx'))
+    print(f_content.url)
     decrypted = decrypt(
         *
         KWIK_PARAMS_RE.search(
@@ -61,6 +60,7 @@ def get_stream_url_from_kwik(session, adfly_url):
             4))
 
     code = 419
+
     while code != 302:
         content = session.post(
             KWIK_D_URL.search(decrypted).group(1),
@@ -71,5 +71,6 @@ def get_stream_url_from_kwik(session, adfly_url):
                 'referer': str(f_content.url),
                 'cookie': f_content.headers.get('set-cookie')})
         code = content.status_code
+        print(code)
 
     return content.headers.get('location')
