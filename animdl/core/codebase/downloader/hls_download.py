@@ -71,17 +71,15 @@ def select_best(q_dicts, preferred_quality):
                                     q.get(
                                         'quality', 0)), reverse=True) or q_dicts)
 
-
 def hls_yield(session, q_dicts, preferred_quality=QUALITY):
     """
     >>> hls_yield(session, {'stream_url': 'https://example.com/hls_stream.m3u8'}, 1080) # Generator[dict]
 
     Returns
     ------
-    A dictionary with 3 keys, `bytes`,
+    A dictionary with 3 keys, `bytes`, 
     """
-    logger = logging.getLogger(
-        "{.__class__} @ 0x{:016X}".format(session, id(session)))
+    logger = logging.getLogger("{.__class__} @ 0x{:016X}".format(session, id(session)))
 
     selected = select_best(q_dicts, preferred_quality)[0]
 
@@ -105,19 +103,14 @@ def hls_yield(session, q_dicts, preferred_quality=QUALITY):
             logger.warning('Could not find the quality {}, falling back to {}.'.format(
                 preferred_quality, second_selection.get('quality') or "an unknown quality."))
 
-        content_response = session.get(
-            second_selection.get('stream_url'), headers=headers)
+        content_response = session.get(second_selection.get('stream_url'), headers=headers)
         ok = content_response.status_code < 400
         if not ok:
             second_selection = next(genexp)
 
     m3u8_data = content_response.text
 
-    relative_url = yarl.URL(
-        second_selection.get(
-            'stream_url',
-            '').rstrip('/') +
-        "/").parent
+    relative_url = yarl.URL(second_selection.get('stream_url', '').rstrip('/') + "/").parent
 
     encryption_uri, encryption_iv, encryption_data = None, None, b''
     encryption_state = not unencrypted(m3u8_data)
@@ -133,11 +126,12 @@ def hls_yield(session, q_dicts, preferred_quality=QUALITY):
     all_ts = TS_EXTENSION_REGEX.findall(m3u8_data)
     last_yield = 0
 
+
     for c, ts_uris in enumerate(all_ts, 1):
         ts_uris = yarl.URL(ts_uris)
         if not ts_uris.is_absolute():
             ts_uris = relative_url.join(ts_uris)
-
+        
         while last_yield != c:
             try:
                 ts_response = session.get(str(ts_uris), headers=headers)

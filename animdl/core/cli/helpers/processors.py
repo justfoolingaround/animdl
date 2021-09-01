@@ -23,7 +23,7 @@ def prompt_user(logger, anime_list_genexp, provider_name):
 
     if not r:
         logger.critical("[\x1b[31manimdl-{}-{}\x1b[39m] {}".format(provider_name,
-                                                                   'searcher', 'Cannot find anything of that query.'))
+              'searcher', 'Cannot find anything of that query.'))
         return {}, None
 
     index = prompt(
@@ -33,7 +33,7 @@ def prompt_user(logger, anime_list_genexp, provider_name):
         show_default=False) - 1
     if (index + 1) > len(r):
         logger.debug("Applying modulus to get a valid index from incorrect index: #%02d -> #%02d" %
-                     (index + 1, index % len(r) + 1))
+           (index + 1, index % len(r) + 1))
         index %= len(r)
 
     return r[index], provider_name
