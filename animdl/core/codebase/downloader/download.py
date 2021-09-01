@@ -71,5 +71,5 @@ def hls_download(
             if _tqdm:
                 _tqdm_bar.update(1)
 
-    if _tqdm:
+    if isinstance(_tqdm_bar, tqdm):
         _tqdm_bar.close()
