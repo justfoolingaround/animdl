@@ -7,6 +7,8 @@ import lxml.html as htmlparser
 from ....config import CRUNCHYROLL
 from ...helper import construct_site_based_regex
 
+from .geobypass import geobypass_response
+
 CRUNCHYROLL_REGEX = construct_site_based_regex(CRUNCHYROLL, extra_regex=r'/([^?/&]+)')
 
 CONTENT_METADATA = re.compile(r"vilos\.config\.media = (\{.+\})")
@@ -17,7 +19,7 @@ def get_subtitle(subtitles, lang='enUS'):
             yield sub.get('url')
 
 def get_stream_url(session, episode_page):
-    json_content = json.loads(CONTENT_METADATA.search(session.get(episode_page).text).group(1))
+    json_content = json.loads(CONTENT_METADATA.search(geobypass_response(episode_page).text).group(1))
     metadata = json_content.get('metadata')
 
     for stream in json_content.get('streams'):
@@ -33,7 +35,7 @@ def fetcher(session, url, check):
 
     url = "http://www.crunchyroll.com/{}".format(CRUNCHYROLL_REGEX.search(url).group(1))
 
-    episode_pages = htmlparser.fromstring(session.get(url).text).cssselect('.episode')[::-1]
+    episode_pages = htmlparser.fromstring(geobypass_response(url).text).cssselect('.episode')[::-1]
 
     for episode in episode_pages:
         episode_number = 0
