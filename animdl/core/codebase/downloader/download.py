@@ -1,4 +1,5 @@
 import logging
+import os
 import time
 
 import httpx
@@ -6,6 +7,7 @@ from tqdm import tqdm
 
 from ...config import AUTO_RETRY, QUALITY
 from .hls_download import hls_yield
+
 
 def sanitize_filename(f):
     return ''.join(' - ' if _ in '<>:"/\\|?*' else _ for _ in f)
@@ -49,16 +51,28 @@ def hls_download(
         _path,
         episode_identifier,
         _tqdm=True,
-        preferred_quality=QUALITY):
+        preferred_quality=QUALITY,
+        *,
+        index_holder,
+        ):
 
     session = httpx.Client()
     _tqdm_bar = None
 
-    with open(_path, 'ab') as sw:
+    continuator = 1
+    if index_holder.exists():
+        with open(index_holder, 'r') as ih:
+            continuator = int(ih.read() or 1)
+
+
+    with open(_path, 'ab') as sw, open(index_holder, 'w') as ih_w:
         for content in hls_yield(
                 session,
                 quality_dict,
-                preferred_quality=preferred_quality):
+                preferred_quality=preferred_quality,
+                auto_retry=AUTO_RETRY,
+                continuation_index=continuator
+                ):
             if _tqdm and not _tqdm_bar:
                 _tqdm_bar = tqdm(
                     desc="[HLS] %s " %
@@ -66,10 +80,15 @@ def hls_download(
                     total=content.get(
                         'total',
                         0),
-                    unit='ts')
+                    unit='ts',
+                    initial=continuator - 1)
             sw.write(content.get('bytes'))
             if _tqdm:
                 _tqdm_bar.update(1)
+            with open(index_holder, 'w') as ih_w:
+                ih_w.write(str(content.get('current', 0) + 1))
 
     if isinstance(_tqdm_bar, tqdm):
         _tqdm_bar.close()
+
+    os.remove(index_holder)

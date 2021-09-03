@@ -192,7 +192,7 @@ def animdl_download(
                 logger.warn("Can't find the quality '{}' for {!r}; falling back to {}.".format(
                     quality, content_title, q if q != 'unknown' else 'an unknown quality'))
         else:
-            content = available_qualities.pop(0)
+            content = available_qualities[0]
 
         q = content.get('quality')
 
@@ -211,10 +211,12 @@ def animdl_download(
         download_path = base / file_path
 
         if extension in ['m3u', 'm3u8']:
-            hls_download(stream_urls,
+            hls_download(available_qualities,
                          base / ("%s.ts" % sanitize_filename(content_title)),
                          content_title,
-                         preferred_quality=quality)
+                         preferred_quality=quality,
+                         index_holder=base / ("%s.partial_ts" % sanitize_filename(content_title))
+                         )
             continue
 
         if idm:
