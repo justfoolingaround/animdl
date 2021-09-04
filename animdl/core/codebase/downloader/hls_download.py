@@ -18,6 +18,7 @@ QUALITY_REGEX = re.compile(
 
 TS_EXTENSION_REGEX = re.compile(r"(?P<ts_url>.*\.ts.*)")
 
+HLS_STREAM_EXTENSIONS = ['m3u8', 'm3u']
 
 def get_extension(url):
     initial, _, extension = yarl.URL(url).name.partition('.')
@@ -55,7 +56,7 @@ def m3u8_generation(session_init, m3u8_uri):
     for regex_find in STREAM_INFO_REGEX.finditer(response.content.decode('utf-8', errors='ignore')):
         stream_info, content_uri = regex_find.groups()
         url = yarl.URL(content_uri)
-        if get_extension(url) == 'm3u8':
+        if get_extension(url) in HLS_STREAM_EXTENSIONS:
             if not url.is_absolute():
                 content_uri = m3u8_uri_parent.join(content_uri)
             yield from m3u8_generation(session_init, content_uri)
@@ -85,7 +86,10 @@ def resolve_stream(session, logger, q_dicts, preferred_quality):
             content_response = session.get(m3u8.get('stream_url'), headers=headers)
             if content_response.status_code < 400:
                 return content_response, origin_m3u8
-
+        content_response = session.get(origin_m3u8.get('stream_url'), headers=headers)
+        if content_response.status_code < 400:
+            return content_response, origin_m3u8
+        
 
 def hls_yield(session, q_dicts, preferred_quality, auto_retry, *, continuation_index=1):
     """
@@ -99,7 +103,6 @@ def hls_yield(session, q_dicts, preferred_quality, auto_retry, *, continuation_i
     content_response, origin_m3u8 = resolve_stream(session, logger, q_dicts, preferred_quality)
     m3u8_data = content_response.content.decode('utf-8', errors='ignore')
     relative_url = yarl.URL(str(content_response.url).rstrip('/') + "/").parent
-
     encryption_uri, encryption_iv, encryption_data = None, None, b''
     encryption_state = not unencrypted(m3u8_data)
 
@@ -112,15 +115,14 @@ def hls_yield(session, q_dicts, preferred_quality, auto_retry, *, continuation_i
         encryption_data = encryption_key_response.content
 
     all_ts = TS_EXTENSION_REGEX.findall(m3u8_data)
-    last_yield = 0
-
     default_iv_generator = def_iv(continuation_index)
 
     for c, ts_uris in enumerate(all_ts[(continuation_index - 1):], continuation_index):
         ts_uris = yarl.URL(ts_uris)
         if not ts_uris.is_absolute():
             ts_uris = relative_url.join(ts_uris)
-        while last_yield != c:
+        sucessful_yield = False
+        while not sucessful_yield:
             try:
                 ts_response = session.get(str(ts_uris), headers=origin_m3u8.get('headers', {}))
                 ts_data = ts_response.content
@@ -128,7 +130,7 @@ def hls_yield(session, q_dicts, preferred_quality, auto_retry, *, continuation_i
                     ts_data = get_decrypter(
                         encryption_data, iv=encryption_iv or b'', default_iv_generator=default_iv_generator)(ts_data)
                 yield {'bytes': ts_data, 'total': len(all_ts), 'current': c}
-                last_yield = c
+                sucessful_yield = True
             except httpx.HTTPError as e:
                 logger.error(
                     'HLS downloading error due to "{!r}", retrying.'.format(e))
