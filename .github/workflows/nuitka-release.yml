@@ -32,10 +32,10 @@ jobs:
           exclusions: '*.git* /*node_modules/* .editorconfig'
 
       - name: Create pre-release
-      uses: "marvinpinto/action-automatic-releases@latest"
-      with:
-        repo_token: "${{ secrets.GITHUB_TOKEN }}"
-        automatic_release_tag: "pre-release"
-        prerelease: true
-        title: "Pre-release Build"
-        files: release.zip
+        uses: "marvinpinto/action-automatic-releases@latest"
+        with:
+          repo_token: "${{ secrets.GITHUB_TOKEN }}"
+          automatic_release_tag: "pre-release"
+          prerelease: true
+          title: "Pre-release Build"
+          files: release.zip
