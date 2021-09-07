@@ -17,7 +17,13 @@ def get_episode_list(session, anime_id):
     """
     Fetch all the episodes' url from GogoAnime using.
     """
-    episode_page = session.get(EPISODE_LOAD_AJAX, params={'ep_start': '0', 'ep_end': '2000', 'id': anime_id, })
+    episode_page = session.get(
+        EPISODE_LOAD_AJAX,
+        params={
+            'ep_start': '0',
+            'ep_end': '2000',
+            'id': anime_id,
+        })
     content = htmlparser.fromstring(episode_page.text)
 
     for episode in content.xpath('//ul[@id="episode_related"]/li/a'):
@@ -36,11 +42,13 @@ def convert_to_anime_page(url):
         return SITE_URL + "/category/%s" % match.group(1)
     return url
 
+
 def get_quality(url_text):
     match = re.search(r'(\d+)P', url_text)
     if not match:
         return None
     return int(match.group(1))
+
 
 def get_stream_url(session, episode_page_url):
 
@@ -50,7 +58,13 @@ def get_stream_url(session, episode_page_url):
     streaming = content_parsed.cssselect(
         'iframe')[0].get('src')
 
-    response = session.get('https:%s' % streaming.replace('streaming.php', 'download'), headers={'referer': "https:{}".format(streaming)})
+    response = session.get(
+        'https:%s' %
+        streaming.replace(
+            'streaming.php',
+            'download'),
+        headers={
+            'referer': "https:{}".format(streaming)})
     content = htmlparser.fromstring(response.text)
 
     return [{'quality': get_quality(url.text_content()), 'stream_url': url.get('href'), 'headers': {'referer': str(response.url)}} for url in content.cssselect(

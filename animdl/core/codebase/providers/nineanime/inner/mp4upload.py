@@ -26,14 +26,14 @@ def extract(session, mp4upload_uri):
 
     mp4upload_embed_page = session.get(mp4upload_uri)
     if mp4upload_embed_page.text == 'File was deleted':
-                return []
-    
+        return []
+
     content = MP4UPLOAD_REGEX.search(
-            mp4upload_embed_page.text).group(1).split('|')
+        mp4upload_embed_page.text).group(1).split('|')
 
     try:
         return [{**(extract_480 if '480' in content else extract_any)(content),
-                    'headers': {'referer': mp4upload_uri, 'ssl_verification': False}}]
+                 'headers': {'referer': mp4upload_uri, 'ssl_verification': False}}]
     except Exception as e:
         return logger.error(
             "'%s' occurred when extracting from '%s'." %

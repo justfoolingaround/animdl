@@ -1,4 +1,4 @@
-import json
+import yaml
 import os
 from pathlib import Path
 
@@ -14,7 +14,7 @@ def merge_dicts(dict1, dict2):
 
 
 CONFIGURATION_FILE_PATH = Path(
-    os.getenv('ANIMDL_CONFIG') or './animdl_config.json')
+    os.getenv('ANIMDL_CONFIG') or './animdl_config.yml')
 
 DEFAULT_CONFIG = {
     'session_file': 'cli_session_animdl.json',
@@ -54,7 +54,7 @@ CONFIG = DEFAULT_CONFIG
 
 if CONFIGURATION_FILE_PATH.exists():
     with open(CONFIGURATION_FILE_PATH, 'r') as conf:
-        CONFIG = merge_dicts(DEFAULT_CONFIG, json.load(conf))
+        CONFIG = merge_dicts(DEFAULT_CONFIG, yaml.load(conf))
 
 SITE_URLS = CONFIG.get('site_urls', {})
 
@@ -82,3 +82,6 @@ SESSION_FILE = CONFIG.get('session_file')
 DEFAULT_PROVIDER = CONFIG.get('default_provider')
 
 AUTO_RETRY = CONFIG.get('download_auto_retry', 300) / 1000
+
+with open('config.test.yaml', 'w') as r:
+    yaml.dump(DEFAULT_CONFIG, r, indent=4)

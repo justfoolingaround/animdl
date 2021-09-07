@@ -33,7 +33,7 @@ def get_embed(session, data_url):
 
     resp = 0
 
-    while resp != 200:
+    while resp in [200, 403]:
         embed_page = session.get(
             EMBED_URL_BASE.format(
                 b64encode(
@@ -43,11 +43,17 @@ def get_embed(session, data_url):
                     errors='ignore')),
             allow_redirects=True)
         resp = embed_page.status_code
+    
+    if resp == 403:
+        return
+    
     return embed_page
 
 
 def get_stream_url(session, data_url):
     url = get_embed(session, data_url)
+    if not url:
+        return []
     if not isinstance(url, str):
         video_on_site = EMBED_VIDEO_MATCHER.search(url.text)
         if video_on_site:

@@ -11,6 +11,7 @@ from ...config import QUALITY, SESSION_FILE
 from ..helpers import *
 from ..http_client import client
 
+
 @click.command(name='download', help="Download your favorite anime by query.")
 @click.argument('query', required=True)
 @click.option('-a', '--anonymous', is_flag=True, default=False,
@@ -184,7 +185,16 @@ def animdl_download(
                 content_title)
             continue
 
-        available_qualities = [*filter_quality(stream_urls, quality, download=True)] or [*filter_urls(stream_urls, download=True)]
+        available_qualities = [
+            *
+            filter_quality(
+                stream_urls,
+                quality,
+                download=True)] or [
+            *
+            filter_urls(
+                stream_urls,
+                download=True)]
         if not available_qualities:
             content = stream_urls[0]
             q = content.get('quality')
@@ -215,7 +225,8 @@ def animdl_download(
                          base / ("%s.ts" % sanitize_filename(content_title)),
                          content_title,
                          preferred_quality=quality,
-                         index_holder=base / ("%s.partial_ts" % sanitize_filename(content_title))
+                         index_holder=base / ("%s.partial_ts" %
+                                              sanitize_filename(content_title))
                          )
             continue
 

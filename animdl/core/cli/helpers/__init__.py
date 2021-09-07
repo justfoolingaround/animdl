@@ -5,6 +5,7 @@ from .processors import process_query, get_searcher
 
 import yarl
 
+
 def get_extension(url):
     url = yarl.URL(url)
     position = url.name.find('.')
@@ -13,7 +14,8 @@ def get_extension(url):
     return url.name[position + 1:]
 
 
-def filter_urls(stream_urls, *, download=False, supported_formats=['m3u8', 'mp4', 'php', 'm3u']):
+def filter_urls(stream_urls, *, download=False,
+                supported_formats=['m3u8', 'mp4', 'php', 'm3u']):
     for _ in sorted(
         stream_urls,
         reverse=True,
@@ -28,11 +30,13 @@ def filter_urls(stream_urls, *, download=False, supported_formats=['m3u8', 'mp4'
             continue
         yield _
         q = _.get('quality') or 'unknown'
-        
 
-def filter_quality(stream_urls, preferred_quality, *, download=False, supported_formats=['m3u8', 'mp4', 'php', 'm3u']):
-    for _ in filter_urls(stream_urls, download=False, supported_formats=['m3u8', 'mp4', 'php', 'm3u']):
+
+def filter_quality(stream_urls, preferred_quality, *, download=False,
+                   supported_formats=['m3u8', 'mp4', 'php', 'm3u']):
+    for _ in filter_urls(stream_urls, download=False, supported_formats=[
+                         'm3u8', 'mp4', 'php', 'm3u']):
         q = _.get('quality') or 'unknown'
         if q != 'unknown' and (isinstance(q, int) or q.isdigit()):
-                if preferred_quality >= int(q):
-                    yield _
+            if preferred_quality >= int(q):
+                yield _

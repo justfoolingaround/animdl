@@ -141,10 +141,17 @@ def animdl_schedule(log_level):
     unix_time = int((datetime.utcnow() - datetime(1970, 1, 1)).total_seconds())
 
     while has_next_page:
-        schedule_data = session.post(ANICHART, json={'query': gql, 'variables': {'weekStart': unix_time, 'weekEnd': unix_time + 24 * 7 * 60 * 60, 'page': page}})
+        schedule_data = session.post(
+            ANICHART,
+            json={
+                'query': gql,
+                'variables': {
+                    'weekStart': unix_time,
+                    'weekEnd': unix_time + 24 * 7 * 60 * 60,
+                    'page': page}})
         data = schedule_data.json()
         schedules.extend(
-        data.get(
+            data.get(
                 'data',
                 {}).get(
                 'Page',
@@ -152,14 +159,14 @@ def animdl_schedule(log_level):
                 'airingSchedules',
                 []))
         has_next_page = data.get(
-        'data',
-        {}).get(
-        'Page',
-        {}).get(
-        'pageInfo',
-        {}).get(
-        'hasNextPage',
-        False)
+            'data',
+            {}).get(
+            'Page',
+            {}).get(
+            'pageInfo',
+            {}).get(
+            'hasNextPage',
+            False)
         page += 1
 
     for date, _content in arrange_template(schedules).items():

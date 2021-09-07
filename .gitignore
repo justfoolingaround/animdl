@@ -1,11 +1,13 @@
 __pycache__/
-devtest.py
 
 # Shader files
 *.glsl
 
 # Session files
 cli_session_animdl.json
+
+# Configs
+animdl-config.*
 
 # justfoolingaround's test anime downloads
 downloadsdev/

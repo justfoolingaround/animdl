@@ -3,6 +3,7 @@ All the search algorithms for all the providers available in AnimDL.
 """
 
 import re
+import json
 
 import lxml.html as htmlparser
 
@@ -38,7 +39,12 @@ def search_9anime(session, query):
     waf_token = ''.join(chr(int(c, 16)) for c in WAF_SEPARATOR.findall(
                 WAF_TOKEN.search(cloudflare_page.text).group(1)))
 
-    nineanime_results = session.get(NINEANIME_URL_SEARCH, params={'keyword': query}, headers={'cookie': 'waf_cv=%s' % waf_token})
+    nineanime_results = session.get(
+        NINEANIME_URL_SEARCH,
+        params={
+            'keyword': query},
+        headers={
+            'cookie': 'waf_cv=%s' % waf_token})
     parsed = htmlparser.fromstring(nineanime_results.text)
 
     for results in parsed.xpath(
@@ -48,11 +54,15 @@ def search_9anime(session, query):
 
 def search_animepahe(session, query):
     def bypass_ddos_guard(session):
-        js_bypass_uri = re.search(r"'(.*?)'", session.get('https://check.ddos-guard.net/check.js').text).group(1)
+        js_bypass_uri = re.search(
+            r"'(.*?)'",
+            session.get('https://check.ddos-guard.net/check.js').text).group(1)
         session.cookies.update(session.get(ANIMEPAHE + js_bypass_uri).cookies)
 
     bypass_ddos_guard(session)
-    animepahe_results = session.get(ANIMEPAHE_URL_SEARCH_AJAX, params={'q': query, 'm': 'search'})
+    animepahe_results = session.get(
+        ANIMEPAHE_URL_SEARCH_AJAX, params={
+            'q': query, 'm': 'search'})
     content = animepahe_results.json()
 
     for results in content.get('data', []):
@@ -68,30 +78,44 @@ def search_animeout(session, query):
 
 
 def search_animixplay(session, query):
-    parsed = htmlparser.fromstring(session.get(GOGOANIME_URL_SEARCH, params={'keyword': query}).text)
+    parsed = htmlparser.fromstring(
+        session.get(
+            GOGOANIME_URL_SEARCH, params={
+                'keyword': query}).text)
 
     for results in parsed.xpath('//p[@class="name"]/a'):
         yield {'anime_url': ANIMIXPLAY + "v1" + results.get('href')[9:], 'name': results.get('title')}
 
 
 def search_gogoanime(session, query):
-    parsed = htmlparser.fromstring(session.get(GOGOANIME_URL_SEARCH, params={'keyword': query}).text)
+    parsed = htmlparser.fromstring(
+        session.get(
+            GOGOANIME_URL_SEARCH, params={
+                'keyword': query}).text)
 
     for results in parsed.xpath('//p[@class="name"]/a'):
         yield {'anime_url': GOGOANIME.strip('/') + results.get('href'), 'name': results.get('title')}
 
 
 def search_twist(session, query):
-    content = session.get(TWIST_URL_CONTENT_API, headers={'x-access-token': '0df14814b9e590a1f26d3071a4ed7974'})
+    content = session.get(
+        TWIST_URL_CONTENT_API, headers={
+            'x-access-token': '0df14814b9e590a1f26d3071a4ed7974'})
     animes = content.json()
 
-    for match, anime in search(query, animes, processor=lambda r: r.get('title') or r.get('alt_title')):
+    for match, anime in search(query, animes, processor=lambda r: r.get(
+            'title') or r.get('alt_title')):
         yield {'anime_url': TWIST_URL_CONTENT + anime.get('slug', {}).get('slug'), 'name': anime.get('title', '')}
 
-def search_crunchyroll(session, query):
-    content = json.loads(session.get(CRUNCHYROLL + "ajax/?req=RpcApiSearch_GetSearchCandidates").text.strip('*/\n -secur'))
 
-    for match, anime in search(query, content.get('data', []), processor=lambda r: r.get('name')):
+def search_crunchyroll(session, query):
+    content = json.loads(
+        session.get(
+            CRUNCHYROLL +
+            "ajax/?req=RpcApiSearch_GetSearchCandidates").text.strip('*/\n -secur'))
+
+    for match, anime in search(query, content.get(
+            'data', []), processor=lambda r: r.get('name')):
         yield {'anime_url': CRUNCHYROLL + anime.get('link', '').strip('/'), 'name': anime.get('name', '')}
 
 
@@ -99,9 +123,17 @@ def search_tenshi(session, query):
     tenshi_page = session.get(TENSHI)
     session_id = tenshi_page.cookies.get('tenshimoe_session')
     token = htmlparser.fromstring(tenshi_page.text).xpath(
-                '//meta[@name="csrf-token"]')[0].get('content')
+        '//meta[@name="csrf-token"]')[0].get('content')
 
-    ajax_content = session.post(TENSHI_URL_SEARCH_POST, data={'q': query}, headers={'x-requested-with': 'XMLHttpRequest', 'x-csrf-token': token, 'referer': 'https://tenshi.moe/', 'cookie': 'tenshimoe_session={}'.format(session_id)})
+    ajax_content = session.post(
+        TENSHI_URL_SEARCH_POST,
+        data={
+            'q': query},
+        headers={
+            'x-requested-with': 'XMLHttpRequest',
+            'x-csrf-token': token,
+            'referer': 'https://tenshi.moe/',
+            'cookie': 'tenshimoe_session={}'.format(session_id)})
     results = ajax_content.json()
 
     for result in results:

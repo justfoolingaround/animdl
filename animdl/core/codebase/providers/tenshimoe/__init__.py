@@ -15,8 +15,8 @@ def extract_urls(session, episode_page):
         '//iframe') or [{}])[0].get('src')
     streams_page = session.get(embed_page, headers={'referer': episode_page})
     for content in htmlparser.fromstring(
-                    streams_page.text).xpath('//source'):
-                yield {'quality': int((content.get('title') or '0').strip('p')), 'stream_url': content.get('src')}
+            streams_page.text).xpath('//source'):
+        yield {'quality': int((content.get('title') or '0').strip('p')), 'stream_url': content.get('src')}
 
 
 def fetcher(session, url, check):

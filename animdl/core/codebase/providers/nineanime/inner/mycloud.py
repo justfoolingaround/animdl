@@ -31,14 +31,17 @@ def extract(session, mcloud_uri):
                 mcloud_uri)
         return []
 
-    mcloud_info = session.get(info_ajax, params={'skey': skey_match.group('skey')}, headers={'referer': mcloud_uri})
+    mcloud_info = session.get(
+        info_ajax, params={
+            'skey': skey_match.group('skey')}, headers={
+            'referer': mcloud_uri})
     return [
-            {
-                'stream_url': content.get(
-                    'file', ''), 'headers': {
-                    'referer': mcloud_uri}} for content in mcloud_info.json().get(
-                        'media', {}).get(
-                            'sources', [])]
+        {
+            'stream_url': content.get(
+                'file', ''), 'headers': {
+                'referer': mcloud_uri}} for content in mcloud_info.json().get(
+            'media', {}).get(
+            'sources', [])]
 
 
 extract.site = "mycloud"

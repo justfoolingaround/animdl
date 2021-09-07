@@ -54,7 +54,7 @@ def hls_download(
         preferred_quality=QUALITY,
         *,
         index_holder,
-        ):
+):
 
     session = httpx.Client()
     _tqdm_bar = None
@@ -64,7 +64,6 @@ def hls_download(
         with open(index_holder, 'r') as ih:
             continuator = int(ih.read() or 1)
 
-
     with open(_path, 'ab') as sw, open(index_holder, 'w') as ih_w:
         for content in hls_yield(
                 session,
@@ -72,7 +71,7 @@ def hls_download(
                 preferred_quality=preferred_quality,
                 auto_retry=AUTO_RETRY,
                 continuation_index=continuator
-                ):
+        ):
             if _tqdm and not _tqdm_bar:
                 _tqdm_bar = tqdm(
                     desc="[HLS] %s " %

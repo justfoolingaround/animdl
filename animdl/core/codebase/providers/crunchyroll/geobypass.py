@@ -14,9 +14,13 @@ headers = httpx.Headers(
     }
 )
 
+
 @functools.lru_cache()
 def get_session_id():
-    return httpx.get(BYPASS_SERVER, params={'version': '1.1'}).json().get('data', {}).get('session_id')
+    return httpx.get(BYPASS_SERVER, params={'version': '1.1'}).json().get(
+        'data', {}).get('session_id')
+
 
 def geobypass_response(url):
-    return httpx.get(url, headers=headers, cookies={'session_id': get_session_id()})
+    return httpx.get(url, headers=headers, cookies={
+                     'session_id': get_session_id()})

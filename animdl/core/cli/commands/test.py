@@ -28,11 +28,7 @@ def animdl_test(x, e, log_level):
     session = client
     SITE_LIST = {
         '9anime': 'https://9anime.to/watch/one-piece.ov8',
-        'animepahe': session.get(
-            'https://pahe.win/a/4',
-            allow_redirects=False).headers.get(
-            'location',
-            ''),
+        'crunchyroll': 'https://www.crunchyroll.com/one-piece',
         'animeout': 'https://www.animeout.xyz/download-one-piece-episodes-latest/',
         'animixplay': 'https://animixplay.to/v1/one-piece',
         'animtime': 'https://animtime.com/title/5',
