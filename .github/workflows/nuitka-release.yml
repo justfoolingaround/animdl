@@ -30,20 +30,12 @@ jobs:
           path: './runner.dist/'
           filename: 'release.zip'
           exclusions: '*.git* /*node_modules/* .editorconfig'
-          
-      - name: Delete exisiting release
-        uses: dev-drprasad/delete-tag-and-release@v0.2.0
-        with:
-          delete_release: true
-          tag_name: 1.3-auto
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        continue-on-error: true
 
-      - name: Upload Release
-        uses: ncipollo/release-action@v1
-        with:
-          artifacts: "release.zip"
-          prerelease: true
-          tag: 1.3-auto
-          token: ${{ secrets.GITHUB_TOKEN }}
+      - name: Create pre-release
+      uses: "marvinpinto/action-automatic-releases@latest"
+      with:
+        repo_token: "${{ secrets.GITHUB_TOKEN }}"
+        automatic_release_tag: "pre-release"
+        prerelease: true
+        title: "Pre-release Build"
+        files: release.zip
