@@ -33,7 +33,7 @@ def get_embed(session, data_url):
 
     resp = 0
 
-    while resp in [200, 403]:
+    while not resp in [200, 403]:
         embed_page = session.get(
             EMBED_URL_BASE.format(
                 b64encode(
