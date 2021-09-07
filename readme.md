@@ -157,4 +157,4 @@ players:
 
 ### Disclaimer
 
-Downloading or streaming copyrighted materials might be illegal in your country.
+The disclaimer of this project can be found [here.](./disclaimer.md)
