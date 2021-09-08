@@ -21,6 +21,7 @@ DEFAULT_CONFIG = {
     'default_provider': 'animixplay',
     'site_urls': {
         '9anime': 'https://9anime.to/',
+        'animekaizoku': 'https://animekaizoku.com/',
         'animeout': 'https://animeout.xyz/',
         'animepahe': 'https://animepahe.com/',
         'animixplay': 'https://animixplay.to/',
@@ -59,6 +60,7 @@ if CONFIGURATION_FILE_PATH.exists():
 SITE_URLS = CONFIG.get('site_urls', {})
 
 NINEANIME = SITE_URLS.get('9anime')
+ANIMEKAIZOKU = SITE_URLS.get('animekaizoku')
 ANIMEOUT = SITE_URLS.get('animeout')
 ANIMEPAHE = SITE_URLS.get('animepahe')
 ANIMIXPLAY = SITE_URLS.get('animixplay')
@@ -82,6 +84,3 @@ SESSION_FILE = CONFIG.get('session_file')
 DEFAULT_PROVIDER = CONFIG.get('default_provider')
 
 AUTO_RETRY = CONFIG.get('download_auto_retry', 300) / 1000
-
-with open('config.test.yaml', 'w') as r:
-    yaml.dump(DEFAULT_CONFIG, r, indent=4)
