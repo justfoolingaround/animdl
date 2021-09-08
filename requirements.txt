@@ -6,3 +6,4 @@ lxml
 tqdm
 pycryptodomex
 yarl
+pyyaml
