@@ -116,6 +116,8 @@ Commands:
 
 **Downloading** is the same as the examples 1-4, except the `download` command is used.
 
+Downloading will take place in the working directory of this project!
+
 ### Supported Sites
 
 <!--Working: https://i.imgur.com/tG9nb8s.png, !Working: https://i.imgur.com/bTLO7LJ.png !-->
