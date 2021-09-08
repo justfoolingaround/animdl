@@ -46,7 +46,7 @@ def process_query(
         *,
         provider=DEFAULT_PROVIDER,
         auto=False,
-        auto_index=0):
+        auto_index=1):
 
     for url, matcher_data in URL_MATCHERS.items():
         if matcher_data.get('matcher').search(query):
@@ -64,4 +64,4 @@ def process_query(
     searcher = get_searcher(provider)(session, query)
     if not auto:
         return prompt_user(logger, searcher, provider)
-    return [*searcher][auto_index], provider
+    return [*searcher][auto_index-1], provider

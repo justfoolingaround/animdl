@@ -64,7 +64,7 @@ from ..http_client import client
               help="Download anime using Internet Download Manager")
 @click.option('--auto', is_flag=True, default=False,
               help="Select the first given index without asking for prompts.")
-@click.option('-i', '--index', required=False, default=0,
+@click.option('-i', '--index', required=False, default=1,
               show_default=False, type=int, help="Index for the auto flag.")
 @click.option('-ll',
               '--log-level',
