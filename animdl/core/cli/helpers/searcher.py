@@ -51,6 +51,14 @@ def search_9anime(session, query):
             '//ul[@class="anime-list"]/li/a[@class="name"]'):
         yield {'anime_url': NINEANIME.rstrip('/') + results.get('href'), 'name': results.text_content()}
 
+def search_animekaizoku(session, query):
+    animekaizoku_results = htmlparser.fromstring(session.get(
+        ANIMEKAIZOKU,
+        params={'s': query}
+    ).text)
+    for results in animekaizoku_results.cssselect('.post-title'):
+        yield {'anime_url': ANIMEKAIZOKU + results.cssselect('a')[0].get('href'), 'name': results.text_content()}
+
 
 def search_animepahe(session, query):
     def bypass_ddos_guard(session):
@@ -142,6 +150,7 @@ def search_tenshi(session, query):
 
 link = {
     '9anime': search_9anime,
+    'animekaizoku': search_animekaizoku,
     'animepahe': search_animepahe,
     'animeout': search_animeout,
     'animixplay': search_animixplay,

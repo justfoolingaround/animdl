@@ -4,10 +4,11 @@ All the current providers that are made available in AnimDL.
 The fetcher function must take session, url and check parameters to work.
 """
 
-from ...config import (ANIMEOUT, ANIMEPAHE, ANIMIXPLAY, ANIMTIME, CRUNCHYROLL,
+from ...config import (ANIMEKAIZOKU, ANIMEOUT, ANIMEPAHE, ANIMIXPLAY, ANIMTIME, CRUNCHYROLL,
                        GOGOANIME, NINEANIME, TENSHI, TWIST)
 from ..helper import construct_site_based_regex
 
+from .animekaizoku import fetcher as animekaizoku_fetcher
 from .animepahe import fetcher as animepahe_fetcher
 from .animeout import fetcher as animeout_fetcher
 from .animixplay import fetcher as animix_fetcher
@@ -19,6 +20,12 @@ from .tenshimoe import fetcher as tenshi_fetcher
 from .twistmoe import fetcher as twist_fetcher
 
 current_providers = {
+    'animekaizoku': {
+        'matcher': construct_site_based_regex(
+            ANIMEKAIZOKU,
+            extra_regex=r'/([^?&/]+)'),
+        'fetcher': animekaizoku_fetcher
+        },
     'animixplay': {
         'matcher': construct_site_based_regex(
             ANIMIXPLAY,
