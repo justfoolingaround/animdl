@@ -48,5 +48,4 @@ Contacting the developer
 
 Begin by making a GitHub issue or sending an email to kr.justfoolingaround@gmail.com.
 
-Do not expect a reply if contacted in services such as Discord.
 </div>
