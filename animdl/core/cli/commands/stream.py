@@ -2,6 +2,8 @@ import logging
 
 import click
 
+from collections import defaultdict
+
 from ...codebase import Associator, get_filler_list
 from ...config import DEFAULT_PLAYER, SESSION_FILE
 from ..helpers import *
@@ -9,16 +11,19 @@ from ..http_client import client
 
 
 def quality_prompt(logger, stream_list, provider):
+    title_dict = defaultdict(lambda: defaultdict(lambda: defaultdict(list)))
+
     for n, anime in enumerate(stream_list, 1):
+        title_dict[anime.get('title') or 'Uncategorized'][anime.get('quality') or 'No specific quality mentioned']['Soft subtitles (Subtitles are not forced.)' if anime.get('subtitle') else 'Hard subtitles (Subtitles are forced.)'].append("{:02d}: {}".format(n, stream_judiciary(anime.get('stream_url'))))
 
-        inital = stream_judiciary(anime.get('stream_url'))
-        if anime.get('quality'):
-            inital += " [{0[quality]}]".format(anime)
-
-        if anime.get('subtitle'):
-            inital += " [CC (Soft-Subbed)]"
-
-        logger.info("{:02d}: {}".format(n, inital))
+    for category, qualities in title_dict.items():
+        logger.info("\x1b[91m▽ {}\x1b[39m".format(category))
+        for quality, subtitles in qualities.items():
+            logger.info("\x1b[96m▽▽ {}\x1b[39m".format(quality))
+            for subtitle, animes in subtitles.items():
+                logger.info("\x1b[95m▽▽▽ {}\x1b[39m".format(subtitle))
+                for anime in animes:
+                    logger.info(anime)
 
     index = click.prompt(
         "[\x1b[33m%s\x1b[39m] Select by the index (defaults to 1)" %

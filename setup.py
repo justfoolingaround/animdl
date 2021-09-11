@@ -16,6 +16,7 @@ setup(
         'comtypes',
         'cssselect',
         'httpx',
+        'requests',
         'pyyaml',
         'yarl',
         'lxml',

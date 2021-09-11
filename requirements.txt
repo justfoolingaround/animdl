@@ -4,6 +4,7 @@ cssselect
 httpx
 lxml
 tqdm
+requests
 pycryptodomex
 yarl
 pyyaml

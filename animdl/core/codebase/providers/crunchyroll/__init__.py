@@ -1,12 +1,12 @@
-from functools import partial
 import json
 import re
+from collections import defaultdict
+from functools import partial
 
 import lxml.html as htmlparser
 
 from ....config import CRUNCHYROLL
 from ...helper import construct_site_based_regex
-
 from .geobypass import geobypass_response
 
 CRUNCHYROLL_REGEX = construct_site_based_regex(
@@ -21,39 +21,40 @@ def get_subtitle(subtitles, lang='enUS'):
             yield sub.get('url')
 
 
-def get_stream_url(session, episode_page):
-    json_content = json.loads(CONTENT_METADATA.search(
-        geobypass_response(episode_page).text).group(1))
-    metadata = json_content.get('metadata')
+def get_stream_urls(episode_data):
+    for episode_page, title in episode_data:
+        json_content = json.loads(CONTENT_METADATA.search(
+            geobypass_response(episode_page).text).group(1))
+        metadata = json_content.get('metadata')
 
-    for stream in json_content.get('streams'):
-        if stream.get('format') in ['adaptive_dash', 'adaptive_hls', 'multitrack_adaptive_hls_v2',
-                                    'vo_adaptive_dash', 'vo_adaptive_hls'] and stream.get('hardsub_lang') in [None, 'enUS']:
-            yield_content = {
-                'stream_url': stream.get('url'),
-                'title': metadata.get('title')}
+        for stream in json_content.get('streams'):
+            if stream.get('format') in ['adaptive_dash', 'adaptive_hls', 'multitrack_adaptive_hls_v2',
+                                        'vo_adaptive_dash', 'vo_adaptive_hls'] and stream.get('hardsub_lang') in [None, 'enUS']:
+                yield_content = {
+                    'stream_url': stream.get('url'),
+                    'title': "{} ({})".format(metadata.get('title'), title) if title else metadata.get('title')}
 
-            if stream.get('hardsub_lang') is None:
-                yield_content.update(
-                    {'subtitle': [*get_subtitle(json_content.get('subtitles'))], 'download': False})
+                if stream.get('hardsub_lang') is None:
+                    yield_content.update(
+                        {'subtitle': [*get_subtitle(json_content.get('subtitles'))], 'download': False})
 
-            yield yield_content
+                yield yield_content
 
+def group_content(slug, html_element):
+    
+    episodes = defaultdict(lambda: list())
+
+    for element in html_element.cssselect('a.episode')[::-1]:
+        episode_match = (re.search('^/{}/episode-(\d+)'.format(re.escape(slug)), element.get('href')))
+        episodes[int(episode_match.group(1)) if episode_match else 0].append((CRUNCHYROLL + element.get('href', '').strip('/'), element.get('title')))
+
+    return episodes
 
 def fetcher(session, url, check):
 
-    url = CRUNCHYROLL + \
-        CRUNCHYROLL_REGEX.search(url).group(1)
+    slug = CRUNCHYROLL_REGEX.search(url).group(1)
+    url = CRUNCHYROLL + slug
 
-    episode_pages = htmlparser.fromstring(
-        geobypass_response(url).text).cssselect('.episode')[::-1]
-
-    for episode in episode_pages:
-        episode_number = 0
-        match = re.search(
-            r'Episode (\d+)',
-            episode.xpath('span')[0].text_content())
-        if match:
-            episode_number = int(match.group(1))
+    for episode_number, episode_data in sorted(group_content(slug, htmlparser.fromstring(geobypass_response(url).text)).items()):
         if check(episode_number):
-            yield partial(lambda s, h: [*get_stream_url(s, CRUNCHYROLL + h.strip('/'))], session, episode.get('href')), episode_number
+            yield partial((lambda e: [*get_stream_urls(e)]), episode_data), episode_number
