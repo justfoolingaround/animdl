@@ -5,7 +5,7 @@ import lxml.html as htmlparser
 from ....config import TENSHI
 from ...helper import construct_site_based_regex
 
-TENSHI_ANIME_PAGE_REGEX = construct_site_based_regex(
+REGEX = construct_site_based_regex(
     TENSHI, extra_regex=r'/anime/([^?&/]+)')
 
 
@@ -21,7 +21,7 @@ def extract_urls(session, episode_page):
 
 def fetcher(session, url, check):
 
-    url = TENSHI_ANIME_PAGE_REGEX.search(url).group(0)
+    url = REGEX.search(url).group(0)
 
     episode_list_page = session.get(url)
     count = int(htmlparser.fromstring(episode_list_page.text).xpath(

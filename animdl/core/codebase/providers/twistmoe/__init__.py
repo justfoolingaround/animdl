@@ -5,10 +5,11 @@ from .stream_url import *
 from ....config import TWIST
 from ...helper import construct_site_based_regex
 
+REGEX = construct_site_based_regex(
+        TWIST, extra_regex=r'/a/([^?&/]+)')
 
 def fetcher(session, url, check):
-    anime_name = construct_site_based_regex(
-        TWIST, extra_regex=r'/a/([^?&/]+)').search(url).group(1)
+    anime_name = REGEX.search(url).group(1)
     for index, data in enumerate(
             get_twistmoe_anime_uri(
             session, anime_name), 1):

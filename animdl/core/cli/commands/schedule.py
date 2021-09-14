@@ -1,3 +1,4 @@
+from collections import defaultdict
 from datetime import datetime
 
 import click
@@ -108,17 +109,13 @@ relations {
 
 
 def arrange_template(data):
-    content = {}
+    content = defaultdict(lambda: defaultdict(list))
 
     for airing in data[::-1]:
         dtobj = datetime.fromtimestamp(airing.get('airingAt', 0))
         d, t = dtobj.strftime(DATE_FORMAT), dtobj.strftime(TIME_FORMAT)
         titles = airing.get('media', {}).get('title', {})
-        title = titles.get('english') or titles.get(
-            'romanji') or titles.get('native')
-        content.setdefault(d, {})
-        content[d].setdefault(t, [])
-        content[d][t].append({'anime': title, 'episode': airing.get(
+        content[d][t].append({'anime': titles.get('english') or titles.get('romanji') or titles.get('native'), 'episode': airing.get(
             'episode', 0), 'datetime_object': dtobj})
 
     return content

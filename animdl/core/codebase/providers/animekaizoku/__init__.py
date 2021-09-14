@@ -12,8 +12,11 @@ from functools import partial
 import lxml.html as htmlparser
 
 from ....config import ANIMEKAIZOKU
-from ...helper.uwu import bypass
+from ...helper import construct_site_based_regex, uwu
 from .indexer import name_index
+
+REGEX = construct_site_based_regex(ANIMEKAIZOKU, extra_regex=r'/([^?&/]+)')
+
 
 ON_NEW_TAB = re.compile(r'openInNewTab\("([^"]+?)"\)')
 ANIMEKAIZOKU_DDL = re.compile(r'\("(\w+)",\d+,"(\w+)",(\d+),(\d+),\d+\)')
@@ -39,7 +42,7 @@ def get_links(session, quality, element_dicts, post_id, div_id):
         for element_dict in element_dicts:
             num = re.search(r"'([^']+?)'", element_dict.get('element', {}).get('onclick')).group(1)
             link = b64decode(ON_NEW_TAB.search(admin_ajax(session, {'action': 'DDL', 'post_id': post_id, 'div_id': div_id, 'tab_id': 2, 'num': num, 'folder': 0}).text).group(1)).decode('utf-8')
-            stream_url = bypass(link)
+            stream_url = uwu.bypass(link)
             yield {'quality': quality, 'stream_url': session.get(stream_url, headers={'referer': link}, allow_redirects=False).headers.get('location'), 'headers': {'referer': stream_url}}
     return [*fast_yield()]
 

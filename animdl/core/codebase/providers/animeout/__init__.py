@@ -3,8 +3,11 @@ from urllib.parse import unquote
 
 import lxml.html as htmlparser
 
+from ....config import ANIMEOUT
+from ...helper import construct_site_based_regex
 from .inner.indexer import index_by_url
 
+REGEX = construct_site_based_regex(ANIMEOUT, extra_regex=r'/([^?&/]+)')
 
 def group_episodes(contents):
     grouped = {}

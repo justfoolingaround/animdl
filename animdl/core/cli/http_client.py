@@ -10,4 +10,4 @@ headers = httpx.Headers(
     }
 )
 
-client = httpx.Client(headers=headers, timeout=10.0)
+client = httpx.Client(headers=headers, timeout=30.0)

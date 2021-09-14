@@ -9,7 +9,7 @@ from ....config import CRUNCHYROLL
 from ...helper import construct_site_based_regex
 from .geobypass import geobypass_response
 
-CRUNCHYROLL_REGEX = construct_site_based_regex(
+REGEX = construct_site_based_regex(
     CRUNCHYROLL, extra_regex=r'/([^?/&]+)')
 
 CONTENT_METADATA = re.compile(r"vilos\.config\.media = (\{.+\})")
@@ -52,7 +52,7 @@ def group_content(slug, html_element):
 
 def fetcher(session, url, check):
 
-    slug = CRUNCHYROLL_REGEX.search(url).group(1)
+    slug = REGEX.search(url).group(1)
     url = CRUNCHYROLL + slug
 
     for episode_number, episode_data in sorted(group_content(slug, htmlparser.fromstring(geobypass_response(url).text)).items()):

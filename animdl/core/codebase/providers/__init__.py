@@ -1,94 +1,30 @@
-"""
-All the current providers that are made available in AnimDL.
+import importlib
+import pathlib
 
-The fetcher function must take session, url and check parameters to work.
-"""
+EXEMPT = [
+    '__init__.py',
+    '__pycache__'
+]
 
-from ...config import (ANIMEKAIZOKU, ANIMEOUT, ANIMEPAHE, ANIMIXPLAY, ANIMTIME, CRUNCHYROLL,
-                       GOGOANIME, NINEANIME, TENSHI, TWIST)
-from ..helper import construct_site_based_regex
+try:
+    __this_path__ = pathlib.Path(__path__[0])
+except:
+    __this_path__ = pathlib.Path()
 
-from .animekaizoku import fetcher as animekaizoku_fetcher
-from .animepahe import fetcher as animepahe_fetcher
-from .animeout import fetcher as animeout_fetcher
-from .animixplay import fetcher as animix_fetcher
-from .animtime import fetcher as animtime_fetcher
-from .crunchyroll import fetcher as crunchyroll_fetcher
-from .gogoanime import fetcher as gogoanime_fetcher
-from .nineanime import fetcher as nineanime_fetcher
-from .tenshimoe import fetcher as tenshi_fetcher
-from .twistmoe import fetcher as twist_fetcher
+def iter_providers(*, exempt=EXEMPT):
+    for path in __this_path__.glob('*/'):
+            if path.name not in exempt:
+                yield importlib.import_module('.{.name}'.format(path), package=__name__), path.name
 
-current_providers = {
-    'animekaizoku': {
-        'matcher': construct_site_based_regex(
-            ANIMEKAIZOKU,
-            extra_regex=r'/([^?&/]+)'),
-        'fetcher': animekaizoku_fetcher
-        },
-    'animixplay': {
-        'matcher': construct_site_based_regex(
-            ANIMIXPLAY,
-            extra_regex=r'/v\d+/([^?&/]+)'),
-        'fetcher': animix_fetcher,
-    },
-    'twist': {
-        'matcher': construct_site_based_regex(
-            TWIST,
-            extra_regex=r'/a/([^?&/]+)'),
-        'fetcher': twist_fetcher,
-    },
-    'animepahe': {
-        'matcher': construct_site_based_regex(
-            ANIMEPAHE,
-            extra_regex=r'/(?:anime|play)/([^?&/]+)'),
-        'fetcher': animepahe_fetcher,
-    },
-    'gogoanime': {
-        'matcher': construct_site_based_regex(
-            GOGOANIME,
-            extra_regex=r'/(?:([^&?/]+)-episode-\d+|category/([^&?/]+))'),
-        'fetcher': gogoanime_fetcher,
-    },
-    '9anime': {
-        'matcher': construct_site_based_regex(
-            NINEANIME,
-            extra_regex=r'/watch/[^&?/]+\.([^&?/]+)'),
-        'fetcher': nineanime_fetcher,
-    },
-    'animeout': {
-        'matcher': construct_site_based_regex(
-            ANIMEOUT,
-            extra_regex=r'/([^?&/]+)'),
-        'fetcher': animeout_fetcher,
-    },
-    'tenshi': {
-        'matcher': construct_site_based_regex(
-            TENSHI,
-            extra_regex=r'/anime/([^?&/]+)'),
-        'fetcher': tenshi_fetcher,
-    },
-    'animtime': {
-        'matcher': construct_site_based_regex(
-            ANIMTIME,
-            extra_regex=r'/title/([^?&/]+)'),
-        'fetcher': animtime_fetcher,
-    },
-    'crunchyroll': {
-        'matcher': construct_site_based_regex(
-            CRUNCHYROLL,
-            extra_regex=r'/([^?&/]+)'),
-        'fetcher': crunchyroll_fetcher,
-    },
-}
+def get_provider(url, *, raise_on_failure=True):
+    for provider_module, name in iter_providers():
+        if provider_module.REGEX.match(url):
+            return provider_module, name
+    
+    if raise_on_failure:
+        raise Exception("Can't find a provider for the url {!r}.")
 
-
-def get_provider(url):
-    for provider, provider_data in current_providers.items():
-        if provider_data.get('matcher').match(url):
-            return provider, provider_data
-
+    return None, None
 
 def get_appropriate(session, url, check=lambda *args: True):
-    provider_name, provider = get_provider(url)
-    return provider.get('fetcher')(session, url, check)
+    return get_provider(url)[0].fetcher(session, url, check)

@@ -7,7 +7,7 @@ from ....config import ANIMTIME
 from ...helper import construct_site_based_regex
 
 CONTENT_RE = re.compile(r't\[t\.([^=]+)=(\d+)\]')
-CONTENT_SLUG_RE = construct_site_based_regex(
+REGEX = construct_site_based_regex(
     ANIMTIME, extra_regex=r'/title/([^/?&]+)')
 
 
@@ -18,7 +18,7 @@ def get_first_item(iterables, check):
 
 
 def get_content(url, js_content):
-    content_slug = CONTENT_SLUG_RE.match(url).group(1)
+    content_slug = REGEX.match(url).group(1)
     for match in CONTENT_RE.finditer(js_content):
         if match.group(2) == content_slug:
             return match

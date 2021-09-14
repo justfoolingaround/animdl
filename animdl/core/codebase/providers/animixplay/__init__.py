@@ -3,6 +3,8 @@ from .stream_url import *
 from ....config import ANIMIXPLAY
 from ...helper import construct_site_based_regex
 
+REGEX = construct_site_based_regex(ANIMIXPLAY, extra_regex=r'/v\d+/([^?&/]+)')
+
 AVAILABLE_PARSERS = {
     'gogo-anime': {
         'matcher': construct_site_based_regex(
