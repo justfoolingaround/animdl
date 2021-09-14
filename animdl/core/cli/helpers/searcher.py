@@ -164,4 +164,8 @@ link = {
     'twist': search_twist,
 }
 
-get_searcher = link.get
+def get_searcher(provider):
+    searcher = link.get(provider)
+    if searcher:
+        searcher.provider = provider
+        return searcher

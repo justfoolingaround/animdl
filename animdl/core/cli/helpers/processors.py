@@ -5,11 +5,11 @@ from ...config import DEFAULT_PROVIDER
 from .searcher import get_searcher
 
 
-def prompt_user(logger, anime_list_genexp, provider_name):
+def prompt_user(logger, anime_list_genexp, provider):
     expansion = [*anime_list_genexp]
 
     if not expansion:
-        return logger.critical("Failed to find anything of that query on {!r}. Try searching on other providers.".format(provider_name)) or ({}, None)
+        return logger.critical("Failed to find anything of that query on {!r}. Try searching on other providers.".format(provider)) or ({}, None)
         
     for n, anime in enumerate(expansion, 1):
         logger.info("{0:02d}: {1[name]} \x1b[33m{1[anime_url]}\x1b[39m".format(n, anime))
@@ -24,7 +24,7 @@ def prompt_user(logger, anime_list_genexp, provider_name):
                      (index + 1, index % len(expansion) + 1))
         index %= len(expansion)
 
-    return expansion[index], provider_name
+    return expansion[index], provider
 
 
 def process_query(
@@ -36,7 +36,7 @@ def process_query(
         auto=False,
         auto_index=1):
 
-
+    legacy = False
     module, provider_name = get_provider(query, raise_on_failure=False)
     
     if module:
@@ -48,9 +48,9 @@ def process_query(
 
     if not searcher:
         searcher, custom_query = get_searcher(provider), query
-    
+
     genexp = searcher(session, custom_query)
-        
+
     if not auto:
-        return prompt_user(logger, genexp, provider)
-    return [*searcher][auto_index-1], provider
+        return prompt_user(logger, genexp, searcher.provider)
+    return [*genexp][auto_index-1], searcher.provider
