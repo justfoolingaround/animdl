@@ -104,6 +104,9 @@ def search_gogoanime(session, query):
     for results in parsed.xpath('//p[@class="name"]/a'):
         yield {'anime_url': GOGOANIME.strip('/') + results.get('href'), 'name': results.get('title')}
 
+def search_kawaiifu(session, query):
+    for results in htmlparser.fromstring(session.get(KAWAIIFU + "search-movie", params={'keyword': query}).text).cssselect('.info > h4 > a:last-child'):
+        yield {'anime_url': results.get('href'), 'name': results.text_content().strip()}
 
 def search_twist(session, query):
     content = session.get(
@@ -155,6 +158,7 @@ link = {
     'animeout': search_animeout,
     'animixplay': search_animixplay,
     'crunchyroll': search_crunchyroll,
+    'kawaiifu': search_kawaiifu,
     'gogoanime': search_gogoanime,
     'tenshi': search_tenshi,
     'twist': search_twist,
