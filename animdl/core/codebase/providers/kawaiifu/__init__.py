@@ -4,7 +4,7 @@ from functools import partial
 
 import lxml.html as htmlparser
 
-REGEX = re.compile(r"(?:https?://)?(?:\S+\.)?(?P<host>domdom\.stream|bestanime3\.xyz|kawaiifu\.com)/(?P<episode_page>anime/)?(?P<type>season/[^/]+|tv-shows|others)/(?P<slug>[^?&#]+)")
+REGEX = re.compile(r"(?:https?://)?(?:\S+\.)?(?P<host>domdom\.stream|bestanime3\.xyz|kawaiifu\.com)/(?P<episode_page>anime/)?(?P<type>season/[^/]+|.+)/(?P<slug>[^?&#]+)")
 
 def get_int(content):
     d = re.search(r'[0-9]+', content)
