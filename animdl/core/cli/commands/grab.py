@@ -11,20 +11,12 @@ from ..http_client import client
 @click.command(name='grab',
                help="Stream the stream links to the stdout stream for external usage.")
 @click.argument('query', required=True)
-@click.option('-s',
-              '--start',
-              help="An integer that determines where to begin the grabbing from.",
+@click.option('-r',
+              '--range',
+              help="Select ranges of anime.",
               required=False,
-              default=1,
-              show_default=False,
-              type=int)
-@click.option('-e',
-              '--end',
-              help="A integer that determines where to end the grabbing at.",
-              required=False,
-              default=0,
-              show_default=False,
-              type=int)
+              default=':',
+              type=str)
 @click.option('-f',
               '--file',
               help="File to write all the grabbed content to.",
@@ -42,8 +34,10 @@ from ..http_client import client
               type=int,
               default=20)
 @bannerify
-def animdl_grab(query, start, end, file, auto, index, log_level):
-    end = end or float('inf')
+def animdl_grab(query, file, auto, index, log_level, **kwargs):
+
+    r = kwargs.get('range')
+
     session = client
     logger = logging.getLogger('animdl-grabber-core')
     anime, provider = process_query(
@@ -59,7 +53,7 @@ def animdl_grab(query, start, end, file, auto, index, log_level):
         file += ".json" if not file.endswith('.json') else ''
 
     for stream_url_caller, episode in anime_associator.raw_fetch_using_check(
-            check=lambda x: end >= x >= start):
+            check=get_check(r)):
         stream_url = stream_url_caller()
         collected_streams.append({'episode': episode, 'streams': stream_url})
         if file:

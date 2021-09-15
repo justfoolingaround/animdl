@@ -15,7 +15,7 @@ def extract_stream_urls(session, urls):
     for url in urls:
         html_element = htmlparser.fromstring(session.get(url).text)
         for source in html_element.cssselect('source'):
-            yield {'quality': get_int(source.get('data-quality')), 'stream_url': source.get('src')}
+            yield {'quality': get_int(source.get('data-quality')), 'stream_url': source.get('src'), 'headers': {'referer': url}}
 
 def get_from_url(session, url):
     episodes = defaultdict(list)

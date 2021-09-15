@@ -2,13 +2,12 @@
 All the search algorithms for all the providers available in AnimDL.
 """
 
-import re
 import json
+import re
 
 import lxml.html as htmlparser
 
 from ...config import *
-
 from .fuzzysearch import search
 
 NINEANIME_URL_SEARCH = NINEANIME + "search"

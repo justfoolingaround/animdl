@@ -45,7 +45,6 @@ python -m pip install .
 - Doesn't make a single unnecessary request; the official site may make 1k requests, this tool makes 3~5.
 - Doesn't use any heavy dependencies such as Selenium or Javascript Evaluators.
 - Effectively bypasses DRMs in several streaming sites.
-- Integrates AnimeFillerList so that the user can filter out any fillers from downloading or streaming.
 - Integrates powerful, fast and efficient internal HLS downloader.
 - Only tool in existence to bypass [9Anime](https://9anime.to)'s cloudflare protection.
 - Operates with full efficiency and speed by using Python's generator functions to their full capacity.
@@ -56,13 +55,12 @@ python -m pip install .
 ### Usage
 
 ```
-animdl.py [OPTIONS] COMMAND [ARGS]...
+animdl [OPTIONS] COMMAND [ARGS]...
 
 Options:
   --help  Show this message and exit.       
 
 Commands:
-  continue  Continue your downloads or stream from where t'was left.
   download  Download your favorite anime by query.
   grab      Stream the stream links to the stdout stream for external usage.
   schedule  Know which animes are going over the air when.

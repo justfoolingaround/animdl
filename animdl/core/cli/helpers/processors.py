@@ -36,7 +36,6 @@ def process_query(
         auto=False,
         auto_index=1):
 
-    legacy = False
     module, provider_name = get_provider(query, raise_on_failure=False)
     
     if module:

@@ -52,6 +52,9 @@ def unencrypted(m3u8_content):
 def extract_encryption(m3u8_content):
     return ENCRYPTION_URL_IV_REGEX.search(m3u8_content).group('key_uri', 'iv')
 
+def join_url(parent, child):
+    return yarl.URL("{}/{}".format(str(parent).rstrip('/'), str(child).lstrip('/')))
+
 
 def m3u8_generation(session_init, m3u8_uri):
     m3u8_uri_parent = yarl.URL(m3u8_uri).parent
@@ -62,7 +65,7 @@ def m3u8_generation(session_init, m3u8_uri):
         url = yarl.URL(content_uri)
         if get_extension(url) in HLS_STREAM_EXTENSIONS:
             if not url.is_absolute():
-                content_uri = m3u8_uri_parent.join(content_uri)
+                content_uri = join_url(m3u8_uri_parent, url)
             yield from m3u8_generation(session_init, content_uri)
         yield {'quality': extract_resolution(stream_info), 'stream_url': content_uri}
 
@@ -85,22 +88,22 @@ def resolve_stream(session, logger, q_dicts, preferred_quality):
     for origin_m3u8 in sort_by_best(q_dicts, preferred_quality):
         headers = origin_m3u8.get('headers', {})
         for m3u8 in sort_by_best(m3u8_generation(lambda s: session.get(
-                s, headers=headers), origin_m3u8.get('stream_url')), preferred_quality):
+                str(s), headers=headers), origin_m3u8.get('stream_url')), preferred_quality):
             if preferred_quality != int(m3u8.get('quality') or 0):
                 logger.warning('Could not find the quality {}, falling back to {}.'.format(
                     preferred_quality, m3u8.get('quality') or "an unknown quality"))
-            content_response = session.head(
-                m3u8.get('stream_url'), headers=headers)
+            content_response = session.get(
+                str(m3u8.get('stream_url')), headers=headers)
             if content_response.status_code < 400:
                 return content_response, origin_m3u8
-        content_response = session.head(
-            origin_m3u8.get('stream_url'), headers=headers)
+        content_response = session.get(
+            str(origin_m3u8.get('stream_url')), headers=headers)
         if content_response.status_code < 400:
             return content_response, origin_m3u8
 
 
 def hls_yield(session, q_dicts, preferred_quality,
-              auto_retry, *, continuation_index=1):
+              auto_retry=2, *, continuation_index=1):
     """
     >>> hls_yield(session, [{'stream_url': 'https://example.com/hls_stream.m3u8'}], 1080) # Generator[dict]
 

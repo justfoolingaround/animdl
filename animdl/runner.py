@@ -5,7 +5,7 @@ __main__ but a runner for the standalones.
 import click
 
 from core import logger
-from core.cli.commands import download, stream, continuation, grab, schedule, test, search
+from core.cli.commands import download, stream, grab, schedule, test, search
 from core.cli.helpers.player import supported_streamers
 
 
@@ -13,7 +13,6 @@ logger.configure_logger()
 
 commands = {
     'download': download.animdl_download,
-    'continue': continuation.animdl_continue,
     'grab': grab.animdl_grab,
     'schedule': schedule.animdl_schedule,
     'test': test.animdl_test,
