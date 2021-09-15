@@ -40,7 +40,6 @@ def process_url(session, url, headers={}):
     return guess_extension(response_headers.get('content-type') or '') or get_extension(url) or get_extension(response.url), int(response_headers.get('content-length') or 0), response_headers.get('accept-ranges') == 'bytes'
 
 def standard_download(session: httpx.Client, url: str, content_dir: pathlib.Path, outfile_name: str, extension: str, content_size: int, headers: dict={}, ranges=True, **opts):
-    
     file = "{}.{}".format(outfile_name, extension)
 
     logger = logging.getLogger('standard-downloader[{}]'.format(file))
@@ -91,17 +90,21 @@ def hls_download(session: httpx.Client, url: str, content_dir: pathlib.Path, out
         downloaded = tsstream.tell()
         if downloaded:
             sizes.extend([downloaded / index] * index)
-        progress_bar = tqdm("HLS GET / {}.ts".format(outfile_name), unit='B', unit_scale=True, unit_divisor=1024, initial=downloaded, disable=opts.get('log_level', 20) < 20,)
+        progress_bar = tqdm(desc="HLS GET / {}.ts".format(outfile_name), unit='B', unit_scale=True, unit_divisor=1024, initial=downloaded, disable=opts.get('log_level', 20) < 20,)
 
         for content in hls_yield(session, [{'stream_url': url, 'headers': headers}], opts.get('preferred_quality') or 1080, opts.get('retry_timeout') or 5, continuation_index=index):
             stream = content.get('bytes')
+            total = content.get('total')
+            current = content.get('current')
+
             size = len(stream)
             sizes.append(size)
 
-            total = content.get('total')
-            current = content.get('current')
-            
-            progress_bar.total = ((sum(sizes)/len(sizes)) * total)
+            mean = (sum(sizes)/len(sizes))
+            stddev = (sum(abs(mean - s)**2 for s in sizes)/len(sizes))**.5
+
+            progress_bar.total = mean * total
+            progress_bar.desc = 'HLS GET / {}.ts [± {:.3f} MB]'.format(outfile_name, stddev / (1024**2))
             progress_bar.update(size)
 
             istream.write(str(current or 0 + 1))
