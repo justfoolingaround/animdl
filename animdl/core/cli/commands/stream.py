@@ -25,7 +25,7 @@ def quality_prompt(log_level, logger, stream_list):
                 for anime in animes:
                     logger.info(anime)
 
-    return stream_list[ask(log_level, "Select above, using the stream index", show_default=True, default=1, type=int) % len(stream_list)]
+    return stream_list[ask(log_level, text="Select above, using the stream index", show_default=True, default=1, type=int) % len(stream_list)]
 
 
 @click.command(name='stream', help="Stream your favorite anime by query.")
@@ -104,7 +104,7 @@ def animdl_stream(
                 logger.warning("There were no stream links available at the moment. Ignoring {!r}, retry using a different provider.".format(window_title))
                 continue
 
-            selection = quality_prompt(logger, stream_urls, provider) if len(stream_urls) > 1 else stream_urls[0]
+            selection = quality_prompt(log_level, logger, stream_urls) if len(stream_urls) > 1 else stream_urls[0]
             
             logger.debug("Calling streamer for {!r}".format(stream_urls))
             
