@@ -9,9 +9,8 @@ class Associator(object):
     Associator associates a anime with its url, filler list and stream url.
     """
 
-    def __init__(self, uri, afl_uri=None, *, session=None):
+    def __init__(self, uri, *, session=None):
         self.url = append_protocol(uri)
-        self.filler_list = afl_uri
         self.session = session or httpx.Client()
 
     def raw_fetch_using_check(self, check):

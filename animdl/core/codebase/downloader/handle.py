@@ -50,7 +50,7 @@ def standard_download(session: httpx.Client, url: str, content_dir: pathlib.Path
 
     with open(out_path, 'ab') as outstream:
         downloaded = outstream.tell() if not ranges else 0
-        progress_bar = tqdm(desc="GET / {}".format(file), total=content_size, disable=opts.get('log_level', 20) < 20, initial=downloaded, unit='B', unit_scale=True, unit_divisor=1024)
+        progress_bar = tqdm(desc="GET / {}".format(file), total=content_size, disable=opts.get('log_level', 20) > 20, initial=downloaded, unit='B', unit_scale=True, unit_divisor=1024)
         while content_size > downloaded:
             temporary_headers = headers.copy()
             if ranges:
@@ -90,7 +90,7 @@ def hls_download(session: httpx.Client, url: str, content_dir: pathlib.Path, out
         downloaded = tsstream.tell()
         if downloaded:
             sizes.extend([downloaded / index] * index)
-        progress_bar = tqdm(desc="HLS GET / {}.ts".format(outfile_name), unit='B', unit_scale=True, unit_divisor=1024, initial=downloaded, disable=opts.get('log_level', 20) < 20,)
+        progress_bar = tqdm(desc="HLS GET / {}.ts".format(outfile_name), unit='B', unit_scale=True, unit_divisor=1024, initial=downloaded, disable=opts.get('log_level', 20) > 20,)
 
         for content in hls_yield(session, [{'stream_url': url, 'headers': headers}], opts.get('preferred_quality') or 1080, opts.get('retry_timeout') or 5, continuation_index=index):
             stream = content.get('bytes')

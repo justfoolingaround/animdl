@@ -85,7 +85,7 @@ def animdl_download(
             continue
 
         logger.info("Downloading {!r} [{:02d}/{:02d}, {:02} remaining] ".format(content_title, count, total, total - count))
-        success, reason = download(session, logger, content_dir, content_title, stream_urls, quality, idm=idm)
+        success, reason = download(session, logger, content_dir, content_title, stream_urls, quality, idm=idm, retry_timeout=AUTO_RETRY, log_level=log_level)
 
         if not success:
             logger.warning("Could not download {!r} due to: {}. Please retry with other providers.".format(content_title, reason))
