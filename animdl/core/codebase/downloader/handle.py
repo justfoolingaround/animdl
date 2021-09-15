@@ -75,10 +75,6 @@ def standard_download(session: httpx.Client, url: str, content_dir: pathlib.Path
     
     progress_bar.close()
 
-def predict_size(sizes, total_files):
-    mean = (sum(sizes) / len(sizes)) * total_files
-    return 
-
 def hls_download(session: httpx.Client, url: str, content_dir: pathlib.Path, outfile_name: str, headers: dict={}, **opts):
 
     sanitized = sanitize_filename(outfile_name)
