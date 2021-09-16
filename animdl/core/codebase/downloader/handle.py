@@ -127,7 +127,7 @@ def handle_download(session, url, headers, content_dir, outfile_name, idm=False,
     extension, content_size, ranges = process_url(session, url, headers)
 
     if extension in FFMPEG_EXTENSIONS and has_ffmpeg():
-        return ffmpeg_download(url, headers, content_dir, outfile_name, **opts)
+        return ffmpeg_download(url, headers, outfile_name, content_dir, **opts)
 
     if extension in EXEMPT_EXTENSIONS:
         raise Exception("Download extension {!r} requires custom downloading which is not supported yet.".format(extension))

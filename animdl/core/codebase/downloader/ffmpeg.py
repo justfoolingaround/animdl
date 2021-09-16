@@ -9,7 +9,6 @@ No need for credit. You might feel guilty though.
 Hope **your** project becomes easier.
 """
 
-import collections
 import logging
 import os
 import re
@@ -17,7 +16,6 @@ import shutil
 import subprocess
 
 from collections import defaultdict
-from pathlib import Path
 
 from tqdm import tqdm
 
@@ -61,7 +59,7 @@ def iter_audio(stderr):
     yield from sorted(it(), key=lambda x: x[1], reverse=True)
 
 
-def analyze_stream(logger: logging.Logger, url: str, headers: dict) -> collections.defaultdict:
+def analyze_stream(logger: logging.Logger, url: str, headers: dict):
     """
     Converts the output of `ffmpeg -i $URL` to a partial stream info default dict.
     
@@ -149,7 +147,7 @@ def ffmpeg_to_tqdm(logger: logging.Logger, process: subprocess.Popen, duration: 
     return process
 
 
-def ffmpeg_download(url: str, headers: dict, outfile_name: str, content_dir: Path, preferred_quality=1080, log_level=20, **opts) -> int:
+def ffmpeg_download(url: str, headers: dict, outfile_name: str, content_dir, preferred_quality=1080, log_level=20, **opts) -> int:
     """
     Downloads content using ffmpeg and optionally uses tqdm to wrap the progress
     bar.
@@ -168,13 +166,18 @@ def ffmpeg_download(url: str, headers: dict, outfile_name: str, content_dir: Pat
     `int` The ffmpeg child process' return code.
 
     """
+    
     logger = logging.getLogger('ffmpeg-hls-download[{}.mkv]'.format(outfile_name))
     logger.debug("Using ffmpeg to download content.")
 
     stream_info = analyze_stream(logger, url, headers)
     
-    file = content_dir / Path("{}.mkv".format(outfile_name))
-    os.remove(file)
+    file = content_dir / ("{}.mkv".format(outfile_name))
+    
+    try:
+        os.remove(file)
+    except:
+        pass
 
     args = [executable, '-hide_banner']
 
