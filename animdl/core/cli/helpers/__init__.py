@@ -18,7 +18,7 @@ def get_quality(the_dict):
     if isinstance(key, int):
         return key
 
-    if isinstance(key, str) and isinstance(key, key.isdigit()):
+    if isinstance(key, str) and key.isdigit():
         return int(key)
 
     digits = re.search(key, r'[0-9]+')
