@@ -81,9 +81,9 @@ def analyze_stream(logger: logging.Logger, url: str, headers: dict):
     args.extend(('-i', url))
 
     logger.debug('Calling PIPE child process for ffmpeg: {}'.format(args))
-    process = subprocess.Popen(args, stderr=subprocess.PIPE)
+    process = subprocess.Popen(args, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
     
-    stderr = b''.join(iter(process.stderr))
+    stderr = b''.join(iter(process.stdout))
 
     duration = re.search(b'Duration: ((?:\d+:)+\d+)', stderr)
     if duration:
@@ -135,9 +135,9 @@ def ffmpeg_to_tqdm(logger: logging.Logger, process: subprocess.Popen, duration: 
     progress_bar = tqdm(desc="HLS, FFMPEG / GET {}.mkv".format(outfile_name), total=duration, unit='segment')
     previous_span = 0
 
-    for stream in iter(process.stderr):
+    for stream in process.stdout:
         logger.debug('[ffmpeg] {}'.format(stream.decode().strip()))
-        current = get_last(re.finditer(b'time=((?:\d+:)+\d+)', stream)) # type: re.Match[bytes]
+        current = get_last(re.finditer(b'\stime=((?:\d+:)+\d+)', stream)) # type: re.Match[bytes]
         if current:
             in_seconds = parse_ffmpeg_duration(current.group(1).decode()) - previous_span
             previous_span += in_seconds
@@ -185,12 +185,12 @@ def ffmpeg_download(url: str, headers: dict, outfile_name: str, content_dir, pre
         args.extend(('-headers', '\r\n'.join('{}:{}'.format(k, v) for k, v in headers.items())))
 
     args.extend(('-i', url, '-c', 'copy', file.as_posix()))
-    
-    for video, quality, audio in sorted(iter_quality(stream_info), key=lambda x: x[1] <= (preferred_quality)):
+
+    for video, quality, audio in filter(lambda x: x[1] <= preferred_quality, sorted(iter_quality(stream_info), key=lambda x: x[1], reverse=True)):
         if quality < preferred_quality:
             logger.warning('Could not find the stream of desired quality {}, currently downloading {}.'.format(preferred_quality, quality or 'an unknown quality'))
 
-        child = subprocess.Popen(args + ['-map', video, '-map', audio], stderr=subprocess.PIPE)
+        child = subprocess.Popen(args + ['-map', video, '-map', audio], stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
 
         if log_level > 20:
             return child.wait()

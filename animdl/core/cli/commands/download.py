@@ -4,7 +4,7 @@ from pathlib import Path
 import click
 
 from ...codebase import Associator, sanitize_filename
-from ...config import QUALITY, AUTO_RETRY
+from ...config import QUALITY, AUTO_RETRY, USE_FFMPEG
 from ..helpers import *
 from ..http_client import client
 
@@ -85,7 +85,7 @@ def animdl_download(
             continue
 
         logger.info("Downloading {!r} [{:02d}/{:02d}, {:02} remaining] ".format(content_title, count, total, total - count))
-        success, reason = download(session, logger, content_dir, content_title, stream_urls, quality, idm=idm, retry_timeout=AUTO_RETRY, log_level=log_level)
+        success, reason = download(session, logger, content_dir, content_title, stream_urls, quality, idm=idm, retry_timeout=AUTO_RETRY, log_level=log_level, use_ffmpeg=USE_FFMPEG)
 
         if not success:
             logger.warning("Could not download {!r} due to: {}. Please retry with other providers.".format(content_title, reason))

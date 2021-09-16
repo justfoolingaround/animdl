@@ -122,11 +122,11 @@ def idm_download(url, headers, content_dir, outfile_name, extension, **opts):
     from .idmanlib import wait_until_download as idmdl    
     idmdl(url, headers=headers or {}, download_folder=content_dir, filename=file)
 
-def handle_download(session, url, headers, content_dir, outfile_name, idm=False, **opts):
+def handle_download(session, url, headers, content_dir, outfile_name, idm=False, use_ffmpeg=False, **opts):
     
     extension, content_size, ranges = process_url(session, url, headers)
 
-    if extension in FFMPEG_EXTENSIONS and has_ffmpeg():
+    if use_ffmpeg and (extension in FFMPEG_EXTENSIONS and has_ffmpeg()):
         return ffmpeg_download(url, headers, outfile_name, content_dir, **opts)
 
     if extension in EXEMPT_EXTENSIONS:

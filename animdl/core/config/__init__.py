@@ -50,6 +50,7 @@ DEFAULT_CONFIG = {
         'time_format': '%X'
     },
     'download_auto_retry': 300,
+    'use_ffmpeg': False
 }
 
 CONFIG = DEFAULT_CONFIG
@@ -86,3 +87,4 @@ SESSION_FILE = CONFIG.get('session_file')
 DEFAULT_PROVIDER = CONFIG.get('default_provider')
 
 AUTO_RETRY = CONFIG.get('download_auto_retry', 300) / 1000
+USE_FFMPEG = CONFIG.get('use_ffmpeg', False)
