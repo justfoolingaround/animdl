@@ -74,8 +74,8 @@ def sort_by_best(q_dicts, preferred_quality):
     return (
         sorted(
             [
-                q for q in q_dicts if get_extension(
-                    q.get('stream_url')) in [
+             q for q in q_dicts if get_extension(
+                q.get('stream_url')) in [
                     'm3u', 'm3u8'] and q.get(
                         'quality', '0').isdigit() and int(
                             q.get(

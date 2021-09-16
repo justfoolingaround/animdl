@@ -9,6 +9,7 @@ from tqdm import tqdm
 
 from .content_mt import mimetypes
 from .hls import HLS_STREAM_EXTENSIONS, hls_yield
+from .ffmpeg import FFMPEG_EXTENSIONS, ffmpeg_download, has_ffmpeg
 
 EXEMPT_EXTENSIONS = ['mpd']
 
@@ -37,7 +38,7 @@ def process_url(session, url, headers={}):
     """
     response = session.head(url, headers=headers)
     response_headers = response.headers
-    return guess_extension(response_headers.get('content-type') or '') or get_extension(url) or get_extension(response.url), int(response_headers.get('content-length') or 0), response_headers.get('accept-ranges') == 'bytes'
+    return (guess_extension(response_headers.get('content-type') or '') or get_extension(url) or get_extension(response.url)).lower(), int(response_headers.get('content-length') or 0), response_headers.get('accept-ranges') == 'bytes'
 
 def standard_download(session: httpx.Client, url: str, content_dir: pathlib.Path, outfile_name: str, extension: str, content_size: int, headers: dict={}, ranges=True, **opts):
     file = "{}.{}".format(outfile_name, extension)
@@ -125,10 +126,13 @@ def handle_download(session, url, headers, content_dir, outfile_name, idm=False,
     
     extension, content_size, ranges = process_url(session, url, headers)
 
-    if extension.lower() in EXEMPT_EXTENSIONS:
+    if extension in FFMPEG_EXTENSIONS and has_ffmpeg():
+        return ffmpeg_download(url, headers, content_dir, outfile_name, **opts)
+
+    if extension in EXEMPT_EXTENSIONS:
         raise Exception("Download extension {!r} requires custom downloading which is not supported yet.".format(extension))
 
-    if extension.lower() in HLS_STREAM_EXTENSIONS:
+    if extension in HLS_STREAM_EXTENSIONS:
         return hls_download(session, url, content_dir, outfile_name, headers or {}, **opts)
 
     if idm:

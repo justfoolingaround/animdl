@@ -70,7 +70,7 @@ def wait_until_download(
         headers,
         form_data,
         auth,
-        filename.as_posix(),
+        filename,
         download_folder.as_posix(),
         lflag=5)
     while not (download_folder / filename).exists():
