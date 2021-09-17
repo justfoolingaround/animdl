@@ -25,7 +25,7 @@ def quality_prompt(log_level, logger, stream_list):
                 for anime in animes:
                     logger.info(anime)
 
-    return stream_list[ask(log_level, text="Select above, using the stream index", show_default=True, default=1, type=int) % len(stream_list)]
+    return stream_list[(ask(log_level, text="Select above, using the stream index", show_default=True, default=1, type=int) - 1) % len(stream_list)]
 
 
 @click.command(name='stream', help="Stream your favorite anime by query.")
