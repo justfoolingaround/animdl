@@ -13,7 +13,7 @@ REGEX = construct_site_based_regex(ANIMEOUT, extra_regex=r'/([^?&/]+)')
 def group_episodes(contents):
     grouped = defaultdict(list)
     for r in contents:
-        grouped.get[r.get('episode') or 0].append(r)
+        grouped[r.get('episode') or 0].append(r)
     return grouped
 
 

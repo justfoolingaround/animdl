@@ -30,7 +30,8 @@ def index_by_url(url):
     *anime, pe = re.split(r'(?=-\s*?[VS]?\d+)', fn, 1, re.I)
     index.update({'name': '-'.join(anime)})
 
-    pe_match = re.search(r"(?<![VS])(\d+).*?", pe, re.I)
+    remove_seasonal = re.sub(r'[VS]\d+\D', '', pe, flags=re.I)
+    pe_match = re.search(r"e?(\d+)", remove_seasonal, re.I)
     if pe_match:
         index.update({'episode': int(pe_match.group(1))})
 
