@@ -4,9 +4,8 @@ from pathlib import Path
 import click
 
 from ...codebase import Associator, sanitize_filename
-from ...config import QUALITY, AUTO_RETRY, USE_FFMPEG
-from ..helpers import *
-from ..http_client import client
+from ...config import AUTO_RETRY, QUALITY, USE_FFMPEG
+from .. import exit_codes, helpers, http_client
 
 
 @click.command(name='download', help="Download your favorite anime by query.")
@@ -40,7 +39,7 @@ from ..http_client import client
               help='Set the integer log level.',
               type=int,
               default=20)
-@bannerify
+@helpers.bannerify
 def animdl_download(
         query,
         quality,
@@ -53,22 +52,24 @@ def animdl_download(
 
     r = kwargs.get('range')
 
-    session = client
+    session = http_client.client
     logger = logging.getLogger('animdl-downloader-core')
 
-    anime, provider = process_query(session, query, logger, auto=auto, auto_index=index)
+    anime, provider = helpers.process_query(session, query, logger, auto=auto, auto_index=index)
     
     if not anime:
-        return logger.critical('Searcher returned no anime to stream, failed to stream.')
+        logger.critical('Searcher returned no anime to stream, failed to stream.')
+        raise SystemExit(exit_codes.NO_CONTENT_FOUND)
+
     logger.name = "animdl-{}-downloader-core".format(provider)
-    content_name = anime.get('name') or download_folder or choice(create_random_titles())
+    content_name = anime.get('name') or download_folder or helpers.choice(helpers.create_random_titles())
 
     anime_associator = Associator(anime.get('anime_url'), session=session)
 
     content_dir = Path('./{}/'.format(sanitize_filename(content_name.strip())))
     content_dir.mkdir(exist_ok=True)
 
-    streams = [*anime_associator.raw_fetch_using_check(get_check(r))]
+    streams = [*anime_associator.raw_fetch_using_check(helpers.get_check(r))]
     total = len(streams)
 
     logger.debug("Downloading to {!r}.".format(content_dir.as_posix()))
@@ -85,7 +86,7 @@ def animdl_download(
             continue
 
         logger.info("Downloading {!r} [{:02d}/{:02d}, {:02} remaining] ".format(content_title, count, total, total - count))
-        success, reason = download(session, logger, content_dir, content_title, stream_urls, quality, idm=idm, retry_timeout=AUTO_RETRY, log_level=log_level, use_ffmpeg=USE_FFMPEG)
+        success, reason = helpers.download(session, logger, content_dir, content_title, stream_urls, quality, idm=idm, retry_timeout=AUTO_RETRY, log_level=log_level, use_ffmpeg=USE_FFMPEG)
 
         if not success:
             logger.warning("Could not download {!r} due to: {}. Please retry with other providers.".format(content_title, reason))

@@ -80,7 +80,7 @@ def handle_streamer(player_opts, **kwargs):
             _ in supported)]
 
     if not user_selection:
-        return -107977
+        return False
 
     player = user_selection.pop(0)
     player_info = PLAYERS.get(player)

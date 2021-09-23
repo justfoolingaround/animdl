@@ -1,20 +1,18 @@
 import logging
+from collections import defaultdict
 
 import click
 
-from collections import defaultdict
-
 from ...codebase import Associator
 from ...config import DEFAULT_PLAYER
-from ..helpers import *
-from ..http_client import client
+from .. import exit_codes, helpers, http_client
 
 
 def quality_prompt(log_level, logger, stream_list):
     title_dict = defaultdict(lambda: defaultdict(lambda: defaultdict(list)))
 
     for n, anime in enumerate(stream_list, 1):
-        title_dict[anime.get('title') or 'Uncategorized'][anime.get('quality') or 'No specific quality mentioned']['Soft subtitles (Subtitles are not forced.)' if anime.get('subtitle') else 'Hard subtitles (Subtitles are forced.)'].append("{:02d}: {}".format(n, stream_judiciary(anime.get('stream_url'))))
+        title_dict[anime.get('title') or 'Uncategorized'][anime.get('quality') or 'No specific quality mentioned']['Soft subtitles (Subtitles are not forced.)' if anime.get('subtitle') else 'Hard subtitles (Subtitles are forced.)'].append("{:02d}: {}".format(n, helpers.stream_judiciary(anime.get('stream_url'))))
 
     for category, qualities in title_dict.items():
         logger.info("\x1b[91m▽ {}\x1b[39m".format(category))
@@ -25,7 +23,7 @@ def quality_prompt(log_level, logger, stream_list):
                 for anime in animes:
                     logger.info(anime)
 
-    return stream_list[(ask(log_level, text="Select above, using the stream index", show_default=True, default=1, type=int) - 1) % len(stream_list)]
+    return stream_list[(helpers.ask(log_level, text="Select above, using the stream index", show_default=True, default=1, type=int) - 1) % len(stream_list)]
 
 
 @click.command(name='stream', help="Stream your favorite anime by query.")
@@ -52,7 +50,7 @@ def quality_prompt(log_level, logger, stream_list):
               help='Set the integer log level.',
               type=int,
               default=20)
-@bannerify
+@helpers.bannerify
 def animdl_stream(
         query,
         player_opts,
@@ -68,18 +66,19 @@ def animdl_stream(
     """
     r = kwargs.get('range')
 
-    session = client
+    session = http_client.client
     logger = logging.getLogger('animdl-streamer-core')
-    streamer = handle_streamer(click.parser.split_arg_string(player_opts or '') or [], vlc=vlc, mpv=mpv)
+    streamer = helpers.handle_streamer(click.parser.split_arg_string(player_opts or '') or [], vlc=vlc, mpv=mpv)
 
-    if streamer == -107977:
-        return logger.critical(
-            'Streaming failed due to selection of a unsupported streamer; please configure the streamer in the config to use it.')
+    if streamer is False:
+        logger.critical('Streaming failed due to selection of a unsupported streamer; please configure the streamer in the config to use it.')
+        raise SystemExit(exit_codes.STREAMER_CONFIGURATION_REQUIRED)
 
-    anime, provider = process_query(session, query, logger, auto=auto, auto_index=index)
+    anime, provider = helpers.process_query(session, query, logger, auto=auto, auto_index=index)
 
     if not anime:
-        return logger.critical('Searcher returned no anime to stream, failed to stream.')
+        logger.critical('Searcher returned no anime to stream, failed to stream.')
+        raise SystemExit(exit_codes.NO_CONTENT_FOUND)
     
     logger.name = "animdl-{}-streamer-core".format(provider)
     logger.debug("Will scrape from {}".format(anime))
@@ -87,7 +86,7 @@ def animdl_stream(
 
     anime_associator = Associator(anime.get('anime_url'), session=session)
 
-    streams = [*anime_associator.raw_fetch_using_check(get_check(r))]
+    streams = [*anime_associator.raw_fetch_using_check(helpers.get_check(r))]
     total = len(streams)
 
     for count, stream_data in enumerate(streams, 1):
@@ -102,6 +101,7 @@ def animdl_stream(
 
             if not stream_urls:
                 logger.warning("There were no stream links available at the moment. Ignoring {!r}, retry using a different provider.".format(window_title))
+                playing = False
                 continue
 
             selection = quality_prompt(log_level, logger, stream_urls) if len(stream_urls) > 1 else stream_urls[0]
@@ -115,8 +115,9 @@ def animdl_stream(
             
             player_process = streamer(selection.get('stream_url'), headers=headers, content_title=selection.get('title') or window_title, subtitles=selection.get('subtitle', []))
             player_process.wait()
-            playing = False
 
             if player_process.returncode:
                 logger.warning("Detected a non-zero return code: {:d}.".format(player_process.returncode))
-                playing = click.confirm("Retry playback for {!r}?".format(window_title), show_default=True, default=False) if log_level >= 20 else False
+                playing = False if log_level > 20 else click.confirm("Retry playback for {!r}?".format(window_title), show_default=True, default=False)
+
+            playing = False if log_level > 10 else click.confirm("Replay {!r}?".format(window_title), show_default=True, default=True)
