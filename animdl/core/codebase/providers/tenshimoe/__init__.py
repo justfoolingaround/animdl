@@ -1,3 +1,5 @@
+import re
+
 from functools import partial
 
 import lxml.html as htmlparser
@@ -11,21 +13,16 @@ REGEX = construct_site_based_regex(
 
 def extract_urls(session, episode_page):
     episode_page_content = session.get(episode_page)
-    embed_page = (htmlparser.fromstring(episode_page_content.text).xpath(
-        '//iframe') or [{}])[0].get('src')
+    embed_page = (htmlparser.fromstring(episode_page_content.text).cssselect('iframe') or [{}])[0].get('src')
     streams_page = session.get(embed_page, headers={'referer': episode_page})
-    for content in htmlparser.fromstring(
-            streams_page.text).xpath('//source'):
-        yield {'quality': int((content.get('title') or '0').strip('p')), 'stream_url': content.get('src')}
-
+    yield from ({'quality': int(_.group(2)), 'stream_url': _.group(1)} for _ in re.finditer(r"src: '(.+?)'.+?size: (\d+)", streams_page.text, flags=re.S))
 
 def fetcher(session, url, check):
 
     url = REGEX.search(url).group(0)
 
     episode_list_page = session.get(url)
-    count = int(htmlparser.fromstring(episode_list_page.text).xpath(
-                '//span[@class="badge badge-secondary align-top"]')[0].text_content())
+    count = int(htmlparser.fromstring(episode_list_page.text).cssselect('span.badge')[0].text_content())
 
     for episode in range(1, count + 1):
         if check(episode):
