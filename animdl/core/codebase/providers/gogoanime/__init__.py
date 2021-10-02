@@ -1,5 +1,5 @@
 import re
-from functools import partial
+from functools import partial, reduce
 
 import lxml.html as htmlparser
 
@@ -75,16 +75,9 @@ def get_stream_url(session, episode_page_url):
     from_download_urls = [{'quality': get_quality(url.text_content()), 'stream_url': url.get('href'), 'headers': {'referer': str(response.url)}} for url in content.cssselect(
         '.dowload > a[download]'
     )]
-
-    if from_download_urls:
-        return from_download_urls
     
-    streamsb_uri = content.cssselect('a[href*="sbplay.org"]')
-
-    if not streamsb_uri:
-        return []
-
-    return [*extract(session, streamsb_uri[0].get('href'))]
+    return from_download_urls or \
+        reduce(lambda x, y: x+y, ([*extract(session, streamsb_uri.get('href'))] for streamsb_uri in content.cssselect('a[href*="sbplay.org"]')), [])
 
     
 
