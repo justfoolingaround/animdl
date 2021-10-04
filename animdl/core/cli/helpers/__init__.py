@@ -35,7 +35,7 @@ def filter_urls(stream_urls, *, download=False):
 
 
 def filter_quality(stream_urls, preferred_quality, *, download=False):
-    for _, quality in filter_urls(stream_urls, download=False):
+    for _, quality in filter_urls(stream_urls, download=download):
         if preferred_quality >= quality:
             yield _, quality
 
