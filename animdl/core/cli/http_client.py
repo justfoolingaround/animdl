@@ -10,4 +10,15 @@ headers = httpx.Headers(
     }
 )
 
+def get_safeoverride(f):
+    def inner(*args, **kwargs):
+        try:
+            retval = f(*args, **kwargs)
+        except:
+            return None
+        return retval
+    return inner
+
 client = httpx.Client(headers=headers, timeout=30.0)
+
+client.__del__ = get_safeoverride(client.__del__)
