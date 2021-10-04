@@ -2,6 +2,9 @@ name: Nuitka Release
 on:
   push:
     branches: [ master ]
+  paths:
+    - "animdl/core/__version__.py"
+    - ".github/workflows/nuitka-release.yml"
 jobs:
   build:
     runs-on: windows-latest
