@@ -43,6 +43,11 @@ DEFAULT_CONFIG = {
             'executable': 'vlc',
             'opts': [],
         },
+        'iina': {
+            'executable': 'iina-cli',
+            'opts': [],
+        },
+
     },
     'schedule': {
         'site_url': 'https://graphql.anilist.co/',
