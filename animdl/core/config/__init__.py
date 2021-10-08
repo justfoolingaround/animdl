@@ -33,7 +33,7 @@ DEFAULT_CONFIG = {
         'twist': 'https://twist.moe/',
     },
     'preferred_quality': 1080,
-    'default_player': 'iina',
+    'default_player': 'mpv',
     'players': {
         'mpv': {
             'executable': 'mpv',
@@ -93,4 +93,3 @@ DEFAULT_PROVIDER = CONFIG.get('default_provider')
 
 AUTO_RETRY = CONFIG.get('download_auto_retry', 300) / 1000
 USE_FFMPEG = CONFIG.get('use_ffmpeg', False)
-
