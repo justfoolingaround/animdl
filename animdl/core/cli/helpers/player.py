@@ -42,6 +42,35 @@ def start_streaming_mpv(
     return subprocess.Popen(args)
 
 
+def start_streaming_iina(
+        executable,
+        stream_url,
+        opts,
+        *,
+        headers=None,
+        **kwargs):
+    args = [executable, stream_url, '--force-window=immediate'] + (opts or [])
+
+    if headers:
+        args.append(
+            '--http-header-fields=%s' %
+            '\r\n'.join(
+                '{}:{}'.format(
+                    k,
+                    v) for k,
+                v in headers.items()))
+
+    content_title = kwargs.pop('content_title', '')
+    subtitles = kwargs.pop('subtitles', []) or []
+
+    if content_title:
+        args.append('--title=%s' % content_title)
+
+    args.extend('--sub-file={}'.format(sub) for sub in subtitles)
+
+    return subprocess.Popen(args)
+
+
 def start_streaming_vlc(
         executable,
         stream_url,
@@ -67,6 +96,7 @@ def start_streaming_vlc(
 
 PLAYER_MAPPING = {
     'mpv': start_streaming_mpv,
+    'iina': start_streaming_iina,
     'vlc': start_streaming_vlc,
 }
 

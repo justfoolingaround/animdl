@@ -1,4 +1,3 @@
-
 ![AnimDL Cover](https://i.imgur.com/nNXSZi6.png)
 
 <h1><p align="center"> AnimDL - Download & Stream Your Favorite Anime </p>
@@ -29,15 +28,18 @@ python -m pip install .
 ### Installing [`mpv`](https://github.com/mpv-player/mpv/)
 
 #### Windows:
+
 - The easiest way to install mpv is by using [chocolatey](https://chocolatey.org/) package manager, it's an amazing tool can that be installed by following their [official documentation](https://chocolatey.org/install).
 - After chocolatey is installed, `mpv` can be installed through a console window (For example: cmd) with an **admininstrator** priviledge by the command: `choco install mpv`.
 
 #### Linux:
-- For users using a Debian-based distro, `mpv` can be installed using `sudo apt install mpv`. 
+
+- For users using a Debian-based distro, `mpv` can be installed using `sudo apt install mpv`.
 - For users using an Arch-based distro, `mpv` can be installed using `sudo pacman -S mpv`.
 
 #### Mac:
--  `mpv` can be installed using `brew install mpv`.
+
+- `mpv` can be installed using `brew install mpv`.
 
 ### Core features
 
@@ -50,7 +52,7 @@ python -m pip install .
 - Operates with full efficiency and speed by using Python's generator functions to their full capacity.
 - Supports downloading with [Internet Download Manager](https://www.internetdownloadmanager.com/) optionally.
 - Supports optional downloading with `ffmpeg` (see [Using ffmpeg](#using-ffmpeg)).
-- Supports streaming with [`mpv`](https://github.com/mpv-player/mpv/) and [`vlc`](https://www.videolan.org/vlc/) (see [Streaming](#streaming))
+- Supports streaming with [`mpv`](https://github.com/mpv-player/mpv/), [`iina`](https://github.com/iina/iina) and [`vlc`](https://www.videolan.org/vlc/) (see [Streaming](#streaming))
 
 ### Usage
 
@@ -73,30 +75,25 @@ Commands:
 
 Streaming **One Piece**'s episode 1 on [**AnimePahe**](https://animepahe.com/) by placing a search forehand:
 
--
-    ```
-    animdl stream "one piece" -r 1
-    ```
+- ```
+  animdl stream "one piece" -r 1
+  ```
 
 Streaming **One Piece**'s episode 1 on [**AnimeOut**](https://animepahe.com/) by placing a search forehand:
 
--
-    ```
-    animdl stream "animeout:one piece" -r 1
-    ```
+- ```
+  animdl stream "animeout:one piece" -r 1
+  ```
 
 Streaming **One Piece**'s episode 1 on [**AnimeOut**](https://animepahe.com/) directly:
 
--
-    ```
-    animdl stream "https://www.animeout.xyz/download-one-piece-episodes-latest/" -r 1
-    ```
+-     ```
+      animdl stream "https://www.animeout.xyz/download-one-piece-episodes-latest/" -r 1
+      ```
 
-
-**Downloading** and **grabbing** is the same as the examples, except the `download` and the `grab` command should be used.
+  **Downloading** and **grabbing** is the same as the examples, except the `download` and the `grab` command should be used.
 
 Downloading will take place in the working directory of this project!
-
 
 ### Range / `-r` option
 
@@ -116,18 +113,18 @@ will select episodes from 3 to 10 (inclusive), 12, 20 and from 40 to 50 (inclusi
 
 <!--Working: https://i.imgur.com/tG9nb8s.png, !Working: https://i.imgur.com/bTLO7LJ.png !-->
 
-| Website | Searcher Prefix | Available Qualities | Status | Content Fetch Speed <br> (Per Episode) | Content Extension |
-| ------- | ---------------- | ------------------- | ------ | ------------------ | ----------------- |
-| [9Anime](https://9anime.to/) | `9anime` | 720p, 1080p | <p align="center"><code><img height="20" src="https://i.imgur.com/bTLO7LJ.png"></code></p> | <p align="center">3.27s</p>   | MP4 / TS  | 
-| [AnimePahe](https://www.animepahe.com/) | `animepahe` | 720p, 1080p | <p align="center"><code><img height="20" src="https://i.imgur.com/tG9nb8s.png"></code></p> | <p align="center">4.15s</p>  | MP4 | 
-| [AnimeOut](https://www.animeout.xyz/) | `animeout` | 720p, 1080p | <p align="center"><code><img height="20" src="https://i.imgur.com/tG9nb8s.png"></code></p> | <p align="center">0s</p>  | MKV | 
-| [Animixplay](https://www.animixplay.to/) | `animixplay` | 480p, 720p, 1080p | <p align="center"><code><img height="20" src="https://i.imgur.com/bTLO7LJ.png"></code></p> | <p align="center">4.17s</p>  | MP4 / TS |
-| [Animtime](https://animtime.com/) | No searcher included | 720p, 1080p | <p align="center"><code><img height="20" src="https://i.imgur.com/tG9nb8s.png"></code></p> | <p align="center">0s</p>  | MP4 |
-| [Crunchyroll](https://www.crunchyroll.com/) | `crunchyroll` | All | <p align="center"><code><img height="20" src="https://i.imgur.com/tG9nb8s.png"></code></p> | <p align="center">0s</p>  | TS |
-| [Kawaiifu](https://www.kawaiifu.com/) (NSFW) | `kawaiifu` | 720p, 1080p | <p align="center"><code><img height="20" src="https://i.imgur.com/tG9nb8s.png"></code></p> | <p align="center">0s</p>  | MP4 |
-| [GogoAnime](https://www.gogoanime.pe/) | `gogoanime` | 480p, 720p, 1080p | <p align="center"><code><img height="20" src="https://i.imgur.com/tG9nb8s.png"></code></p> | <p align="center">2.34s</p>   | MP4 / TS |
-| [Tenshi](https://www.tenshi.moe/) | `tenshi` | 720p, 1080p | <p align="center"><code><img height="20" src="https://i.imgur.com/tG9nb8s.png"></code></p> | <p align="center">0s</p> | MP4 |
-| [Twist](https://www.twist.moe/) | `twist` | 720p, 1080p | <p align="center"><code><img height="20" src="https://i.imgur.com/tG9nb8s.png"></code></p> | <p align="center">0s</p> | MP4 |
+| Website                                      | Searcher Prefix      | Available Qualities | Status                                                                                     | Content Fetch Speed <br> (Per Episode) | Content Extension |
+| -------------------------------------------- | -------------------- | ------------------- | ------------------------------------------------------------------------------------------ | -------------------------------------- | ----------------- |
+| [9Anime](https://9anime.to/)                 | `9anime`             | 720p, 1080p         | <p align="center"><code><img height="20" src="https://i.imgur.com/bTLO7LJ.png"></code></p> | <p align="center">3.27s</p>            | MP4 / TS          |
+| [AnimePahe](https://www.animepahe.com/)      | `animepahe`          | 720p, 1080p         | <p align="center"><code><img height="20" src="https://i.imgur.com/tG9nb8s.png"></code></p> | <p align="center">4.15s</p>            | MP4               |
+| [AnimeOut](https://www.animeout.xyz/)        | `animeout`           | 720p, 1080p         | <p align="center"><code><img height="20" src="https://i.imgur.com/tG9nb8s.png"></code></p> | <p align="center">0s</p>               | MKV               |
+| [Animixplay](https://www.animixplay.to/)     | `animixplay`         | 480p, 720p, 1080p   | <p align="center"><code><img height="20" src="https://i.imgur.com/bTLO7LJ.png"></code></p> | <p align="center">4.17s</p>            | MP4 / TS          |
+| [Animtime](https://animtime.com/)            | No searcher included | 720p, 1080p         | <p align="center"><code><img height="20" src="https://i.imgur.com/tG9nb8s.png"></code></p> | <p align="center">0s</p>               | MP4               |
+| [Crunchyroll](https://www.crunchyroll.com/)  | `crunchyroll`        | All                 | <p align="center"><code><img height="20" src="https://i.imgur.com/tG9nb8s.png"></code></p> | <p align="center">0s</p>               | TS                |
+| [Kawaiifu](https://www.kawaiifu.com/) (NSFW) | `kawaiifu`           | 720p, 1080p         | <p align="center"><code><img height="20" src="https://i.imgur.com/tG9nb8s.png"></code></p> | <p align="center">0s</p>               | MP4               |
+| [GogoAnime](https://www.gogoanime.pe/)       | `gogoanime`          | 480p, 720p, 1080p   | <p align="center"><code><img height="20" src="https://i.imgur.com/tG9nb8s.png"></code></p> | <p align="center">2.34s</p>            | MP4 / TS          |
+| [Tenshi](https://www.tenshi.moe/)            | `tenshi`             | 720p, 1080p         | <p align="center"><code><img height="20" src="https://i.imgur.com/tG9nb8s.png"></code></p> | <p align="center">0s</p>               | MP4               |
+| [Twist](https://www.twist.moe/)              | `twist`              | 720p, 1080p         | <p align="center"><code><img height="20" src="https://i.imgur.com/tG9nb8s.png"></code></p> | <p align="center">0s</p>               | MP4               |
 
 ### More sites?
 
@@ -140,25 +137,24 @@ Currently, there are no plans to add more sites as **AnimDL** supports top sites
 Streaming will require either `mpv` or `vlc`. You will require these to be in your `PATH`, if not, simply make a `animdl_config.yml` on the working directory and add these configurations appropriately:
 
 ```yaml
-
 players:
-    mpv:
-        executable: "mpv"
-        opts: []
-    vlc:
-        executable: "vlc"
-        opts: []
-
-```    
+  mpv:
+    executable: "mpv"
+    opts: []
+  vlc:
+    executable: "vlc"
+    opts: []
+  iina:
+    executable: "iina-cli"
+    opts: []
+```
 
 ### Using ffmpeg
 
 `ffmpeg` can be used with animdl using the config file.
 
 ```yml
-
 use_ffmpeg: true
-
 ```
 
 This config will make the downloader use ffmpeg for HLS streams.
@@ -172,3 +168,4 @@ ffmpeg is set as optional because:
 ### Disclaimer
 
 The disclaimer of this project can be found [here.](./disclaimer.md)
+

@@ -33,7 +33,7 @@ DEFAULT_CONFIG = {
         'twist': 'https://twist.moe/',
     },
     'preferred_quality': 1080,
-    'default_player': 'mpv',
+    'default_player': 'iina',
     'players': {
         'mpv': {
             'executable': 'mpv',
@@ -43,6 +43,11 @@ DEFAULT_CONFIG = {
             'executable': 'vlc',
             'opts': [],
         },
+        'iina': {
+            'executable': 'iina-cli',
+            'opts': [],
+        },
+
     },
     'schedule': {
         'site_url': 'https://graphql.anilist.co/',
@@ -88,3 +93,4 @@ DEFAULT_PROVIDER = CONFIG.get('default_provider')
 
 AUTO_RETRY = CONFIG.get('download_auto_retry', 300) / 1000
 USE_FFMPEG = CONFIG.get('use_ffmpeg', False)
+
