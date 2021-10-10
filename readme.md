@@ -88,12 +88,12 @@ Streaming **One Piece**'s episode 1 on [**AnimeOut**](https://animepahe.com/) by
 Streaming **One Piece**'s episode 1 on [**AnimeOut**](https://animepahe.com/) directly:
 
 - ```
-      animdl stream "https://www.animeout.xyz/download-one-piece-episodes-latest/" -r 1
+  animdl stream "https://www.animeout.xyz/download-one-piece-episodes-latest/" -r 1
   ```
 
-  **Downloading** and **grabbing** is the same as the examples, except the `download` and the `grab` command should be used.
+**Downloading** and **grabbing** is the same as the examples, except the `download` and the `grab` command should be used.
 
-Downloading will take place in the working directory of this project!
+**Note:** Downloading will take place in the working directory of this project!
 
 ### Range / `-r` option
 
