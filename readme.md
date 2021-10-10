@@ -87,7 +87,7 @@ Streaming **One Piece**'s episode 1 on [**AnimeOut**](https://animepahe.com/) by
 
 Streaming **One Piece**'s episode 1 on [**AnimeOut**](https://animepahe.com/) directly:
 
--     ```
+-```
       animdl stream "https://www.animeout.xyz/download-one-piece-episodes-latest/" -r 1
       ```
 
