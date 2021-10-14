@@ -3,6 +3,7 @@ import re
 from click import prompt
 
 from ...codebase.downloader import handle_download
+from .discord import AnimDLRPC
 from .fun import (bannerify, choice, create_random_titles, stream_judiciary,
                   to_stdout)
 from .player import *

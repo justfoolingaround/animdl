@@ -46,6 +46,7 @@ def quality_prompt(log_level, logger, stream_list):
               'iina', flag_value=True, help="Force iina for streaming.")
 @click.option('--auto', is_flag=True, default=False,
               help="Select the first given index without asking for prompts.")
+@click.option('--discord', is_flag=True, default=False, help="Send in a Discord Rich Presence.")
 @click.option('-i', '--index', required=False, default=0,
               show_default=False, type=int, help="Index for the auto flag.")
 @click.option('-ll',
@@ -61,6 +62,7 @@ def animdl_stream(
     vlc,
     iina,
     auto,
+    discord,
     index,
     log_level,
     **kwargs
@@ -97,6 +99,13 @@ def animdl_stream(
     streams = [*anime_associator.raw_fetch_using_check(helpers.get_check(r))]
     total = len(streams)
 
+    if discord:
+        rpc_client = helpers.AnimDLRPC()
+        if rpc_client.conn is None:
+            logger.critical("Could not find a open pipe to establish a Discord Rich Presence.")
+        else:
+            rpc_client.handshake()
+
     for count, stream_data in enumerate(streams, 1):
 
         stream_urls_caller, episode_number = stream_data
@@ -123,6 +132,10 @@ def animdl_stream(
 
             logger.info("Streaming {!r}, [{:d}/{:d}, {:d} remaining]".format(
                 window_title, count, total, total - count))
+
+            if discord and rpc_client.conn is not None:
+                rpc_thread = rpc_client.threaded_activation(provider.title(), selection.get('title') or anime.get('name') or window_title, "{}/{}. {} remaining".format(count, total, total - count), conditional_predicate=lambda: playing, rpc_timeout=50)       
+                rpc_thread.start()
 
             player_process = streamer(selection.get('stream_url'), headers=headers, content_title=selection.get(
                 'title') or window_title, subtitles=selection.get('subtitle', []))
