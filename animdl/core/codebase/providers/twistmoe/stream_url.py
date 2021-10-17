@@ -49,7 +49,7 @@ def get_twistmoe_anime_uri(
         session,
         anime_name,
         *,
-        api_url='https://twist.moe/api/anime/{anime_name}'):
+        api_url='https://api.twist.moe/api/anime/{anime_name}'):
 
     base_url = 'https://air-cdn.twist.moe%s' if session.get(
         api_url.format(
