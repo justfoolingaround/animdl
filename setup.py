@@ -15,7 +15,7 @@ setup(
         'click',
         'comtypes',
         'cssselect',
-        'httpx',
+        'httpx==0.19.0',
         'requests',
         'pyyaml',
         'yarl',
