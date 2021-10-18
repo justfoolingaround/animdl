@@ -5,64 +5,66 @@ from functools import partial
 
 import lxml.html as htmlparser
 
-ID_MATCHER = re.compile(r"(?<=\?id=)[^&]+")
+ID_MATCHER = re.compile(r"\?id=([^&]+)")
+EMBED_URL_BASE = "https://animixplay.to/api/live"
+EMBED_M3U8_MATCHER = re.compile(r'player\.html[?#]([^#]+)')
+EMBED_VIDEO_MATCHER = re.compile(r'iframesrc="(.+?)"')
 
-EMBED_URL_BASE = "https://animixplay.to/api/live{}"
-EMBED_M3U8_MATCHER = re.compile(r'(?<=player\.html[?#])[^#]+')
-EMBED_VIDEO_MATCHER = re.compile(r'(?<=video=")[^"]+')
-
+URL_ALIASES = {
+    'bestanimescdn': 'omega.kawaiifucdn.xyz/anime3',
+    'anicdn.stream': 'gogocdn.club',
+    'ssload.info': 'gogocdn.club',
+}
 
 def fetching_chain(f1, f2, session, url, check=lambda *args: True):
     return f2(session, f1(session, url), check=check)
 
-
 def from_site_url(session, url) -> dict:
-    """
-    Keep in mind that the return of this function will vary from stream to stream. (Gogo Anime streams and 4Anime streams will vary.)
-    """
     return json.loads(
         htmlparser.fromstring(
             session.get(url).content).cssselect('#epslistplace')[0].text)
 
+def url_update(url):
+    for key, item in URL_ALIASES.items():
+        url = url.replace(key, item)
+    return url
 
-def get_embed(session, data_url):
-    content_id_re = ID_MATCHER.search(data_url)
-    if not content_id_re:
-        return data_url
-    content_id = content_id_re.group(0).encode(errors='ignore')
+def extract_from_url(embed_url):
+    on_url = EMBED_M3U8_MATCHER.search(embed_url)
 
-    resp = 0
-
-    while not resp in [200, 403]:
-        embed_page = session.get(
-            EMBED_URL_BASE.format(
-                b64encode(
-                    b"%sLTXs3GrU8we9O%s" %
-                    (content_id,
-                     b64encode(content_id))).decode(
-                    errors='ignore')),
-            allow_redirects=True)
-        resp = embed_page.status_code
+    if not on_url:
+        return []
     
-    if resp == 403:
-        return
+    return [{'stream_url': url_update(b64decode(on_url.group(1)).decode())}]
+
+
+def extract_from_embed(session, embed_url):
+    embed_page = session.get(embed_url, allow_redirects=True)
+
+    while embed_page.status_code not in [200, 403]:
+        embed_page = session.get(embed_url, allow_redirects=True)
+
+    if embed_page.status_code == 403:
+        return []
+
+    on_site = EMBED_VIDEO_MATCHER.search(embed_page.text)
     
-    return embed_page
+    if on_site:
+        return extract_from_url(on_site.group(1))
+
+    return extract_from_url(str(embed_page.url))
+
+def from_content_id(session, content_id):
+    return session.post("https://api.gogocdn.club/v/{}".format(content_id), headers={'x-requested-with': 'XMLHttpRequest'}).json().get('m3u8')
 
 
 def get_stream_url(session, data_url):
-    url = get_embed(session, data_url)
-    if not url:
-        return []
-    if not isinstance(url, str):
-        video_on_site = EMBED_VIDEO_MATCHER.search(url.text)
-        if video_on_site:
-            return [{'stream_url': video_on_site.group(0)}]
-        url = url.url
+    content_id = ID_MATCHER.search(data_url)
+    
+    if content_id:
+        return extract_from_embed(session, EMBED_URL_BASE + b64encode("{}LTXs3GrU8we9O{}".format(content_id.group(1), b64encode(content_id.group(1).encode()).decode()).encode()).decode()) or [{'stream_url': url_update(from_content_id(session, content_id.group(1)))}]
 
-    return [{'stream_url': b64decode(EMBED_M3U8_MATCHER.search(str(url)).group(
-        0).encode(errors='ignore')).decode(errors='ignore').replace('bestanimescdn', 'omega.kawaiifucdn.xyz/anime3'), 'quality': 'multi'}]
-
+    return extract_from_url(data_url)
 
 def gogoanime_parser(session, data: dict, *, check=lambda *args: True):
     for value in range(data.get('eptotal')):
