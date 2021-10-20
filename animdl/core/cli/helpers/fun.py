@@ -6,10 +6,12 @@ Credits for the functions:
 """
 
 import logging
+import regex
 import yarl
 from random import choice
 
 from ...__version__ import __core__
+from ..http_client import client
 
 package_banner = """\
 ░█████╗░███╗░░██╗██╗███╗░░░███╗██████╗░██╗░░░░░
@@ -20,6 +22,21 @@ package_banner = """\
 ╚═╝░░╚═╝╚═╝░░╚══╝╚═╝╚═╝░░░░░╚═╝╚═════╝░╚══════╝v{}
 A highly efficient anime downloader and streamer
 """.format(__core__)
+
+
+update_banner = """\x1b[91m\
+Version mismatch with upstream [↑ {}, ↓ {}].
+
+Please consider updating to the latest version for ensuring bug fixes,
+code optimizations and new features. This can be done by using:
+
+>>> pip install git+https://github.com/justfoolingaround/animdl.git
+
+Or, 
+
+>>> py -m pip install git+https://github.com/justfoolingaround/animdl.git \x1b[39m
+"""
+
 
 LANGUAGE = {
     'adjective': [
@@ -411,14 +428,22 @@ def stream_judiciary(url):
     return "{!r} from {}".format(url.name, LABELS.get(url.host, url.host))
 
 
+def check_for_update(*, current=__core__, git_version_url="https://raw.githubusercontent.com/justfoolingaround/animdl/master/animdl/core/__version__.py"):
+    upstream_version = regex.search( r'__core__ = "(.*?)"', client.get(git_version_url).text).group(1)
+    return upstream_version == current, upstream_version
+
 def bannerify(f):
     def internal(*args, **kwargs):
         quiet_state = kwargs.get('log_level')
         if quiet_state is not None:
             if quiet_state <= 20:
                 print("\x1b[35m{}\x1b[39m".format(package_banner))
+                latest, version = check_for_update()
+                if not latest:
+                    print(update_banner.format(version, __core__))
             logging.basicConfig(
                 level=quiet_state,
                 format="[\x1b[35m%(filename)s:%(lineno)d\x1b[39m - %(asctime)s - %(name)s: %(levelname)s] %(message)s")
         return f(*args, **kwargs)
+
     return internal
