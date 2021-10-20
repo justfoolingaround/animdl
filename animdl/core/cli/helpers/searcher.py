@@ -71,12 +71,12 @@ def search_animeout(session, query):
 
 def search_animixplay(session, query):
     parsed = htmlparser.fromstring(
-        session.get(
-            GOGOANIME_URL_SEARCH, params={
-                'keyword': query}).text)
+        session.post(
+            'https://cachecow.eu/api/search', data={
+                'qfast': query}).json().get('result') or "<div></div>")
 
-    for results in parsed.xpath('//p[@class="name"]/a'):
-        yield {'anime_url': ANIMIXPLAY + "v1" + results.get('href')[9:], 'name': results.get('title')}
+    for results in parsed.cssselect('.name > a'):
+        yield {'anime_url': ANIMIXPLAY[:-1] + results.get('href'), 'name': results.get('title')}
 
 
 def search_gogoanime(session, query):
