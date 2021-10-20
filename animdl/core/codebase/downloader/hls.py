@@ -1,5 +1,5 @@
 import logging
-import re
+import regex
 import time
 
 import httpx
@@ -7,16 +7,16 @@ import yarl
 from Cryptodome.Cipher import AES
 
 
-ENCRYPTION_DETECTION_REGEX = re.compile(r"#EXT-X-KEY:METHOD=([^,]+),")
-ENCRYPTION_URL_IV_REGEX = re.compile(
+ENCRYPTION_DETECTION_REGEX = regex.compile(r"#EXT-X-KEY:METHOD=([^,]+),")
+ENCRYPTION_URL_IV_REGEX = regex.compile(
     r"#EXT-X-KEY:METHOD=(?P<method>[^,]+),URI=\"(?P<key_uri>[^\"]+)\"(?:,IV=(?P<iv>.*))?")
 
 
-STREAM_INFO_REGEX = re.compile(r"#EXT-X-STREAM-INF:(.*)\s+(.+)")
-QUALITY_REGEX = re.compile(
+STREAM_INFO_REGEX = regex.compile(r"#EXT-X-STREAM-INF:(.*)\s+(.+)")
+QUALITY_REGEX = regex.compile(
     r'RESOLUTION=\d+x(\d+)')
 
-TS_EXTENSION_REGEX = re.compile(r"(?P<ts_url>.*\.ts.*)")
+TS_EXTENSION_REGEX = regex.compile(r"(?P<ts_url>.*\.ts.*)")
 
 HLS_STREAM_EXTENSIONS = ['m3u8', 'm3u']
 

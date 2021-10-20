@@ -3,7 +3,6 @@ All the search algorithms for all the providers available in AnimDL.
 """
 
 import json
-import re
 
 import lxml.html as htmlparser
 

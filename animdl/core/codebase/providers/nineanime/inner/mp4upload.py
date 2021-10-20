@@ -1,7 +1,7 @@
-import re
+import regex
 import logging
 
-MP4UPLOAD_REGEX = re.compile(r"player\|(.*)\|videojs")
+MP4UPLOAD_REGEX = regex.compile(r"player\|(.*)\|videojs")
 
 
 def extract_480(splitted_values):

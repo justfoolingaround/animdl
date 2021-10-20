@@ -3,7 +3,6 @@ Probably the only 9Anime scraper in the world that does not rely on Selenium or 
 """
 
 import json
-import re
 from functools import partial
 
 import lxml.html as htmlparser

@@ -1,6 +1,6 @@
-import re
+import regex
 
-SUFFIX_REGEX = re.compile(r'([^?&/]+)(?:\?.+)?$')
+SUFFIX_REGEX = regex.compile(r'([^?&/]+)(?:\?.+)?$')
 
 BRACE_PAIRS = [
     ('{', '}'),
@@ -9,24 +9,24 @@ BRACE_PAIRS = [
     ('【', '】'),
 ]
 
-PARENTHESIS_REGEX = re.compile("|".join(
-    r'({0}[^{1}]*{1})'.format(re.escape(s), re.escape(e)) for s, e in BRACE_PAIRS))
+PARENTHESIS_REGEX = regex.compile("|".join(
+    r'({0}[^{1}]*{1})'.format(regex.escape(s), regex.escape(e)) for s, e in BRACE_PAIRS))
 
 
 def name_index(element):
     index = {'element': element}
     name = element.text_content()
-    quality = re.search(r'(\d+)pp?', name)
-    fn = re.sub(r'((\d+)pp?|x\.?26[45])', '', name)
+    quality = regex.search(r'(\d+)pp?', name)
+    fn = regex.sub(r'((\d+)pp?|x\.?26[45])', '', name)
     if quality:
         index.update({'quality': int(quality.group(1))})
 
     fn = PARENTHESIS_REGEX.sub('', fn)
-    *anime, pe = re.split(r'(?=-\s*?[VS]?\d+)', fn, 1, re.I)
+    *anime, pe = regex.split(r'(?=-\s*?[VS]?\d+)', fn, 1, regex.I)
     index.update({'name': '-'.join(anime)})
 
-    remove_seasonal = re.sub(r'[VS]\d+\D', '', pe, flags=re.I)
-    pe_match = re.search(r"e?(\d+)", remove_seasonal, re.I)
+    remove_seasonal = regex.sub(r'[VS]\d+\D', '', pe, flags=regex.I)
+    pe_match = regex.search(r"e?(\d+)", remove_seasonal, regex.I)
     if pe_match:
         index.update({'episode': int(pe_match.group(1))})
 

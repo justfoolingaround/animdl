@@ -1,4 +1,4 @@
-import re
+import regex
 from functools import partial, reduce
 
 import lxml.html as htmlparser
@@ -49,7 +49,7 @@ def convert_to_anime_page(url):
 
 
 def get_quality(url_text):
-    match = re.search(r'(\d+)P', url_text)
+    match = regex.search(r'(\d+)P', url_text)
     if not match:
         return None
     return int(match.group(1))

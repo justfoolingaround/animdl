@@ -1,17 +1,16 @@
 """
 A ffmpeg download wrapper for ffmpeg and tqdm.
 
-Wrapper was created in favor of [animdl](https://github.com/justfoolingaround/animdl.git) and since the developer
-doesn't care about you copying and pasting this code somewhere, you may do it.
-
-No need for credit. You might feel guilty though.
+Wrapper was created in favor of [animdl](https://github.com/justfoolingaround/animdl.git) 
+and since the developer doesn't care about you copying and pasting this code somewhere, 
+you may do it. No need for credit. You might feel guilty though.
 
 Hope **your** project becomes easier.
 """
 
 import logging
 import os
-import re
+import regex
 import shutil
 import subprocess
 
@@ -53,7 +52,7 @@ def iter_audio(stderr):
         """
         A generator, that is made for sorting and sending to another generator.
         """
-        for match in re.finditer(b'Stream #(\d+):(\d+): Audio:.+ (\d+) Hz', stderr):
+        for match in regex.finditer(b'Stream #(\d+):(\d+): Audio:.+ (\d+) Hz', stderr):
             program, stream_id, freq = (_.decode() for _ in match.groups()) 
             yield "{}:a:{}".format(program, stream_id), int(freq)
     yield from sorted(it(), key=lambda x: x[1], reverse=True)
@@ -85,13 +84,13 @@ def analyze_stream(logger: logging.Logger, url: str, headers: dict):
     
     stderr = b''.join(iter(process.stdout))
 
-    duration = re.search(b'Duration: ((?:\d+:)+\d+)', stderr)
+    duration = regex.search(b'Duration: ((?:\d+:)+\d+)', stderr)
     if duration:
         info['duration'] = parse_ffmpeg_duration(duration.group(1).decode())
     
     audio = [*iter_audio(stderr)]
 
-    for match in re.finditer(b'Stream #(\d+):(\d+): Video: .+x(\d+)', stderr):
+    for match in regex.finditer(b'Stream #(\d+):(\d+): Video: .+x(\d+)', stderr):
         program, stream_index, resolution = (int(_.decode()) for _ in match.groups())
         info['streams'][program][stream_index]['quality'] = resolution
         info['streams'][program][stream_index]['audio'] = audio
@@ -137,7 +136,7 @@ def ffmpeg_to_tqdm(logger: logging.Logger, process: subprocess.Popen, duration: 
 
     for stream in process.stdout:
         logger.debug('[ffmpeg] {}'.format(stream.decode().strip()))
-        current = get_last(re.finditer(b'\stime=((?:\d+:)+\d+)', stream)) # type: re.Match[bytes]
+        current = get_last(regex.finditer(b'\stime=((?:\d+:)+\d+)', stream))
         if current:
             in_seconds = parse_ffmpeg_duration(current.group(1).decode()) - previous_span
             previous_span += in_seconds

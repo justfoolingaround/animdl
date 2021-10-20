@@ -1,4 +1,4 @@
-import re
+import regex
 
 from functools import partial
 
@@ -15,7 +15,7 @@ def extract_urls(session, episode_page):
     episode_page_content = session.get(episode_page)
     embed_page = (htmlparser.fromstring(episode_page_content.text).cssselect('iframe') or [{}])[0].get('src')
     streams_page = session.get(embed_page, headers={'referer': episode_page})
-    yield from ({'quality': int(_.group(2)), 'stream_url': _.group(1)} for _ in re.finditer(r"src: '(.+?)'.+?size: (\d+)", streams_page.text, flags=re.S))
+    yield from ({'quality': int(_.group(2)), 'stream_url': _.group(1)} for _ in regex.finditer(r"src: '(.+?)'.+?size: (\d+)", streams_page.text, flags=regex.S))
 
 def fetcher(session, url, check):
 

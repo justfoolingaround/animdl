@@ -1,5 +1,5 @@
 import json
-import re
+import regex
 from collections import defaultdict
 from functools import partial
 
@@ -12,7 +12,7 @@ from .geobypass import geobypass_response
 REGEX = construct_site_based_regex(
     CRUNCHYROLL, extra_regex=r'/([^?/&]+)')
 
-CONTENT_METADATA = re.compile(r"vilos\.config\.media = (\{.+\})")
+CONTENT_METADATA = regex.compile(r"vilos\.config\.media = (\{.+\})")
 
 
 def get_subtitle(subtitles, lang='enUS'):
@@ -45,7 +45,7 @@ def group_content(slug, html_element):
     episodes = defaultdict(lambda: list())
 
     for element in html_element.cssselect('a.episode')[::-1]:
-        episode_match = (re.search('^/{}/episode-(\d+)'.format(re.escape(slug)), element.get('href')))
+        episode_match = (regex.search('^/{}/episode-(\d+)'.format(regex.escape(slug)), element.get('href')))
         episodes[int(episode_match.group(1)) if episode_match else 0].append((CRUNCHYROLL + element.get('href', '').strip('/'), element.get('title')))
 
     return episodes

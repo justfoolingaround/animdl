@@ -1,7 +1,7 @@
-import re
+import regex
 import logging
 
-STREAMTAPE_REGEX = re.compile(r"innerHTML = \"//([^\"]+)\" \+ 'c([^']+)'")
+STREAMTAPE_REGEX = regex.compile(r"innerHTML = \"//([^\"]+)\" \+ 'c([^']+)'")
 
 
 def extract(session, streamtape_uri):

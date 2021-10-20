@@ -1,16 +1,16 @@
 from .....config import NINEANIME
 
-import re
+import regex
 import logging
 
-SKEY_RE = re.compile(r"skey = '(?P<skey>[^']+)';")
+SKEY_RE = regex.compile(r"skey = '(?P<skey>[^']+)';")
 
 
 def extract(session, vidstream_uri):
     """
     A safe extraction for VidStream.
     """
-    info_ajax = "{}/info/{}".format(*re.search(
+    info_ajax = "{}/info/{}".format(*regex.search(
         '(.+)/(?:embed|e)/(.+)', vidstream_uri).group(1, 2))
     logger = logging.getLogger('9anime-vidstream-extractor')
 

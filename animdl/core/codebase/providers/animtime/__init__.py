@@ -6,15 +6,9 @@ import lxml.html as htmlparser
 from ....config import ANIMTIME
 from ...helper import construct_site_based_regex
 
-CONTENT_RE = re.compile(r't\[t\.([^=]+)=(\d+)\]')
+CONTENT_RE = re.compile(r't\.(\w+)=([0-9]+)')
 REGEX = construct_site_based_regex(
     ANIMTIME, extra_regex=r'/title/([^/?&]+)')
-
-
-def get_first_item(iterables, check):
-    for item in iterables:
-        if check(item):
-            return item
 
 
 def get_content(url, js_content):
@@ -25,13 +19,9 @@ def get_content(url, js_content):
 
 
 def fetcher(session, url, check):
-    animtime_page = session.get(url)
-    scripts = htmlparser.fromstring(animtime_page.text).xpath('//script')
+    html_page = htmlparser.fromstring(session.get(url).text)
 
-    main = get_first_item(scripts, lambda e: e.get(
-        'src', '').startswith('main')).get('src')
-
-    mainjs = session.get(ANIMTIME + main)
+    mainjs = session.get(ANIMTIME + html_page.cssselect('script[src^="main"]')[0].get('src'))
     content = mainjs.text
 
     content = content[content.index('tm=function(t)'):]

@@ -21,6 +21,7 @@ setup(
         'yarl',
         'lxml',
         'tqdm',
+        'regex==2021.10.8',
         'pycryptodomex',
     ],
     entry_points='''

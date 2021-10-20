@@ -1,14 +1,14 @@
 import json
-import re
+import regex
 from base64 import b64decode, b64encode
 from functools import partial
 
 import lxml.html as htmlparser
 
-ID_MATCHER = re.compile(r"\?id=([^&]+)")
+ID_MATCHER = regex.compile(r"\?id=([^&]+)")
 EMBED_URL_BASE = "https://animixplay.to/api/live"
-EMBED_M3U8_MATCHER = re.compile(r'player\.html[?#]([^#]+)')
-EMBED_VIDEO_MATCHER = re.compile(r'iframesrc="(.+?)"')
+EMBED_M3U8_MATCHER = regex.compile(r'player\.html[?#]([^#]+)')
+EMBED_VIDEO_MATCHER = regex.compile(r'iframesrc="(.+?)"')
 
 URL_ALIASES = {
     'bestanimescdn': 'omega.kawaiifucdn.xyz/anime3',

@@ -1,15 +1,15 @@
-import re
+import regex
 from base64 import b64decode
 
 from .decrypter import decrypt
 
-YTSM = re.compile(r"ysmm = '([^']+)")
-KWIK_F_URL = re.compile(r"[&f]/(.+)")
-LOCKED_AD = re.compile(r'&url=([^&]+)')
+YTSM = regex.compile(r"ysmm = '([^']+)")
+KWIK_F_URL = regex.compile(r"[&f]/(.+)")
+LOCKED_AD = regex.compile(r'&url=([^&]+)')
 
-KWIK_PARAMS_RE = re.compile(r'\("(\w+)",\d+,"(\w+)",(\d+),(\d+),\d+\)')
-KWIK_D_URL = re.compile(r'action="([^"]+)"')
-KWIK_D_TOKEN = re.compile(r'value="([^"]+)"')
+KWIK_PARAMS_RE = regex.compile(r'\("(\w+)",\d+,"(\w+)",(\d+),(\d+),\d+\)')
+KWIK_D_URL = regex.compile(r'action="([^"]+)"')
+KWIK_D_TOKEN = regex.compile(r'value="([^"]+)"')
 
 
 def decode_adfly(coded_key):

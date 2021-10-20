@@ -34,10 +34,7 @@ def animdl_search(query, json, provider, log_level):
                 provider, DEFAULT_PROVIDER))
         provider = DEFAULT_PROVIDER
 
-    for i, search_data in enumerate(link.get(provider)(session, query)):
-        if json:
-            print(json_.dumps(search_data))
-        else:
-            logger.info(
-                '[#{:02d}] {name} \x1b[33m{anime_url}\x1b[39m'.format(
-                    i, **search_data))
+    genexp = link.get(provider)(session, query)
+
+    for i, search_data in enumerate(genexp):
+        logger.info('[#{:02d}] {name} \x1b[33m{anime_url}\x1b[39m'.format(i, **search_data)) if not json else print(json_.dumps(search_data))

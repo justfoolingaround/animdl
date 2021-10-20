@@ -1,16 +1,16 @@
 from .....config import NINEANIME
 
-import re
+import regex
 import logging
 
-SKEY_RE = re.compile(r"skey = '(?P<skey>[^']+)';")
+SKEY_RE = regex.compile(r"skey = '(?P<skey>[^']+)';")
 
 
 def uri_correction(mcloud_uri):
     """
     Compensation for the inaccuracy with url decode that occurs internally in **animdl**.
     """
-    content_id = re.search(r"embed/(\w+)", mcloud_uri).group(1)
+    content_id = regex.search(r"embed/(\w+)", mcloud_uri).group(1)
     return "https://mcloud.to/info/%s" % content_id, "https://mcloud.to/embed/%s" % content_id
 
 
@@ -18,7 +18,7 @@ def extract(session, mcloud_uri):
     """
     A safe extraction for MyCloud.
     """
-    info_ajax = "{}/info/{}".format(*re.search(
+    info_ajax = "{}/info/{}".format(*regex.search(
         '(.+)/(?:embed|e)/(.+)', mcloud_uri).group(1, 2))
     logger = logging.getLogger('9anime-mycloud-extractor')
 

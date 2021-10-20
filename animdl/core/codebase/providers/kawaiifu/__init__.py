@@ -1,13 +1,13 @@
-import re
+import regex
 from collections import defaultdict
 from functools import partial
 
 import lxml.html as htmlparser
 
-REGEX = re.compile(r"(?:https?://)?(?:\S+\.)?(?P<host>domdom\.stream|bestanime3\.xyz|kawaiifu\.com)/(?P<episode_page>anime/)?(?P<type>season/[^/]+|.+)/(?P<slug>[^?&#]+)")
+REGEX = regex.compile(r"(?:https?://)?(?:\S+\.)?(?P<host>domdom\.stream|bestanime3\.xyz|kawaiifu\.com)/(?P<episode_page>anime/)?(?P<type>season/[^/]+|.+)/(?P<slug>[^?&#]+)")
 
 def get_int(content):
-    d = re.search(r'[0-9]+', content)
+    d = regex.search(r'[0-9]+', content)
     if d:
         return int(d.group(0))
 
