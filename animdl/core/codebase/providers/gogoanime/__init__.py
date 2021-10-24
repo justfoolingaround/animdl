@@ -1,11 +1,11 @@
-import regex
+from base64 import b64decode
 from functools import partial, reduce
 
 import lxml.html as htmlparser
+import regex
 
 from ....config import GOGOANIME
 from ...helper import construct_site_based_regex
-
 from .inner.streamsb import extract
 
 REGEX = construct_site_based_regex(
@@ -17,6 +17,25 @@ ANIME_RE = construct_site_based_regex(
 EPISODE_LOAD_AJAX = "https://ajax.gogo-load.com/ajax/load-list-episode"
 SITE_URL = GOGOANIME
 
+DOWNLOAD_URL_RE = regex.compile(r"download\.php\?url=([^?&/]+)")
+
+GARBAGES = [
+    'URASDGHUSRFSJGYfdsffsderFStewthsfSFtrfte',
+    'AdeqwrwedffryretgsdFrsftrsvfsfsr',
+    'werFrefdsfrersfdsrfer36343534',
+    'AawehyfcghysfdsDGDYdgdsf',
+    'wstdgdsgtert',
+    'Adrefsd',
+    'sdf',
+]
+
+def decrypt_redirect(url):
+    is_gogocdn = DOWNLOAD_URL_RE.search(url)
+    
+    if not is_gogocdn:
+        return url
+    
+    return b64decode(reduce(lambda x, y: x.replace(y, ''), GARBAGES, is_gogocdn.group(1))).decode()
 
 def get_episode_list(session, anime_id):
     """
@@ -72,7 +91,7 @@ def get_stream_url(session, episode_page_url):
             'referer': "https:{}".format(streaming)})
     content = htmlparser.fromstring(response.text)
 
-    from_download_urls = [{'quality': get_quality(url.text_content()), 'stream_url': url.get('href'), 'headers': {'referer': str(response.url)}} for url in content.cssselect(
+    from_download_urls = [{'quality': get_quality(url.text_content()), 'stream_url': decrypt_redirect(url.get('href')), 'headers': {'referer': url.get('href')}} for url in content.cssselect(
         '.dowload > a[download]'
     )]
     
