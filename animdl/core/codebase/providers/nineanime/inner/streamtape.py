@@ -1,7 +1,7 @@
 import regex
 import logging
 
-STREAMTAPE_REGEX = regex.compile(r"innerHTML = \"//([^\"]+)\" \+ 'c([^']+)'")
+STREAMTAPE_REGEX = regex.compile(r"'robotlink'\)\.innerHTML = '(.+?)'\+ \('xcd(.+?)'\)")
 
 
 def extract(session, streamtape_uri):
@@ -15,12 +15,11 @@ def extract(session, streamtape_uri):
         logger.warning("Could not find stream links. {}".format(
             "The file was deleted." if streamtape_embed_page.status_code == 404 else 'Failed to extract from: {}'.format(streamtape_uri)))
         return []
-    content_get_uri = "https://%s" % ''.join(regex_match.group(1, 2))
+
+    content_get_uri = "https:{}".format(''.join(regex_match.groups()))
 
     streamtape_redirect = session.get(
-        content_get_uri, allow_redirects=False, headers={
-            'referer': streamtape_uri})
+        content_get_uri, allow_redirects=False)
     return [{'stream_url': streamtape_redirect.headers.get('location')}]
-
 
 extract.site = "streamtape"

@@ -43,7 +43,7 @@ def process_query(
 
     *provider_name, custom_query = query.split(':', 1)
 
-    searcher = get_searcher(''.join(provider_name))
+    searcher = get_searcher(':'.join(provider_name))
 
     if not searcher:
         searcher, custom_query = get_searcher(provider), query
