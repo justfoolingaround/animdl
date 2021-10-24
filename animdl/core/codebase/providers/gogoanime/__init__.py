@@ -34,8 +34,10 @@ def decrypt_redirect(url):
     
     if not is_gogocdn:
         return url
+
+    encrypted_url = reduce(lambda x, y: x.replace(y, ''), GARBAGES, is_gogocdn.group(1))
     
-    return b64decode(reduce(lambda x, y: x.replace(y, ''), GARBAGES, is_gogocdn.group(1))).decode()
+    return b64decode(encrypted_url + "="*(len(encrypted_url) % 4)).decode()
 
 def get_episode_list(session, anime_id):
     """
