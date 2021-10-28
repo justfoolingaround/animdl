@@ -21,6 +21,7 @@ DEFAULT_CONFIG = {
     'default_provider': 'animepahe',
     'site_urls': {
         '9anime': 'https://9anime.to/',
+        'allanime': 'https://allanime.site/',
         'animekaizoku': 'https://animekaizoku.com/',
         'animeout': 'https://animeout.xyz/',
         'animepahe': 'https://animepahe.com/',
@@ -67,6 +68,7 @@ if CONFIGURATION_FILE_PATH.exists():
 SITE_URLS = CONFIG.get('site_urls', {})
 
 NINEANIME = SITE_URLS.get('9anime')
+ALLANIME = SITE_URLS.get('allanime')
 ANIMEKAIZOKU = SITE_URLS.get('animekaizoku')
 ANIMEOUT = SITE_URLS.get('animeout')
 ANIMEPAHE = SITE_URLS.get('animepahe')
