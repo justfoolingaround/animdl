@@ -1,3 +1,11 @@
+"""
+Animix raises `503 (Service Temporarily Unavailable)` in these user-agents:
+
+- animdl/1.3
+
+I know what you're doing and you can't stop me, Animix. I'm watching you.
+"""
+
 import httpx
 
 headers = httpx.Headers(
