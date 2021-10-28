@@ -403,12 +403,12 @@ def create_random_titles():
     noun = LANGUAGE.get('noun')
 
     return [
-        "%s-%s" % (choice(adjs), choice(noun)),
-        "the-%s-%s" % (choice(adjs), choice(noun)),
-        "%s-%s" % (choice(noun), choice(noun)),
-        "the-%s's-%s" % (choice(noun), choice(noun)),
-        "the-%s-of-the-%s" % (choice(noun), choice(noun)),
-        "%s-in-the-%s" % (choice(noun), choice(noun)),
+        "{}-{}".format(choice(adjs), choice(noun)),
+        "the-{}-{}".format(choice(adjs), choice(noun)),
+        "{}-{}".format(choice(noun), choice(noun)),
+        "the-{}'s-{}".format(choice(noun), choice(noun)),
+        "the-{}-of-the-{}".format(choice(noun), choice(noun)),
+        "{}-in-the-{}".format(choice(noun), choice(noun)),
     ]
 
 
