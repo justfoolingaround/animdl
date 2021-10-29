@@ -3,7 +3,7 @@ import logging
 import click
 
 from ...codebase import Associator
-from ..helpers import bannerify
+from ..helpers import bannerify, ensure_extraction
 from ..http_client import client
 
 
@@ -29,6 +29,7 @@ def animdl_test(x, e, log_level):
     SITE_LIST = {
         '9anime': 'https://9anime.to/watch/one-piece.ov8',
         'crunchyroll': 'https://www.crunchyroll.com/one-piece',
+        'allanime': 'https://allanime.site/anime/ReooPAxPMsHM4KPMY',
         'animeout': 'https://www.animeout.xyz/download-one-piece-episodes-latest/',
         'animixplay': 'https://animixplay.to/v1/one-piece',
         'animtime': 'https://animtime.com/title/5',
@@ -51,7 +52,7 @@ def animdl_test(x, e, log_level):
             if not links:
                 raise Exception('No stream urls found on {!r}.'.format(site))
             for link_cb, en in links:
-                for stream in link_cb():
+                for stream in ensure_extraction(session, link_cb):
                     print(
                         '\t - \x1b[32m{stream_url}\x1b[39m'.format_map(stream))
             logger.info(
