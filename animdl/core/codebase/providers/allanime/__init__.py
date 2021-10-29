@@ -1,4 +1,5 @@
 import json
+import logging
 from collections import defaultdict
 from functools import partial
 
@@ -17,26 +18,26 @@ SANITIZER = {
     '\\u002F': '/',
 }
 
-EMBED_BLACKLIST = (
-    regex.compile("streaming\.php\?"),
-    "https://mp4upload.com/",
-    "https://streamsb.net/",
-    "https://dood.to/",
-    "https://videobin.co/",
-    "https://ok.ru",
-    "https://streamlare.com",
+EMBED_LIST = (
+    ('gogoplay', regex.compile("(streaming|load)\.php\?")),
+    ('mp4upload', "https://mp4upload.com/"),
+    ('streamsb', "https://streamsb.net/"),
+    ('doodstream', "https://dood.to/"),
+    ('videobin', "https://videobin.co/"),
+    ('okru', "https://ok.ru"),
+    ('streamlare', "https://streamlare.com"),
 ) 
 
-def is_blacklisted(url):
-    for blacklist in EMBED_BLACKLIST:
-        if isinstance(blacklist, regex.Pattern):
-            if blacklist.search(url):
-                return True
+def is_embed(url):
+    for name, site_url in EMBED_LIST:
+        if isinstance(site_url, regex.Pattern):
+            if site_url.search(url):
+                return name
             continue
 
-        if blacklist in url:
-            return True
-    return False
+        if site_url in url:
+            return name
+    return None
 
 def iter_episodes(episode_dictionary, anime_page_url):
     episodes = defaultdict(list)
@@ -76,11 +77,15 @@ def extract_content(session, content, *, api_endpoint):
                     yield {'stream_url': uri_ref, 'title': title, 'headers': {'referer': (api_endpoint.with_path('player').with_query({'url': uri_ref})).human_repr()}}
             else:
                 to_direct = content_uri.human_repr()
-                if not is_blacklisted(to_direct):
+                embed = is_embed(to_direct)
+                if embed:
+                    yield {'stream_url': to_direct, 'title': title, 'further_extraction': (embed, {})}
+                else:
                     yield {'stream_url': to_direct, 'title': title}
 
 
 def fetcher(session, url, check):
+    logging.warning("This provider is slow at the cost of high amount of streams.")
     animepage_url = (ALLANIME + "anime/{}").format(REGEX.search(url).group(1))
 
     api_endpoint = yarl.URL(session.get(ALLANIME + "getVersion").json().get('episodeIframeHead', ''))

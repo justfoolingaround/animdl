@@ -1,12 +1,38 @@
+import logging
+from re import I
 import regex
 
 from click import prompt
 
-from ...codebase.downloader import handle_download
+from ...codebase import downloader, extractors
 from .fun import (bannerify, choice, create_random_titles, stream_judiciary,
                   to_stdout)
 from .player import *
 from .processors import get_searcher, process_query
+
+def inherit_stream_meta(parent, streams, *, exempt=['headers', 'stream_url']):
+    for stream in streams:
+        stream.update({_: __ for _, __ in parent.items() if _ not in exempt})
+        yield stream
+
+def further_extraction(session, stream):
+    extractor, options = stream.get('further_extraction')
+    fe_logger = logging.getLogger("further-extraction")
+
+    for ext_module, ext in extractors.iter_extractors():
+        if ext == extractor:
+            try:
+                return list(inherit_stream_meta(stream, ext_module.extract(session, stream.get('stream_url'), **options)))
+            except Exception as e:
+                fe_logger.error("Extraction from {!r} failed due to: {!r}.".format(ext, e))
+    return []
+
+def ensure_extraction(session, stream_uri_caller):
+    for stream in stream_uri_caller():
+        if 'further_extraction' in stream:
+            yield from further_extraction(session, stream)
+        else:
+            yield stream
 
 
 def get_quality(the_dict):
@@ -69,10 +95,17 @@ def download(session, logger, content_dir, outfile_name, stream_urls, quality, *
 
     for download_data in iter_downloads:
         dl, q = download_data
+        if "further_extraction" in dl:
+            try:
+                return download(session, logger, content_dir, outfile_name, further_extraction(session, dl), quality, **kwargs)
+            except Exception as e:
+                logger.critical("Could not extract from the stream due to {!r}. falling back to other streams.".format(e))
+                continue
+
         content_url = dl.get('stream_url')
         content_headers = dl.get('headers')
         try:
-            return True, handle_download(session, content_url, content_headers, content_dir, outfile_name, preferred_quality=quality, **kwargs)
+            return True, downloader.handle_download(session, content_url, content_headers, content_dir, outfile_name, preferred_quality=quality, **kwargs)
         except Exception as e:
             logger.critical("Could not download a stream, due to: {!r}, falling back to other streams.".format(e))
     

@@ -105,7 +105,7 @@ def animdl_stream(
 
             window_title = "Episode {:02d}".format(episode_number)
 
-            stream_urls = stream_urls_caller()
+            stream_urls = list(helpers.ensure_extraction(session, stream_urls_caller))
 
             if not stream_urls:
                 logger.warning(

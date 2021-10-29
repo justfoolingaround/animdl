@@ -6,6 +6,7 @@ import click
 from ...codebase import Associator
 from ..helpers import *
 from ..http_client import client
+from .. import helpers
 
 
 @click.command(name='grab',
@@ -47,15 +48,18 @@ def animdl_grab(query, file, auto, index, log_level, **kwargs):
     logger.name = "animdl-{}-grabber-core".format(provider)
     anime_associator = Associator(anime.get('anime_url'), session=session)
     logger.info("Initializing grabbing session.")
-    collected_streams = []
 
     if file:
+        collected_streams = []
         file += ".json" if not file.endswith('.json') else ''
 
     for stream_url_caller, episode in anime_associator.raw_fetch_using_check(
             check=get_check(r)):
-        stream_url = stream_url_caller()
-        collected_streams.append({'episode': episode, 'streams': stream_url})
+        stream_url = list(helpers.ensure_extraction(session, stream_url_caller))
+        
+        if file:
+            collected_streams.append({'episode': episode, 'streams': stream_url})
+        
         if file:
             logger.info('{} => {!r}'.format('E%02d' % episode, file))
             try:
