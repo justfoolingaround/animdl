@@ -7,14 +7,14 @@ MP4UPLOAD_REGEX = regex.compile(r"player\|(.*)\|videojs")
 def extract_480(splitted_values):
     return {
         'quality': int(splitted_values[50]),
-        'stream_url': "{4}://{18}.{3}.{1}:{70}/d/{69}/{68}.{67}".format(
+        'stream_url': "{4}://{18}.mp4upload.{1}:{70}/d/{69}/{68}.{67}".format(
             *splitted_values)}
 
 
 def extract_any(splitted_values):
     return {
         'quality': int(splitted_values[53]),
-        'stream_url': "{3}://{18}.{2}.{0}:{73}/d/{72}/{71}.{70}".format(
+        'stream_url': "{3}://{18}.mp4upload.{0}:{73}/d/{72}/{71}.{70}".format(
             *splitted_values)}
 
 
