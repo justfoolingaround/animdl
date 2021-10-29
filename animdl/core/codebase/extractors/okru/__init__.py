@@ -1,4 +1,5 @@
 import json
+from html import unescape
 
 import lxml.html as htmlparser
 
@@ -12,22 +13,6 @@ QUALITY = {
     'hd': 720
 }
 
-SANTIZER = {
-    '&quot;': '"',
-    "\\\\u0026": "&",
-    "\\u0026": "&",
-    "\\u003E": ">",
-    "\\u003C": "<",
-    "\\<": "<",
-    "\\>": ">",
-    "&amp;": "&",
-}
-
-def sanitize(content, *, sanitizer=SANTIZER):
-    for k, v in sanitizer.items():
-        content = content.replace(k, v)
-    return content
-
 def extract(session, url, **opts):
     response = session.get(url)
     
@@ -39,7 +24,7 @@ def extract(session, url, **opts):
     if not metadata:
         return []
 
-    data_opts = json.loads(json.loads(sanitize(metadata[0].get('data-options'))).get('flashvars', {}).get('metadata'))
+    data_opts = json.loads(json.loads(unescape(metadata[0].get('data-options'))).get('flashvars', {}).get('metadata'))
 
     def fast_yield():
         for videos in data_opts.get('videos', []):
