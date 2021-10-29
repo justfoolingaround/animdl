@@ -16,7 +16,7 @@ def inherit_stream_meta(parent, streams, *, exempt=['headers', 'stream_url']):
         yield stream
 
 def further_extraction(session, stream):
-    extractor, options = stream.get('further_extraction')
+    extractor, options = stream.pop('further_extraction', (None, None))
     fe_logger = logging.getLogger("further-extraction")
 
     for ext_module, ext in extractors.iter_extractors():

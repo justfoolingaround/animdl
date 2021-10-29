@@ -8,4 +8,9 @@ def extract(session, url, **opts):
     if response.status_code >= 400:
         return []
 
-    return [{"stream_url": stream} for stream in json.loads(SOURCES_REGEX.search(response.text).group(1))]
+    sources = SOURCES_REGEX.search(response.text)
+    
+    if not sources:
+        return []
+    
+    return [{"stream_url": stream} for stream in json.loads(sources.group(1))]

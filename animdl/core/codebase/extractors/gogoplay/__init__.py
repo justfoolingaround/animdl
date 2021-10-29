@@ -3,6 +3,7 @@ from functools import reduce
 
 import lxml.html as htmlparser
 import regex
+import yarl
 
 DOWNLOAD_URL_RE = regex.compile(r"download\.php\?url=([^?&/]+)")
 
@@ -35,11 +36,15 @@ def get_quality(url_text):
 
 
 def extract(session, url, **opts):
+    parsed_url = yarl.URL(url)
+
+    if not parsed_url.scheme:
+        parsed_url = parsed_url.with_scheme('https')
+
+    content_url = parsed_url.with_name('download').with_query(parsed_url.query).human_repr()
 
     response = session.get(
-        url.replace(
-            'streaming.php',
-            'download'),
+        content_url,
         headers={
             'referer': url})
     content = htmlparser.fromstring(response.text)
