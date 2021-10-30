@@ -5,6 +5,7 @@ from functools import partial
 
 import lxml.html as htmlparser
 import regex
+import time
 
 animixplay_logger = logging.getLogger('provider:animixplay')
 
@@ -50,6 +51,7 @@ def extract_from_embed(session, embed_url):
 
     while embed_page.status_code not in [200, 403]:
         embed_page = session.get(embed_url, allow_redirects=True)
+        time.sleep(3)
 
     if embed_page.status_code == 403:
         return []
