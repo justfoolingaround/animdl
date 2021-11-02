@@ -420,12 +420,12 @@ def to_stdout(message, caller='animdl', *, color_index=36):
 
 def stream_judiciary(url):
 
-    url = yarl.URL(url)
+    try:
+        url = yarl.URL(url)
+    except Exception as e:
+        return "Unknown [URL Parsing error.]"
 
-    if not url.name:
-        return "Unknown"
-
-    return "{!r} from {}".format(url.name, LABELS.get(url.host, url.host))
+    return "{!r} from {}".format(url.name or "Unknown", LABELS.get(url.host, url.host))
 
 
 def check_for_update(*, current=__core__, git_version_url="https://raw.githubusercontent.com/justfoolingaround/animdl/master/animdl/core/__version__.py"):
