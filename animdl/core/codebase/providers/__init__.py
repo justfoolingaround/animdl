@@ -1,6 +1,8 @@
 import importlib
 import pathlib
 
+from ..helper import append_protocol
+
 EXEMPT = [
     '__init__.py',
     '__pycache__'
@@ -27,4 +29,4 @@ def get_provider(url, *, raise_on_failure=True):
     return None, None
 
 def get_appropriate(session, url, check=lambda *args: True):
-    return get_provider(url)[0].fetcher(session, url, check)
+    return get_provider(append_protocol(url))[0].fetcher(session, url, check)

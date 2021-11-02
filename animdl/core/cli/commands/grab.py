@@ -3,10 +3,10 @@ import logging
 
 import click
 
-from ...codebase import Associator
+from ...codebase import providers
+from .. import helpers
 from ..helpers import *
 from ..http_client import client
-from .. import helpers
 
 
 @click.command(name='grab',
@@ -46,15 +46,13 @@ def animdl_grab(query, file, auto, index, log_level, **kwargs):
     if not anime:
         return
     logger.name = "animdl-{}-grabber-core".format(provider)
-    anime_associator = Associator(anime.get('anime_url'), session=session)
     logger.info("Initializing grabbing session.")
 
     if file:
         collected_streams = []
         file += ".json" if not file.endswith('.json') else ''
 
-    for stream_url_caller, episode in anime_associator.raw_fetch_using_check(
-            check=get_check(r)):
+    for stream_url_caller, episode in providers.get_appropriate(session, anime.get('anime_url'), check=get_check(r)):
         stream_url = list(helpers.ensure_extraction(session, stream_url_caller))
         
         if file:

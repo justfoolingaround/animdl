@@ -3,7 +3,7 @@ from collections import defaultdict
 
 import click
 
-from ...codebase import Associator
+from ...codebase import providers
 from ...config import DEFAULT_PLAYER
 from .. import exit_codes, helpers, http_client
 
@@ -92,9 +92,7 @@ def animdl_stream(
     logger.debug("Will scrape from {}".format(anime))
     logger.info('Now initiating your stream session')
 
-    anime_associator = Associator(anime.get('anime_url'), session=session)
-
-    streams = [*anime_associator.raw_fetch_using_check(helpers.get_check(r))]
+    streams = [*providers.get_appropriate(session, anime.get('anime_url'), helpers.get_check(r))]
     total = len(streams)
 
     for count, stream_data in enumerate(streams, 1):

@@ -3,7 +3,7 @@ from pathlib import Path
 
 import click
 
-from ...codebase import Associator, sanitize_filename
+from ...codebase import providers, sanitize_filename
 from ...config import AUTO_RETRY, QUALITY, USE_FFMPEG
 from .. import exit_codes, helpers, http_client
 
@@ -64,12 +64,10 @@ def animdl_download(
     logger.name = "animdl-{}-downloader-core".format(provider)
     content_name = anime.get('name') or download_folder or helpers.choice(helpers.create_random_titles())
 
-    anime_associator = Associator(anime.get('anime_url'), session=session)
-
     content_dir = Path('./{}/'.format(sanitize_filename(content_name.strip())))
     content_dir.mkdir(exist_ok=True)
 
-    streams = [*anime_associator.raw_fetch_using_check(helpers.get_check(r))]
+    streams = [*providers.get_appropriate(session, anime.get('anime_url'), helpers.get_check(r))]
     total = len(streams)
 
     logger.debug("Downloading to {!r}.".format(content_dir.as_posix()))

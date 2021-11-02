@@ -2,7 +2,7 @@ import logging
 
 import click
 
-from ...codebase import Associator
+from ...codebase import providers
 from ..helpers import bannerify, ensure_extraction
 from ..http_client import client
 
@@ -45,10 +45,8 @@ def animdl_test(x, e, log_level):
 
     for site in x:
         logger.info("Attempting to scrape anime from {!r}.".format(site))
-        anime_associator = Associator(site, session=session)
-
         try:
-            links = [*anime_associator.raw_fetch_using_check(lambda r: r == e)]
+            links = [*providers.get_appropriate(session, site, lambda r: r == e)]
             if not links:
                 raise Exception('No stream urls found on {!r}.'.format(site))
             for link_cb, en in links:
