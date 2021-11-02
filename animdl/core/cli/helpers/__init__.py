@@ -1,6 +1,6 @@
 import logging
-from re import I
 import regex
+import functools
 
 from click import prompt
 
@@ -10,6 +10,8 @@ from .fun import (bannerify, choice, create_random_titles, stream_judiciary,
 from .player import *
 from .processors import get_searcher, process_query
 
+fe_logger = logging.getLogger("further-extraction")
+
 def inherit_stream_meta(parent, streams, *, exempt=['headers', 'stream_url']):
     for stream in streams:
         stream.update({_: __ for _, __ in parent.items() if _ not in exempt})
@@ -17,14 +19,14 @@ def inherit_stream_meta(parent, streams, *, exempt=['headers', 'stream_url']):
 
 def further_extraction(session, stream):
     extractor, options = stream.pop('further_extraction', (None, None))
-    fe_logger = logging.getLogger("further-extraction")
-
-    for ext_module, ext in extractors.iter_extractors():
-        if ext == extractor:
-            try:
-                return list(inherit_stream_meta(stream, ext_module.extract(session, stream.get('stream_url'), **options)))
-            except Exception as e:
-                fe_logger.error("Extraction from {!r} failed due to: {!r}.".format(ext, e))
+    
+    if extractor:
+        for ext_module, ext in extractors.iter_extractors():
+            if ext == extractor:
+                try:
+                    return functools.reduce(lambda x, y: x + y, list(further_extraction(session, inherited_stream) for inherited_stream in inherit_stream_meta(stream, ext_module.extract(session, stream.get('stream_url')), **options)), [])
+                except Exception as e:
+                    fe_logger.error("Extraction from {!r} failed due to: {!r}.".format(ext, e))
     return []
 
 def ensure_extraction(session, stream_uri_caller):
