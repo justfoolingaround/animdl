@@ -29,7 +29,7 @@ DEFAULT_CONFIG = {
         'animtime': 'https://animtime.com/',
         'crunchyroll': 'http://www.crunchyroll.com/',
         'kawaiifu': 'https://kawaiifu.com/',
-        'gogoanime': 'https://gogoanime.pe/',
+        'gogoanime': 'https://gogoanime.cm/',
         'tenshi': 'https://tenshi.moe/',
         'twist': 'https://twist.moe/',
     },
