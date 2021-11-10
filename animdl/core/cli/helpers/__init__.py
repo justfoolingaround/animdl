@@ -27,7 +27,8 @@ def further_extraction(session, stream):
                     return functools.reduce(lambda x, y: x + y, list(further_extraction(session, inherited_stream) for inherited_stream in inherit_stream_meta(stream, ext_module.extract(session, stream.get('stream_url')), **options)), [])
                 except Exception as e:
                     fe_logger.error("Extraction from {!r} failed due to: {!r}.".format(ext, e))
-    return []
+    
+    return [stream]
 
 def ensure_extraction(session, stream_uri_caller):
     for stream in stream_uri_caller():
