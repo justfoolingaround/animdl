@@ -63,7 +63,7 @@ CONFIG = DEFAULT_CONFIG
 
 if CONFIGURATION_FILE_PATH.exists():
     with open(CONFIGURATION_FILE_PATH, 'r') as conf:
-        CONFIG = merge_dicts(DEFAULT_CONFIG, yaml.load(conf))
+        CONFIG = merge_dicts(DEFAULT_CONFIG, yaml.load(conf, Loader=yaml.SafeLoader))
 
 SITE_URLS = CONFIG.get('site_urls', {})
 
