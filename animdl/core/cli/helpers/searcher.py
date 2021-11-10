@@ -118,7 +118,7 @@ def search_crunchyroll(session, query):
 
     for match, anime in search(query, content.get(
             'data', []), processor=lambda r: r.get('name')):
-        yield {'anime_url': CRUNCHYROLL + anime.get('link', '').strip('/'), 'name': anime.get('name', '')}
+        yield {'anime_url': anime.get('link', '').strip('/'), 'name': anime.get('name', '')}
 
 
 def search_tenshi(session, query):
