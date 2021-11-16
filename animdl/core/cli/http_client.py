@@ -15,7 +15,7 @@ headers = httpx.Headers(
         b"Accept-Encoding": b"gzip, deflate",
         b"Connection": b"keep-alive",
         b"Referer": "https://google.com/",
-        b"User-Agent": b"animdl/1.3.75"
+        b"User-Agent": b"animdl/1.3.76"
     }
 )
 
