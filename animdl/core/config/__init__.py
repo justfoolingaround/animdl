@@ -31,6 +31,7 @@ DEFAULT_CONFIG = {
         'kawaiifu': 'https://kawaiifu.com/',
         'gogoanime': 'https://gogoanime.cm/',
         'tenshi': 'https://tenshi.moe/',
+        'nyaasi': 'https://nyaa.si/',
         'twist': 'https://twist.moe/',
     },
     'preferred_quality': 1080,
@@ -48,7 +49,13 @@ DEFAULT_CONFIG = {
             'executable': 'iina-cli',
             'opts': [],
         },
-
+    },
+    'qbittorrent': {
+        'endpoint_url': "http://127.0.0.1:8080",
+        'credentials': {
+            'username': "admin",
+            'password': "youshallnotpass",
+        },
     },
     'schedule': {
         'site_url': 'https://graphql.anilist.co/',
@@ -77,6 +84,7 @@ ANIMTIME = SITE_URLS.get('animtime')
 CRUNCHYROLL = SITE_URLS.get('crunchyroll')
 KAWAIIFU = SITE_URLS.get('kawaiifu')
 GOGOANIME = SITE_URLS.get('gogoanime')
+NYAASI = SITE_URLS.get('nyaasi')
 TENSHI = SITE_URLS.get('tenshi')
 TWIST = SITE_URLS.get('twist')
 
@@ -95,3 +103,8 @@ DEFAULT_PROVIDER = CONFIG.get('default_provider')
 
 AUTO_RETRY = CONFIG.get('download_auto_retry', 300) / 1000
 USE_FFMPEG = CONFIG.get('use_ffmpeg', False)
+
+QBITTORENT_CONFIG = CONFIG.get('qbittorrent', {})
+
+QBITTORENT_ENDPOINT = QBITTORENT_CONFIG.get('endpoint_url')
+QBITTORENT_CREDENTIALS = QBITTORENT_CONFIG.get('credentials', {})

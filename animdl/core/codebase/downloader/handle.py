@@ -8,8 +8,9 @@ import yarl
 from tqdm import tqdm
 
 from .content_mt import mimetypes
-from .hls import HLS_STREAM_EXTENSIONS, hls_yield
 from .ffmpeg import FFMPEG_EXTENSIONS, ffmpeg_download, has_ffmpeg
+from .hls import HLS_STREAM_EXTENSIONS, hls_yield
+from .torrent import MAGNET_URI_REGEX, download_torrent, is_supported as torrent_is_supported
 
 EXEMPT_EXTENSIONS = ['mpd']
 
@@ -123,7 +124,14 @@ def idm_download(url, headers, content_dir, outfile_name, extension, **opts):
     idmdl(url, headers=headers or {}, download_folder=content_dir, filename=file)
 
 def handle_download(session, url, headers, content_dir, outfile_name, idm=False, use_ffmpeg=False, **opts):
-    
+    if MAGNET_URI_REGEX.search(url):
+        torrent_info = opts.pop('torrent_info', {})
+        endpoint = torrent_info.get('endpoint_url')
+        if torrent_is_supported(session, endpoint):
+            return download_torrent(session, url, content_dir, outfile_name, endpoint, login_data=torrent_info.get('credentials'), log_level=opts.get('log_level', 20))
+        else:
+            raise Exception("Got magnet url but qBittorrent WebUI is not active: {!r}".format(url))
+
     extension, content_size, ranges = process_url(session, url, headers)
 
     if use_ffmpeg and (extension in FFMPEG_EXTENSIONS and has_ffmpeg()):

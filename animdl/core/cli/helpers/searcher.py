@@ -120,6 +120,10 @@ def search_crunchyroll(session, query):
             'data', []), processor=lambda r: r.get('name')):
         yield {'anime_url': anime.get('link', '').strip('/'), 'name': anime.get('name', '')}
 
+def search_nyaasi(session, query):
+    for anime in htmlparser.fromstring(session.get(NYAASI, params={'q': query, 's': 'seeders', 'o': 'desc'}).text).cssselect('tr > td[colspan="2"] > a[title]:last-child	'):
+        yield {'anime_url': NYAASI + anime.get('href')[1:], 'name': anime.get('title', '').strip()}
+
 
 def search_tenshi(session, query):
     tenshi_page = session.get(TENSHI)
@@ -153,6 +157,7 @@ link = {
     'kawaiifu': search_kawaiifu,
     'gogoanime': search_gogoanime,
     'tenshi': search_tenshi,
+    'nyaa': search_nyaasi,
     'twist': search_twist,
 }
 

@@ -34,3 +34,5 @@ def fetcher(session, url, check):
     for episode in range(1, episodes + 1):
         if check(episode):
             yield partial(lambda x: [{'stream_url': x, 'referer': ANIMTIME}], constructor + "{:03d}".format(episode) + end), episode
+
+fetcher.fast_enqueue = True

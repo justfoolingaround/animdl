@@ -4,7 +4,7 @@ from pathlib import Path
 import click
 
 from ...codebase import providers, sanitize_filename
-from ...config import AUTO_RETRY, QUALITY, USE_FFMPEG
+from ...config import AUTO_RETRY, QUALITY, USE_FFMPEG, QBITTORENT_CONFIG
 from .. import exit_codes, helpers, http_client
 
 
@@ -67,16 +67,14 @@ def animdl_download(
     content_dir = Path('./{}/'.format(sanitize_filename(content_name.strip())))
     content_dir.mkdir(exist_ok=True)
 
-    streams = [*providers.get_appropriate(session, anime.get('anime_url'), helpers.get_check(r))]
+    streams = list(providers.get_appropriate(session, anime.get('anime_url'), helpers.get_check(r)))
     total = len(streams)
 
     logger.debug("Downloading to {!r}.".format(content_dir.as_posix()))
 
-    for count, stream_data in enumerate(streams, 1):
+    for count, (stream_urls_caller, episode_number) in enumerate(streams, 1):
 
-        stream_urls_caller, episode_number = stream_data
-        content_title = "E{:02d}".format(episode_number)
-        
+        content_title = "E{:02d}".format(episode_number)    
         stream_urls = stream_urls_caller()
 
         if not stream_urls:
@@ -84,7 +82,7 @@ def animdl_download(
             continue
 
         logger.info("Downloading {!r} [{:02d}/{:02d}, {:02} remaining] ".format(content_title, count, total, total - count))
-        success, reason = helpers.download(session, logger, content_dir, content_title, stream_urls, quality, idm=idm, retry_timeout=AUTO_RETRY, log_level=log_level, use_ffmpeg=USE_FFMPEG)
+        success, reason = helpers.download(session, logger, content_dir, content_title, stream_urls, quality, idm=idm, retry_timeout=AUTO_RETRY, log_level=log_level, use_ffmpeg=USE_FFMPEG, torrent_info=QBITTORENT_CONFIG)
 
         if not success:
             logger.warning("Could not download {!r} due to: {}. Please retry with other providers.".format(content_title, reason))

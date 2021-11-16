@@ -111,7 +111,7 @@ def download(session, logger, content_dir, outfile_name, stream_urls, quality, *
         content_url = dl.get('stream_url')
         content_headers = dl.get('headers')
         try:
-            return True, downloader.handle_download(session, content_url, content_headers, content_dir, outfile_name, preferred_quality=quality, **kwargs)
+            return True, downloader.handle_download(session, content_url, content_headers, content_dir, outfile_name if not dl.get('is_torrent', False) else dl.get('torrent_name'), preferred_quality=quality, **kwargs)
         except Exception as e:
             logger.critical("Could not download a stream, due to: {!r}, falling back to other streams.".format(e))
     

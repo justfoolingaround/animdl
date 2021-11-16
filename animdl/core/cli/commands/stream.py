@@ -97,9 +97,8 @@ def animdl_stream(
     streams = list(enqueuer)
     total = len(streams)
 
-    for count, stream_data in enumerate(streams, 1):
+    for count, (stream_urls_caller, episode_number) in enumerate(streams, 1):
 
-        stream_urls_caller, episode_number = stream_data
         playing = True
         while playing:
 
@@ -115,6 +114,10 @@ def animdl_stream(
 
             selection = quality_prompt(log_level, logger, stream_urls) if len(
                 stream_urls) > 1 else stream_urls[0]
+
+            if selection.pop('is_torrent', False):
+                logging.warning("Obtained torrent in streaming, please download the torrent and stream it. (Torrent downloads take place in sequential order.)")
+                continue
 
             logger.debug("Calling streamer for {!r}".format(stream_urls))
 
