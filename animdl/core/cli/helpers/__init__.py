@@ -71,7 +71,7 @@ def filter_quality(stream_urls, preferred_quality, *, download=False):
 def get_range_conditions(range_string):
     for matches in regex.finditer(r"(?:([0-9]*)[:\-.]([0-9]*)|([0-9]+))", range_string):
         start, end, singular = matches.groups()
-        if ((start or '').isdigit() and (end or '').isdigit()) and int(start) > int(end):
+        if start and end and int(start) > int(end):
             start, end = end, start
         yield (lambda x, s=singular: int(s) == x) if singular else (lambda x: True) if not (start or end) else (lambda x, s=start: x >= int(s)) if start and not end else (lambda x, e=end: x <= int(e)) if not start and end else (lambda x, s=start, e=end: int(s) <= x <= int(e))
 
@@ -100,7 +100,10 @@ def download(session, logger, content_dir, outfile_name, stream_urls, quality, *
         dl, q = download_data
         if "further_extraction" in dl:
             try:
-                return download(session, logger, content_dir, outfile_name, further_extraction(session, dl), quality, **kwargs)
+                further_status, further_yield = download(session, logger, content_dir, outfile_name, further_extraction(session, dl), quality, **kwargs)
+                if further_status:
+                    return further_status, further_yield
+                continue
             except Exception as e:
                 logger.critical("Could not extract from the stream due to {!r}. falling back to other streams.".format(e))
                 continue

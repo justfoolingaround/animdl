@@ -92,7 +92,9 @@ def animdl_stream(
     logger.debug("Will scrape from {}".format(anime))
     logger.info('Now initiating your stream session')
 
-    streams = [*providers.get_appropriate(session, anime.get('anime_url'), helpers.get_check(r))]
+    enqueuer = providers.get_appropriate(session, anime.get('anime_url'), helpers.get_check(r))
+
+    streams = list(enqueuer)
     total = len(streams)
 
     for count, stream_data in enumerate(streams, 1):
