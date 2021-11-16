@@ -43,7 +43,7 @@ class AnimeHttpClient(httpx.Client):
 
                 self.http_logger.info("Cloudflare was detected in the response for: {.url}.".format(response))
 
-                self.http_logger.info("This issue can be easily be bypassed by following the instructions here: .")
+                self.http_logger.info("This issue can be easily be bypassed by following the instructions here: https://github.com/justfoolingaround/animdl/blob/master/cloudflare.md")
 
                 self.cookies.update({'cf_clearance': input("[*] cf_clearance: ")})
                 self.headers.update({'user-agent': input("[*] user-agent: ")})
