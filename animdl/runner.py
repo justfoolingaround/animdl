@@ -4,7 +4,7 @@ __main__ but a runner for the standalones.
 
 import click
 
-from core import logger
+from core import logger, __version__
 from core.cli.commands import download, stream, grab, schedule, test, search
 from core.cli.helpers.player import supported_streamers
 
@@ -26,6 +26,7 @@ if executable:
 
 
 @click.group(commands=commands)
+@click.version_option(__version__.__core__, '-v')
 def __animdl_cli__():
     pass
 
