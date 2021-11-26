@@ -25,6 +25,7 @@ DEFAULT_CONFIG = {
         'animekaizoku': 'https://animekaizoku.com/',
         'animeout': 'https://animeout.xyz/',
         'animepahe': 'https://animepahe.com/',
+        'animexin': 'https://animexin.xyz/',
         'animixplay': 'https://animixplay.to/',
         'animtime': 'https://animtime.com/',
         'crunchyroll': 'http://www.crunchyroll.com/',
@@ -79,6 +80,7 @@ ALLANIME = SITE_URLS.get('allanime')
 ANIMEKAIZOKU = SITE_URLS.get('animekaizoku')
 ANIMEOUT = SITE_URLS.get('animeout')
 ANIMEPAHE = SITE_URLS.get('animepahe')
+ANIMEXIN = SITE_URLS.get('animexin')
 ANIMIXPLAY = SITE_URLS.get('animixplay')
 ANIMTIME = SITE_URLS.get('animtime')
 CRUNCHYROLL = SITE_URLS.get('crunchyroll')
