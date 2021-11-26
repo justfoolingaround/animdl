@@ -28,30 +28,8 @@ def get_safeoverride(f):
     return inner
 
 class AnimeHttpClient(httpx.Client):
-
+    
     http_logger = logging.getLogger("animdl-http")
-
-    def request(self, *args, **kwargs):
-
-        response = super().request(*args, **kwargs)
-        
-        if response.status_code == 403:
-            if b'window._cf_chl_opt' in response.content:
-                if logging.root.level > 20:
-                    self.http_logger.warning("The response is cloudflare protected and animdl cannot prompt for Cloudflare bypass cookie at this log level.")
-                    return response
-
-                self.http_logger.info("Cloudflare was detected in the response for: {.url}.".format(response))
-
-                self.http_logger.info("This issue can be easily be bypassed by following the instructions here: https://github.com/justfoolingaround/animdl/blob/master/cloudflare.md")
-
-                self.cookies.update({'cf_clearance': input("[*] cf_clearance: ")})
-                self.headers.update({'user-agent': input("[*] user-agent: ")})
-
-                response = self.request(*args, **kwargs)
-
-
-        return response
 
 
 client = AnimeHttpClient(headers=headers, timeout=30.0)

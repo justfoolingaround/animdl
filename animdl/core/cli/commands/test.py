@@ -33,7 +33,7 @@ def animdl_test(x, e, log_level):
         'animeout': 'https://www.animeout.xyz/download-one-piece-episodes-latest/',
         'animixplay': 'https://animixplay.to/v1/one-piece',
         'animtime': 'https://animtime.com/title/5',
-        'gogoanime': 'https://gogoanime.pe/category/one-piece',
+        'gogoanime': 'https://gogoanime.cm/category/one-piece',
         'tenshi': 'https://tenshi.moe/anime/kjfrhu3s',
         'twist': 'https://twist.moe/a/one-piece',
     }
