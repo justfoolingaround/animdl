@@ -12,9 +12,20 @@ def merge_dicts(dict1, dict2):
                 dict2[k] = v
     return dict2
 
+def get_existent_path(*paths):
+    for path in paths:
+        path_object = Path(path)
+        if path_object.exists():
+            return path_object
 
-CONFIGURATION_FILE_PATH = Path(
-    os.getenv('ANIMDL_CONFIG') or './animdl_config.yml')
+USERPROFILE_ANIMDL_PATH = os.getenv('userprofile', ".") + "/.animdl/config.yml"
+
+CONFIGURATION_FILE_PATH = get_existent_path(
+    os.getenv('ANIMDL_CONFIG'), 
+    './animdl_config.yml', 
+    '/animdl_config.yml',
+    USERPROFILE_ANIMDL_PATH
+)
 
 DEFAULT_CONFIG = {
     'session_file': 'cli_session_animdl.json',
@@ -69,7 +80,7 @@ DEFAULT_CONFIG = {
 
 CONFIG = DEFAULT_CONFIG
 
-if CONFIGURATION_FILE_PATH.exists():
+if CONFIGURATION_FILE_PATH is not None:
     with open(CONFIGURATION_FILE_PATH, 'r') as conf:
         CONFIG = merge_dicts(DEFAULT_CONFIG, yaml.load(conf, Loader=yaml.SafeLoader))
 
