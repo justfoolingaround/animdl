@@ -1,7 +1,8 @@
-import logging
-import regex
 import functools
+import logging
+import traceback
 
+import regex
 from click import prompt
 
 from ...codebase import downloader, extractors
@@ -87,6 +88,18 @@ def ask(log_level, **prompt_kwargs):
 
     return prompt(**prompt_kwargs)
 
+DOWNLOAD_ERROR_MESSAGE = """
+\x1b[34mDownload failure #{0:02d}\x1b[39m
+
+Download Arguments: {1}
+Quality: {2}
+
+Raw exception: {3!r}
+
+Complete traceback: {4}\
+"""
+
+
 def download(session, logger, content_dir, outfile_name, stream_urls, quality, **kwargs):
     downloadable_content = [*filter_quality(stream_urls, quality, download=True)] or \
         [*filter_urls(stream_urls, download=True)]
@@ -94,13 +107,12 @@ def download(session, logger, content_dir, outfile_name, stream_urls, quality, *
     if not downloadable_content:
         return False, "No downloadable content found."
 
-    iter_downloads = iter(downloadable_content)
+    errors = []
 
-    for download_data in iter_downloads:
-        dl, q = download_data
-        if "further_extraction" in dl:
+    for (download_data, quality_) in iter(downloadable_content):
+        if "further_extraction" in download_data:
             try:
-                further_status, further_yield = download(session, logger, content_dir, outfile_name, further_extraction(session, dl), quality, **kwargs)
+                further_status, further_yield = download(session, logger, content_dir, outfile_name, further_extraction(session, download_data), quality, **kwargs)
                 if further_status:
                     return further_status, further_yield
                 continue
@@ -108,11 +120,25 @@ def download(session, logger, content_dir, outfile_name, stream_urls, quality, *
                 logger.critical("Could not extract from the stream due to {!r}. falling back to other streams.".format(e))
                 continue
 
-        content_url = dl.get('stream_url')
-        content_headers = dl.get('headers')
+        content_url = download_data.get('stream_url')
+        content_headers = download_data.get('headers')
+        
         try:
-            return True, downloader.handle_download(session, content_url, content_headers, content_dir, outfile_name if not dl.get('is_torrent', False) else dl.get('torrent_name'), preferred_quality=quality, **kwargs)
+            return True, downloader.handle_download(session, content_url, content_headers, content_dir, outfile_name if not download_data.get('is_torrent', False) else download_data.get('torrent_name'), preferred_quality=quality, **kwargs)
         except Exception as e:
-            logger.critical("Could not download a stream, due to: {!r}, falling back to other streams.".format(e))
-    
+            logger.critical("Oops, due to {!r}, this stream has been rendered unable to download.".format(e))
+
+            errors.append(((download_data, quality_), e, traceback.format_exc()))
+        
+    logger.critical("No downloads were done. Use log level DEBUG or, -ll 0 to get complete tracebacks for the failed downloads.")
+
+    for count, ((download_data, quality_), exception, tb) in enumerate(errors, 1):
+        logger.debug(DOWNLOAD_ERROR_MESSAGE.format(
+            count,
+            download_data,
+            quality_,
+            exception,
+            tb
+        ))
+
     return False, "All stream links were undownloadable."
