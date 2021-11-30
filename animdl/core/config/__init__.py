@@ -21,8 +21,7 @@ def get_existent_path(*paths):
 USERPROFILE_ANIMDL_PATH = os.getenv('userprofile', ".") + "/.animdl/config.yml"
 
 CONFIGURATION_FILE_PATH = get_existent_path(
-    os.getenv('ANIMDL_CONFIG'), 
-    './animdl_config.yml', 
+    os.getenv('ANIMDL_CONFIG', './animdl_config.yml'),  
     '/animdl_config.yml',
     USERPROFILE_ANIMDL_PATH
 )
