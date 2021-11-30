@@ -71,7 +71,7 @@ def animdl_stream(
     r = kwargs.get('range')
 
     session = http_client.client
-    logger = logging.getLogger('animdl-streamer-core')
+    logger = logging.getLogger('streamer')
     streamer = helpers.handle_streamer(click.parser.split_arg_string(
         player_opts or '') or [], vlc=vlc, mpv=mpv, iina=iina)
 
@@ -88,7 +88,7 @@ def animdl_stream(
             'Searcher returned no anime to stream, failed to stream.')
         raise SystemExit(exit_codes.NO_CONTENT_FOUND)
 
-    logger.name = "animdl-{}-streamer-core".format(provider)
+    logger.name = "{}/{}".format(provider, logger.name)
     logger.debug("Will scrape from {}".format(anime))
     logger.info('Now initiating your stream session')
 

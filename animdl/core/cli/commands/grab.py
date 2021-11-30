@@ -40,12 +40,12 @@ def animdl_grab(query, file, auto, index, log_level, **kwargs):
     r = kwargs.get('range')
 
     session = client
-    logger = logging.getLogger('animdl-grabber-core')
+    logger = logging.getLogger('grabber')
     anime, provider = process_query(
         session, query, logger, auto=auto, auto_index=index)
     if not anime:
         return
-    logger.name = "animdl-{}-grabber-core".format(provider)
+    logger.name = "{}/{}".format(provider, logger.name)
     logger.info("Initializing grabbing session.")
 
     if file:

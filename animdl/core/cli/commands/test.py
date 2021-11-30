@@ -41,7 +41,7 @@ def animdl_test(x, e, log_level):
     if not x:
         x = SITE_LIST.values()
 
-    logger = logging.getLogger('animdl-tests')
+    logger = logging.getLogger('tests')
 
     for site in x:
         logger.info("Attempting to scrape anime from {!r}.".format(site))

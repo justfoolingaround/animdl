@@ -68,7 +68,7 @@ def process_url(session, url, headers={}):
 def standard_download(session: httpx.Client, url: str, content_dir: pathlib.Path, outfile_name: str, extension: str, content_size: int, headers: dict={}, ranges=True, **opts):
     file = "{}.{}".format(outfile_name, extension)
 
-    logger = logging.getLogger('standard-downloader[{}]'.format(file))
+    logger = logging.getLogger('downloader/standard[{}]'.format(file))
     out_path = content_dir / pathlib.Path(sanitize_filename(file))
 
     if not ranges:

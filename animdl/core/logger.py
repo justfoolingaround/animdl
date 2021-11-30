@@ -21,7 +21,8 @@ class LoggingFormatter(logging.Formatter):
 
         if self.use_color:
             color = COLORS.get(record.levelname)
-            record.levelname = "{}{}\x1b[39m".format(color, record.levelname)
+            record.levelname = "{}{}\x1b[39m".format(color, record.levelname[0])
+
             if record.name:
                 record.name = "{}{}\x1b[39m".format(color, record.name)
 

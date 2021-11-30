@@ -5,6 +5,8 @@ Credits for the functions:
     create_random_titles: (https://www.ruggenberg.nl/titels.html)
 """
 
+import os
+
 import logging
 import regex
 import yarl
@@ -13,18 +15,38 @@ from random import choice
 from ...__version__ import __core__
 from ..http_client import client
 
-package_banner = """\
-░█████╗░███╗░░██╗██╗███╗░░░███╗██████╗░██╗░░░░░
-██╔══██╗████╗░██║██║████╗░████║██╔══██╗██║░░░░░
-███████║██╔██╗██║██║██╔████╔██║██║░░██║██║░░░░░
-██╔══██║██║╚████║██║██║╚██╔╝██║██║░░██║██║░░░░░
-██║░░██║██║░╚███║██║██║░╚═╝░██║██████╔╝███████╗
-╚═╝░░╚═╝╚═╝░░╚══╝╚═╝╚═╝░░░░░╚═╝╚═════╝░╚══════╝v{}
-A highly efficient anime downloader and streamer
-""".format(__core__)
+def line_chop(string: str, max_length, separators=[' ', '\n']):
+    if not string:
+        return
+
+    if len(string) <= max_length:
+        yield string
+        return
+
+    sep, sep_index = max(((_, string[:max_length].rfind(_)) for _ in separators), key=lambda x: x[1])
+
+    if sep_index == -1:
+        sep, sep_index = '', max_length
+
+    yield string[:sep_index]
+    yield from line_chop(string[sep_index + len(sep):], max_length, separators=separators)
 
 
-update_banner = """\x1b[91m\
+def terminal_center(string, *, columns=os.get_terminal_size().columns, fill=' '):
+    def genexp():
+        for line in string.splitlines():
+            for piece in line_chop(line, columns):
+                starting_position = ((columns // 2) + (columns % 2) - len(piece) // 2 + len(piece) % 2)
+                yield fill * (starting_position - 1) + piece
+    return '\n'.join(genexp())
+
+package_banner = terminal_center("""\
+justfoolingaround/animdl - v{}
+A highly efficient anime downloader and streamer\
+""".format(__core__))
+
+
+update_banner = terminal_center("""\x1b[91m\
 Version mismatch with upstream [↑ {}, ↓ {}].
 
 Please consider updating to the latest version for ensuring bug fixes,
@@ -35,7 +57,7 @@ code optimizations and new features. This can be done by using:
 Or, 
 
 >>> py -m pip install git+https://github.com/justfoolingaround/animdl.git \x1b[39m
-"""
+""")
 
 
 LANGUAGE = {

@@ -53,7 +53,7 @@ def animdl_download(
     r = kwargs.get('range')
 
     session = http_client.client
-    logger = logging.getLogger('animdl-downloader-core')
+    logger = logging.getLogger('downloader')
 
     anime, provider = helpers.process_query(session, query, logger, auto=auto, auto_index=index)
     
@@ -61,7 +61,7 @@ def animdl_download(
         logger.critical('Searcher returned no anime to stream, failed to stream.')
         raise SystemExit(exit_codes.NO_CONTENT_FOUND)
 
-    logger.name = "animdl-{}-downloader-core".format(provider)
+    logger.name = "{}/{}".format(provider, logger.name)
     content_name = anime.get('name') or download_folder or helpers.choice(helpers.create_random_titles())
 
     content_dir = Path('./{}/'.format(sanitize_filename(content_name.strip())))

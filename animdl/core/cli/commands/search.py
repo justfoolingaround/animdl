@@ -25,7 +25,7 @@ from ..http_client import client
               flag_value=True)
 @bannerify
 def animdl_search(query, json, provider, log_level):
-    logger = logging.getLogger('animdl-searcher')
+    logger = logging.getLogger('searcher')
     session = client
 
     if provider not in link:
