@@ -32,12 +32,11 @@ def line_chop(string: str, max_length, separators=[' ', '\n']):
     yield from line_chop(string[sep_index + len(sep):], max_length, separators=separators)
 
 
-def terminal_center(string, *, columns=os.get_terminal_size().columns, fill=' '):
+def terminal_center(string: str, *, columns=os.get_terminal_size().columns):
     def genexp():
         for line in string.splitlines():
             for piece in line_chop(line, columns):
-                starting_position = ((columns // 2) + (columns % 2) - len(piece) // 2 + len(piece) % 2)
-                yield fill * (starting_position - 1) + piece
+                yield piece.center(columns)
     return '\n'.join(genexp())
 
 package_banner = terminal_center("""\
@@ -46,17 +45,18 @@ A highly efficient anime downloader and streamer\
 """.format(__core__))
 
 
-update_banner = terminal_center("""\x1b[91m\
-Version mismatch with upstream [↑ {}, ↓ {}].
+update_banner = terminal_center("""\
+Version mismatch with upstream [↑ {}, ↓ {}]
 
-Please consider updating to the latest version for ensuring bug fixes,
-code optimizations and new features. This can be done by using:
+Please consider updating to the latest version for ensuring bug fixes, code optimizations and new features. This can be done by using:
 
->>> pip install git+https://github.com/justfoolingaround/animdl.git
+pip install git+https://github.com/justfoolingaround/animdl.git
 
-Or, 
+Or,
 
->>> py -m pip install git+https://github.com/justfoolingaround/animdl.git \x1b[39m
+py -m pip install git+https://github.com/justfoolingaround/animdl.git
+
+(OCD? Yeah, can't fix that.)
 """)
 
 
@@ -462,7 +462,7 @@ def bannerify(f):
                 print("\x1b[35m{}\x1b[39m".format(package_banner))
                 latest, version = check_for_update()
                 if not latest:
-                    print(update_banner.format(version, __core__))
+                    print("\x1b[31m{}\x1b[39m".format(update_banner.format(version, __core__)))
             logging.basicConfig(
                 level=quiet_state,
                 format="[\x1b[35m%(filename)s:%(lineno)d\x1b[39m - %(asctime)s - %(name)s: %(levelname)s] %(message)s")
