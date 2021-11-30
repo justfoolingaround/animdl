@@ -4,6 +4,7 @@ import pathlib
 import time
 
 import httpx
+import regex
 import yarl
 from tqdm import tqdm
 
@@ -13,21 +14,36 @@ from .hls import HLS_STREAM_EXTENSIONS, hls_yield
 from .torrent import MAGNET_URI_REGEX, download_torrent, is_supported as torrent_is_supported
 
 EXEMPT_EXTENSIONS = ['mpd']
+CONTENT_DISP_RE = regex.compile(r'filename=(?:"(.+?)"|([^;]+))')
 
 def sanitize_filename(f):
     return ''.join(' - ' if _ in '<>:"/\\|?*' else _ for _ in f).strip()
 
-def get_extension(url):
-    url = yarl.URL(url)
-    position = url.name.find('.')
+def ext_from_filename(filename):
+    position = filename.find('.')
     if position == -1:
         return ''
-    return url.name[position + 1:]
+    return filename[position + 1:]
+
+def get_extension(url):
+    url = yarl.URL(url)
+    return ext_from_filename(url.name)
 
 def guess_extension(content_type):
+    if not content_type:
+        return ''
+    
     for name, cd, extension in mimetypes:
         if cd == content_type:
             return (extension or '').lstrip('.')
+
+def ext_from_content_disposition(content_disposition):
+    match = CONTENT_DISP_RE.search(content_disposition)
+
+    if not match:
+        return ''
+    
+    return ext_from_filename(match.group(1) or match.group(2))
 
 def process_url(session, url, headers={}):
     """
@@ -39,7 +55,15 @@ def process_url(session, url, headers={}):
     """
     response = session.head(url, headers=headers)
     response_headers = response.headers
-    return (guess_extension(response_headers.get('content-type') or '') or get_extension(url) or get_extension(response.url)).lower(), int(response_headers.get('content-length') or 0), response_headers.get('accept-ranges') == 'bytes'
+
+    extension = (
+        ext_from_content_disposition(response_headers.get('content-disposition', '') or '') or
+        guess_extension(response_headers.get('content-type', '')) or
+        get_extension(url) or
+        get_extension(str(response.url))
+        ).lower()
+    
+    return extension, int(response_headers.get('content-length') or 0), 'bytes' in response_headers.get('accept-ranges', '')
 
 def standard_download(session: httpx.Client, url: str, content_dir: pathlib.Path, outfile_name: str, extension: str, content_size: int, headers: dict={}, ranges=True, **opts):
     file = "{}.{}".format(outfile_name, extension)
@@ -51,7 +75,7 @@ def standard_download(session: httpx.Client, url: str, content_dir: pathlib.Path
         logger.critical("Stream does not support ranged downloading; failed downloads cannot be continued.")
 
     with open(out_path, 'ab') as outstream:
-        downloaded = outstream.tell() if not ranges else 0
+        downloaded = outstream.tell() if ranges else 0
         progress_bar = tqdm(desc="GET / {}".format(file), total=content_size, disable=opts.get('log_level', 20) > 20, initial=downloaded, unit='B', unit_scale=True, unit_divisor=1024)
         while content_size > downloaded:
             temporary_headers = headers.copy()
