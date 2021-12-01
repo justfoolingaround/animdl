@@ -18,13 +18,16 @@ from ..http_client import client
               help='Set the integer log level.',
               type=int,
               default=20)
+@click.option('--log-file',
+            help='Set a log file to log everything to.',
+            required=False,)
 @click.option('-j',
               '--json',
               help="An integer that determines where to begin the grabbing from.",
               is_flag=True,
               flag_value=True)
 @bannerify
-def animdl_search(query, json, provider, log_level):
+def animdl_search(query, json, provider, **kwargs):
     logger = logging.getLogger('searcher')
     session = client
 

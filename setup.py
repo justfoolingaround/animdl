@@ -8,7 +8,7 @@ setup(
     author_email='kr.justfoolingaround@gmail.com',
     description='A highly efficient, fast, powerful and light-weight anime downloader and streamer for your favorite anime.',
     packages=find_packages(),
-    url='https://github.com/justfoolingaround/animdl-install',
+    url='https://github.com/justfoolingaround/animdl',
     keywords=['stream', 'anime', 'download', 'anime-downloader', 'twist', '9anime',
               'gogoanime', 'animepahe', '4anime', 'anime-streamer', 'fouranime', 'animixplay'],
     install_requires=[

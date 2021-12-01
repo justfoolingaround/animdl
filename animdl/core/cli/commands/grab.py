@@ -29,6 +29,9 @@ from ..http_client import client
               help="Select the first given index without asking for prompts.")
 @click.option('-i', '--index', required=False, default=0,
               show_default=False, type=int, help="Index for the auto flag.")
+@click.option('--log-file',
+            help='Set a log file to log everything to.',
+            required=False,)
 @click.option('-ll',
               '--log-level',
               help='Set the integer log level.',

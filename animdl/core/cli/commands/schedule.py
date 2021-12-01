@@ -123,6 +123,9 @@ def arrange_template(data):
 
 @click.command(name='schedule',
                help="Know which animes are going over the air when.")
+@click.option('--log-file',
+            help='Set a log file to log everything to.',
+            required=False,)
 @click.option('-ll',
               '--log-level',
               help='Set the integer log level.',

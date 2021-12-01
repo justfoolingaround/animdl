@@ -18,13 +18,16 @@ from ..http_client import client
               default=1,
               required=False,
               type=int)
+@click.option('--log-file',
+            help='Set a log file to log everything to.',
+            required=False,)
 @click.option('-ll',
               '--log-level',
               help='Set the integer log level.',
               type=int,
               default=20)
 @bannerify
-def animdl_test(x, e, log_level):
+def animdl_test(x, e, **kwargs):
     session = client
     SITE_LIST = {
         '9anime': 'https://9anime.to/watch/one-piece.ov8',
