@@ -27,4 +27,4 @@ def extract(session, url, **opts):
             'referer': url})
     content = htmlparser.fromstring(response.text)
 
-    return [{'quality': get_quality(url.text_content()), 'stream_url': url.get('href'), 'headers': {'referer': url}} for url in content.cssselect('.dowload > a[download]')]
+    return [{'quality': get_quality(url.text_content()), 'stream_url': _url.get('href'), 'headers': {'referer': url}} for _url in content.cssselect('.dowload > a[download]')]
