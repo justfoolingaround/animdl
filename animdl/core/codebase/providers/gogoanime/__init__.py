@@ -66,4 +66,4 @@ def fetcher(session, url, check):
 
     for index, episode in enumerate(episodes, 1):
         if check(index):
-            yield partial(lambda e: [{'stream_url': get_embed_page(session, episode), 'further_extraction': ('gogoplay', {})}] , episode), index
+            yield partial(lambda e: [{'stream_url': get_embed_page(session, e), 'further_extraction': ('gogoplay', {})}] , episode), index
