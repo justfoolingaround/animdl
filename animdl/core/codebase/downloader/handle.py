@@ -20,7 +20,7 @@ def sanitize_filename(f):
     return ''.join(' - ' if _ in '<>:"/\\|?*' else _ for _ in f).strip()
 
 def ext_from_filename(filename):
-    position = filename.find('.')
+    position = filename.rfind('.')
     if position == -1:
         return ''
     return filename[position + 1:]

@@ -12,17 +12,17 @@ ENCRYPTION_URL_IV_REGEX = regex.compile(
     r"#EXT-X-KEY:METHOD=(?P<method>[^,]+),URI=\"(?P<key_uri>[^\"]+)\"(?:,IV=(?P<iv>.*))?")
 
 
-STREAM_INFO_REGEX = regex.compile(r"#EXT-X-STREAM-INF:(.*)\s+(.+)")
+STREAM_INFO_REGEX = regex.compile(r"#EXT-X-STREAM-INF(:.*?)?\s+(.+)")
 QUALITY_REGEX = regex.compile(
     r'RESOLUTION=\d+x(\d+)')
 
-TS_EXTENSION_REGEX = regex.compile(r"(?P<ts_url>.*\.ts.*)")
+TS_EXTENSION_REGEX = regex.compile(r"(?P<ts_url>.*\.[a-zA-Z]+.*)")
 
 HLS_STREAM_EXTENSIONS = ['m3u8', 'm3u']
 
 
 def get_extension(url):
-    initial, _, extension = yarl.URL(url).name.partition('.')
+    initial, _, extension = yarl.URL(url).name.rpartition('.')
     return extension
 
 
