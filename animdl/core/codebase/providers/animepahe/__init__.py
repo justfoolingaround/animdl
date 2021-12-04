@@ -50,7 +50,7 @@ def get_stream_url(session, release_id, stream_session):
 
     for d in content:
         for quality, data in d.items():
-            yield {'quality': quality, 'headers': {'referer': data.get('kwik')}, 'stream_url': get_stream_url_from_kwik(session, data.get('kwik_adfly'))}
+            yield {'quality': quality, 'headers': {'referer': data.get('kwik')}, 'stream_url': get_m3u8_from_kwik(session, data.get('kwik'))}
 
 
 def get_stream_urls_from_page(session, release_id, page, check):
