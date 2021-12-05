@@ -41,6 +41,7 @@ DEFAULT_CONFIG = {
         'crunchyroll': 'http://www.crunchyroll.com/',
         'kawaiifu': 'https://kawaiifu.com/',
         'gogoanime': 'https://gogoanime.cm/',
+        'haho': 'https://haho.moe/',
         'tenshi': 'https://tenshi.moe/',
         'nyaasi': 'https://nyaa.si/',
         'twist': 'https://twist.moe/',
@@ -98,6 +99,7 @@ KAWAIIFU = SITE_URLS.get('kawaiifu')
 GOGOANIME = SITE_URLS.get('gogoanime')
 NYAASI = SITE_URLS.get('nyaasi')
 TENSHI = SITE_URLS.get('tenshi')
+HAHO = SITE_URLS.get('haho')
 TWIST = SITE_URLS.get('twist')
 
 QUALITY = CONFIG.get('preferred_quality')

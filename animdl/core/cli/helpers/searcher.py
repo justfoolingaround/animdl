@@ -24,6 +24,7 @@ ANIMIX_URL_CONTENT = ANIMIXPLAY.rstrip('/')
 GOGOANIME_URL_SEARCH = GOGOANIME + "/search.html?"
 
 TENSHI_URL_SEARCH_POST = TENSHI + "anime/search"
+HAHO_URL_SEARCH_POST = HAHO + "anime/search"
 
 TWIST_URL_CONTENT_API = "https://api.twist.moe/api/anime"
 TWIST_URL_CONTENT = TWIST + "a/"
@@ -145,6 +146,26 @@ def search_tenshi(session, query):
     for result in results:
         yield {'name': result.get('title'), 'anime_url': result.get('url')}
 
+def search_haho(session, query):
+
+    haho_page = session.get(HAHO)
+    session_id = haho_page.cookies.get('hentai_aho_streaming_session')
+    token = htmlparser.fromstring(haho_page.text).xpath(
+        '//meta[@name="csrf-token"]')[0].get('content')
+
+    ajax_content = session.post(
+        HAHO_URL_SEARCH_POST,
+        data={
+            'q': query},
+        headers={
+            'x-requested-with': 'XMLHttpRequest',
+            'x-csrf-token': token,
+            'referer': 'https://haho.moe/',
+            'cookie': 'hentai_aho_streaming_session={}'.format(session_id)})
+    results = ajax_content.json()
+
+    for result in results:
+        yield {'name': result.get('title'), 'anime_url': result.get('url')}
 
 link = {
     '9anime': search_9anime,
@@ -156,6 +177,7 @@ link = {
     'crunchyroll': search_crunchyroll,
     'kawaiifu': search_kawaiifu,
     'gogoanime': search_gogoanime,
+    'haho': search_haho,
     'tenshi': search_tenshi,
     'nyaa': search_nyaasi,
     'twist': search_twist,
