@@ -28,24 +28,23 @@ def extract_from_site(session, episode_url, **opts):
 
     for embed in htmlparser.fromstring(session.get(episode_url).text).cssselect('iframe'):
         _, content_uri = embed.get('src', '#').split('#')
-        base, *_ = base64.b64decode(content_uri).decode()[4:].split(';')
+        base, *_sub = base64.b64decode(content_uri).decode()[4:].split(';')
 
-        yield from (
-            {
+        subtitle = list(base + _ + ".vtt" for _ in _sub)
+
+        yield from ({**_, **opts, **({'subtitle': subtitle} if subtitle else {})} for _ in
+            ({
                 'quality': 720,
                 'stream_url': base + "x264.720p.mp4",
-                **opts
             },
             {
                 'quality': 1080,
                 'stream_url': base + "av1.1080p.webm",
-                **opts
             },
             {
                 'quality': 2160,
                 'stream_url': base + "av1.2160p.webm",
-                **opts
-            },
+            })
         )
 
 def fetcher(session, url, check):
