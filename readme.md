@@ -1,6 +1,7 @@
-![AnimDL Cover](https://i.imgur.com/nNXSZi6.png)
+<!-- ![AnimDL Cover](https://i.imgur.com/nNXSZi6.png) !-->
 
-<h1><p align="center"> AnimDL - Download & Stream Your Favorite Anime </p>
+<p align="center"><img src="https://capsule-render.vercel.app/api?type=soft&fontColor=703ee5&text=justfoolingaround/animdl&height=150&fontSize=60&desc=Ridiculously%20efficient,%20fast%20and%20light-weight.&descAlignY=75&descAlign=60&color=00000000&animation=twinkling"></p>
+
 
 <p align="center"><a href="https://github.com/justfoolingaround/animdl"><img src="https://forthebadge.com/images/badges/makes-people-smile.svg" height="30px"><img src="https://forthebadge.com/images/badges/made-with-python.svg" height="30px"><img src="https://forthebadge.com/images/badges/powered-by-black-magic.svg" height="30px"></a></p>
 </h1>
