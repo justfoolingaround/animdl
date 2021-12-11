@@ -147,7 +147,7 @@ def search_tenshi(session, query):
         yield {'name': result.get('title'), 'anime_url': result.get('url')}
 
 def search_zoro(session, query):
-    for result in htmlparser.fromstring(session.get(ZORO + "/search", params={'keyword': query, 'sort': 'most_watched'}).text).cssselect('a.item-qtip[title][data-id]'):
+    for result in htmlparser.fromstring(session.get(ZORO + "/search", params={'keyword': query}).text).cssselect('a.item-qtip[title][data-id]'):
         yield {
             'name': result.get('title'),
             'anime_url': ZORO + result.get('href')[1:-11]
