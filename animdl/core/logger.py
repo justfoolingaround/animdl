@@ -40,7 +40,7 @@ class Logger(logging.Logger):
         self.propagate = False
         
         formatter = LoggingFormatter()
-        
+
         if self.FILE_STREAM is not None:
             file_stream_handler = logging.FileHandler(self.FILE_STREAM, 'a', encoding='utf-8')
             file_stream_handler.setFormatter(FileLoggingFormatter())

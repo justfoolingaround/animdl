@@ -56,7 +56,7 @@ def get_embed_page(session, episode_url):
     content_parsed = htmlparser.fromstring(response.text)
     return "https:{}".format(content_parsed.cssselect('iframe')[0].get('src'))
 
-def fetcher(session, url, check):
+def fetcher(session, url, check, match):
     url = convert_to_anime_page(url)
 
     anime_page = session.get(url)

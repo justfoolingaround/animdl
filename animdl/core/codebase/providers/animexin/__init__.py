@@ -65,12 +65,10 @@ def extract(session, url, **opts):
 
 
 
-def fetcher(session, url, check):
-    match = REGEX.search(url)
+def fetcher(session, url, check, match):
     
     if match.group('slug'):
         url = ANIMEXIN + "anime/{}".format(match.group('slug'))
-
 
     for episode in htmlparser.fromstring(session.get(url).text).cssselect('.eplister li[data-index] > a')[::-1]:
         number, name = get_episode_metadata(episode)

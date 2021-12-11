@@ -17,7 +17,7 @@ def group_episodes(contents):
     return grouped
 
 
-def fetcher(session, url, check):
+def fetcher(session, url, check, match):
     animeout_page = session.get(url)
     parsed = htmlparser.fromstring(animeout_page.text)
 

@@ -22,9 +22,8 @@ def extract_urls(session, episode_page):
 
     yield from ({'stream_url': _.get('src'), 'quality': _get_quality(_.get('title'))} for _ in htmlparser.fromstring(streams_page.text).cssselect('source'))
 
-def fetcher(session, url, check):
-
-    url = REGEX.search(url).group(0)
+def fetcher(session, url, check, match):
+    url = match.group(0)
 
     episode_list_page = session.get(url)
     count = int(htmlparser.fromstring(episode_list_page.text).cssselect('span.badge')[0].text_content())

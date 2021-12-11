@@ -27,10 +27,8 @@ def get_from_url(session, url):
     return episodes 
 
 
-def fetcher(session, url, check):
+def fetcher(session, url, check, match):
     
-    match = REGEX.search(url)
-
     if match.group('host') == 'kawaiifu.com':
         url += '-episode'
 

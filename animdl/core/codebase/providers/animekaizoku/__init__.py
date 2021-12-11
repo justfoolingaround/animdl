@@ -31,6 +31,7 @@ def group_episodes(iterab):
     episode_dict = defaultdict(lambda: list())
     for content in sorted(iterab, key=lambda x: x.get('episode', 0)):
         episode_dict[content.get('episode') or 0].append(content)
+    
     return episode_dict
 
 
@@ -46,7 +47,7 @@ def get_links(session, quality, element_dicts, post_id, div_id):
             yield {'quality': quality, 'stream_url': session.get(stream_url, headers={'referer': link}, allow_redirects=False).headers.get('location'), 'headers': {'referer': stream_url}}
     return [*fast_yield()]
 
-def fetcher(session, url, check):
+def fetcher(session, url, check, match):
 
     response = session.get(url).text
 

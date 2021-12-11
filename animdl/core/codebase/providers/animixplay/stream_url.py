@@ -21,14 +21,6 @@ URL_ALIASES = {
     'ssload.info': 'gogocdn.club',
 }
 
-def fetching_chain(f1, f2, session, url, check=lambda *args: True):
-    return f2(session, f1(session, url), check=check)
-
-def from_site_url(session, url) -> dict:
-    return json.loads(
-        htmlparser.fromstring(
-            session.get(url).content).cssselect('#epslistplace')[0].text)
-
 def url_update(url):
     for key, item in URL_ALIASES.items():
         if key in url:
@@ -77,7 +69,9 @@ def get_stream_url(session, data_url):
 
     return extract_from_url(data_url)
 
-def gogoanime_parser(session, data: dict, *, check=lambda *args: True):
+def fetcher(session, url, check, match):
+    data = json.loads(htmlparser.fromstring(session.get(url).content).cssselect('#epslistplace')[0].text)
+
     for value in range(data.get('eptotal')):
         if check(value + 1):
             yield partial(lambda s, data_url: get_stream_url(s, data_url), session, data[str(value)]), value + 1

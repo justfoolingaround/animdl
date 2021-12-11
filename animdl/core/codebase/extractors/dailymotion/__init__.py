@@ -4,11 +4,6 @@ import regex
 
 DAILYMOTION_VIDEO = regex.compile(r"/embed/video/([^&?/]+)")
 
-def iter_urls(qualities):
-    for name, data in qualities.items():
-        for url in data:
-            yield url.get('url')
-
 def extract(session, url, **opts):
     match = DAILYMOTION_VIDEO.search(url)
 
@@ -22,4 +17,4 @@ def extract(session, url, **opts):
     
     return list({
         'stream_url': content_uri, **({'subtitles': subtitles} if subtitles else {})
-    } for content_uri in iter_urls(metadata.get('qualities')))
+    } for content_uri in (quality.get('url') for quality in (quality_data for name, quality_data in metadata.get('qualities', {}.items()))))

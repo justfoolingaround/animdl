@@ -47,9 +47,9 @@ def extract_from_site(session, episode_url, **opts):
             })
         )
 
-def fetcher(session, url, check):
+def fetcher(session, url, check, match):
     
-    if EPISODE_REGEX.search(url):
+    if match.group(1).isdigit():
         url = get_episodes_page(session, url)
     
     for episode_page in htmlparser.fromstring(session.get(url).text).cssselect('li[data-index] > a')[::-1]:

@@ -17,9 +17,9 @@ def extract_urls(session, episode_page):
     streams_page = session.get(embed_page, headers={'referer': episode_page})
     yield from ({'quality': int(_.group(2)), 'stream_url': _.group(1)} for _ in regex.finditer(r"src: '(.+?)'.+?size: (\d+)", streams_page.text, flags=regex.S))
 
-def fetcher(session, url, check):
+def fetcher(session, url, check, match):
 
-    url = REGEX.search(url).group(0)
+    url = match.group(0)
 
     episode_list_page = session.get(url)
     count = int(htmlparser.fromstring(episode_list_page.text).cssselect('span.badge')[0].text_content())

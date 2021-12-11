@@ -18,7 +18,7 @@ def get_content(url, js_content):
             return match
 
 
-def fetcher(session, url, check):
+def fetcher(session, url, check, match):
     html_page = htmlparser.fromstring(session.get(url).text)
 
     mainjs = session.get(ANIMTIME + html_page.cssselect('script[src^="main"]')[0].get('src'))

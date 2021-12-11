@@ -80,10 +80,11 @@ def bypass_ddos_guard(session):
     session.cookies.update(session.get(ANIMEPAHE + js_bypass_uri).cookies)
 
 
-def fetcher(session, url, check):
-    match = PLAYER_RE.search(url)
-    if match:
-        url = "https://www.animepahe.com/anime/%s" % match.group(1)
+def fetcher(session, url, check, match):
+    player_match = PLAYER_RE.search(url)
+
+    if player_match:
+        url = "https://www.animepahe.com/anime/%s" % player_match.group(1)
 
     anime_page = session.get(url)
     release_id = ID_RE.search(anime_page.text).group(1)

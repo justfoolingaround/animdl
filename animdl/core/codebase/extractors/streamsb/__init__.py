@@ -5,7 +5,7 @@ DOWNLOAD_CONTENT = regex.compile(r"download_video\('(.+?)','(.+?)','(.+?)'\)")
 QUALITY_RE = regex.compile(r"\d+x(\d+)")
 
 def extract(session, url, **opts):
-    content = htmlparser.fromstring(session.get(url).text)
+    content = htmlparser.fromstring(session.get(url.replace('/e/', '/d/')).text)
 
     def fast_yield():
         genexp = iter(content.cssselect('tr > td'))

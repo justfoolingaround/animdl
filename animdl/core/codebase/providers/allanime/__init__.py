@@ -39,7 +39,7 @@ def is_embed(url):
             return name
     return None
 
-def iter_episodes(episode_dictionary, anime_page_url):
+def iter_episodes(episode_dictionary: dict, anime_page_url: str):
     episodes = defaultdict(list)
     
     for type_of, episode_numbers in episode_dictionary.items():
@@ -48,13 +48,13 @@ def iter_episodes(episode_dictionary, anime_page_url):
         
     yield from sorted(episodes.items(), key=lambda x: x[0])
 
-def sanitize(content):
+def sanitize(content: 'str'):
     for key, item in SANITIZER.items():
         content = content.replace(key, item)
     return content
 
 
-def extract_content(session, content, *, api_endpoint):
+def extract_content(session, content: 'iter_episodes', *, api_endpoint: 'str'):
     for title, url in content:
         for source_urls in SOURCE_URLS.finditer(session.get(url).text):
             content_uri = yarl.URL(sanitize(source_urls.group(1)))
@@ -84,9 +84,9 @@ def extract_content(session, content, *, api_endpoint):
                     yield {'stream_url': to_direct, 'title': title}
 
 
-def fetcher(session, url, check):
+def fetcher(session, url: 'str', check, match):
     logging.warning("This provider is slow at the cost of high amount of streams.")
-    animepage_url = (ALLANIME + "anime/{}").format(REGEX.search(url).group(1))
+    animepage_url = (ALLANIME + "anime/{}").format(match.group(1))
 
     api_endpoint = yarl.URL(session.get(ALLANIME + "getVersion").json().get('episodeIframeHead', ''))
 

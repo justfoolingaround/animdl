@@ -1,6 +1,7 @@
 import importlib
 import pathlib
 
+
 from ..helper import append_protocol
 
 EXEMPT = [
@@ -20,13 +21,15 @@ def iter_providers(*, exempt=EXEMPT):
 
 def get_provider(url, *, raise_on_failure=True):
     for provider_module, name in iter_providers():
-        if provider_module.REGEX.match(url):
-            return provider_module, name
+        match = provider_module.REGEX.match(url)
+        if match:
+            return match, provider_module, name
     
     if raise_on_failure:
         raise Exception("Can't find a provider for the url {!r}.")
 
-    return None, None
+    return None, None, None
 
 def get_appropriate(session, url, check=lambda *args: True):
-    return get_provider(append_protocol(url))[0].fetcher(session, url, check)
+    regex_match, provider_module, provider_name = get_provider(append_protocol(url))
+    return provider_module.fetcher(session, url, check, match=regex_match)

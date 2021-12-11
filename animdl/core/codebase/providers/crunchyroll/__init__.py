@@ -50,9 +50,9 @@ def group_content(slug, html_element):
 
     return episodes
 
-def fetcher(session, url, check):
+def fetcher(session, url, check, match):
 
-    slug = REGEX.search(url).group(1)
+    slug = match.group(1)
     url = CRUNCHYROLL + slug
 
     for episode_number, episode_data in sorted(group_content(slug, htmlparser.fromstring(geobypass_response(url).text)).items()):
