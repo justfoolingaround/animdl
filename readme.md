@@ -129,6 +129,7 @@ will select episodes from 3 to 10 (inclusive), 12, 20 and from 40 to 50 (inclusi
 | [Haho](https://www.haho.moe/) (NSFW)         | `haho`           | 720p, 1080p         | <p align="center"><code><img height="20" src="https://i.imgur.com/tG9nb8s.png"></code></p> | <p align="center">0s</p>               | MP4               |
 | [Tenshi](https://www.tenshi.moe/)            | `tenshi`             | 720p, 1080p         | <p align="center"><code><img height="20" src="https://i.imgur.com/tG9nb8s.png"></code></p> | <p align="center">0s</p>               | MP4               |
 | [Twist](https://www.twist.moe/)              | `twist`              | 720p, 1080p         | <p align="center"><code><img height="20" src="https://i.imgur.com/tG9nb8s.png"></code></p> | <p align="center">0s</p>               | MP4               |
+| [Zoro](https://www.zoro.to/)                 | `zoro`   | 720p, 1080p         | <p align="center"><code><img height="20" src="https://i.imgur.com/tG9nb8s.png"></code></p> | <p align="center">0s</p>               | MP4 |
 
 ### More sites?
 

@@ -46,6 +46,7 @@ DEFAULT_CONFIG = {
         'tenshi': 'https://tenshi.moe/',
         'nyaasi': 'https://nyaa.si/',
         'twist': 'https://twist.moe/',
+        'zoro': 'https://zoro.to/',
     },
     'preferred_quality': 1080,
     'default_player': 'mpv',
@@ -103,6 +104,7 @@ TENSHI = SITE_URLS.get('tenshi')
 HAHO = SITE_URLS.get('haho')
 HENTAISTREAM = SITE_URLS.get('hentaistream')
 TWIST = SITE_URLS.get('twist')
+ZORO = SITE_URLS.get('zoro')
 
 QUALITY = CONFIG.get('preferred_quality')
 
