@@ -124,9 +124,9 @@ def download(session, logger, content_dir, outfile_name, stream_urls, quality, *
 
         content_url = download_data.get('stream_url')
         content_headers = download_data.get('headers')
-        
+
         try:
-            return True, downloader.handle_download(session, content_url, content_headers, content_dir, outfile_name if not download_data.get('is_torrent', False) else download_data.get('torrent_name'), preferred_quality=quality, **kwargs)
+            return True, downloader.handle_download(session, content_url, content_headers, content_dir, outfile_name if not download_data.get('is_torrent', False) else download_data.get('torrent_name'), preferred_quality=quality, subtitles=download_data.get('subtitle', []), **kwargs)
         except Exception as e:
             logger.critical("Oops, due to {!r}, this stream has been rendered unable to download.".format(e))
 

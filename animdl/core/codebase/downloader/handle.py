@@ -1,3 +1,4 @@
+import functools
 import logging
 import os
 import pathlib
@@ -9,9 +10,11 @@ import yarl
 from tqdm import tqdm
 
 from .content_mt import mimetypes
-from .ffmpeg import FFMPEG_EXTENSIONS, ffmpeg_download, has_ffmpeg
+from .ffmpeg import (FFMPEG_EXTENSIONS, ffmpeg_download, has_ffmpeg,
+                     merge_subtitles)
 from .hls import HLS_STREAM_EXTENSIONS, hls_yield
-from .torrent import MAGNET_URI_REGEX, download_torrent, is_supported as torrent_is_supported
+from .torrent import MAGNET_URI_REGEX, download_torrent
+from .torrent import is_supported as torrent_is_supported
 
 EXEMPT_EXTENSIONS = ['mpd']
 CONTENT_DISP_RE = regex.compile(r'filename=(?:"(.+?)"|([^;]+))')
@@ -45,6 +48,7 @@ def ext_from_content_disposition(content_disposition):
     
     return ext_from_filename(match.group(1) or match.group(2))
 
+@functools.lru_cache()
 def process_url(session, url, headers={}):
     """
     Get the extension, content size and range downloadability forehand.
@@ -147,7 +151,49 @@ def idm_download(url, headers, content_dir, outfile_name, extension, **opts):
     from .idmanlib import wait_until_download as idmdl    
     idmdl(url, headers=headers or {}, download_folder=content_dir, filename=file)
 
+def subautomatic(f):
+    """
+    Thanks to @Ashu#1518 for motivating me for this thing here.
+    """
+    def __inner__(session, url, headers, content_dir, outfile_name, *args, **kwargs):
+        logger = logging.getLogger('ffmpeg/submerge')
+
+        subtitles = kwargs.pop('subtitles', [])
+
+        callback = f(session, url, headers, content_dir, outfile_name, *args, **kwargs)
+
+        if not subtitles:
+            return
+
+        if not has_ffmpeg():
+            return logger.warning("ffmpeg was not found. {!r} will not be merged.".format(subtitles))
+
+        extension, content_size, ranges = process_url(session, url, headers)
+        resolved_path = (content_dir / "{}.{}".format(outfile_name, extension)).resolve()
+        subout_path = (content_dir / "{} [CC].{}".format(outfile_name, extension)).resolve()
+
+        ffmpeg_returncode = merge_subtitles(resolved_path, subout_path, subtitles, log_level=kwargs.get('log_level', 20))
+        
+        if ffmpeg_returncode:
+            return logger.warning("Got a non-zero return code {} from ffmpeg, the original file will not be erased in case of merge failure.".format(ffmpeg_returncode)) or callback
+
+        try:
+            os.remove(resolved_path)
+        except FileNotFoundError:
+            pass
+        
+        try:
+            os.rename(subout_path, resolved_path)
+        except FileNotFoundError:
+            pass
+
+        return callback
+    return __inner__
+
+
+@subautomatic
 def handle_download(session, url, headers, content_dir, outfile_name, idm=False, use_ffmpeg=False, **opts):
+    
     if MAGNET_URI_REGEX.search(url):
         torrent_info = opts.pop('torrent_info', {})
         endpoint = torrent_info.get('endpoint_url')

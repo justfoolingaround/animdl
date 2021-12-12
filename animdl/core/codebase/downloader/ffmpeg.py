@@ -195,3 +195,23 @@ def ffmpeg_download(url: str, headers: dict, outfile_name: str, content_dir, pre
             return child.wait()
 
         return ffmpeg_to_tqdm(logger, child, duration=stream_info.get('duration'), outfile_name=outfile_name).returncode
+
+def merge_subtitles(video_path, out_path, subtitle_paths, log_level=20):
+    
+    args = [executable, '-hide_banner', '-i', video_path, "-c:v", "copy", out_path, "-y"]
+
+    for subtitle in subtitle_paths:
+        args.extend(('-i', subtitle))
+
+    child = subprocess.Popen(args, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
+
+    if log_level > 20:
+        child.wait()
+        return child.returncode
+
+    for _ in iter(child.stdout):
+        print("[ffmpeg/submerge] {}\r".format(_.decode('utf-8').strip()))
+
+    child.wait()
+
+    return child.returncode
