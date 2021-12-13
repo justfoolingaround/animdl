@@ -139,7 +139,7 @@ def animdl_stream(
                     "Detected a non-zero return code: {:d}.".format(player_process.returncode))
                 playing = False if log_level > 20 else click.confirm(
                     "Retry playback for {!r}?".format(window_title), show_default=True, default=False)
+                continue
 
             playing = False if log_level > 10 else click.confirm(
                 "Replay {!r}?".format(window_title), show_default=True, default=True)
-
