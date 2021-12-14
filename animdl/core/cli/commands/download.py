@@ -4,7 +4,7 @@ from pathlib import Path
 import click
 
 from ...codebase import providers, sanitize_filename
-from ...config import AUTO_RETRY, QUALITY, USE_FFMPEG, QBITTORENT_CONFIG
+from ...config import AUTO_RETRY, QUALITY, QBITTORENT_CONFIG
 from .. import exit_codes, helpers, http_client
 
 
@@ -85,7 +85,7 @@ def animdl_download(
             continue
 
         logger.info("Downloading {!r} [{:02d}/{:02d}, {:02} remaining] ".format(content_title, count, total, total - count))
-        success, reason = helpers.download(session, logger, content_dir, content_title, stream_urls, quality, idm=idm, retry_timeout=AUTO_RETRY, log_level=log_level, use_ffmpeg=USE_FFMPEG, torrent_info=QBITTORENT_CONFIG)
+        success, reason = helpers.download(session, logger, content_dir, content_title, stream_urls, quality, idm=idm, retry_timeout=AUTO_RETRY, log_level=log_level, torrent_info=QBITTORENT_CONFIG)
 
         if not success:
             logger.warning("Could not download {!r} due to: {}. Please retry with other providers.".format(content_title, reason))

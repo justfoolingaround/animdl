@@ -210,8 +210,7 @@ def merge_subtitles(video_path, out_path, subtitle_paths, log_level=20):
         return child.returncode
 
     for _ in iter(child.stdout):
-        print("[ffmpeg/submerge] {}\r".format(_.decode('utf-8').strip()))
-
+        print("[ffmpeg/submerge] {}".format(_.decode('utf-8').strip()), end='\r')
     child.wait()
 
     return child.returncode
