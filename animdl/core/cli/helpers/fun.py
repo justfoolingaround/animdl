@@ -35,6 +35,10 @@ def line_chop(string: str, max_length, separators=[' ', '\n']):
 
 
 def terminal_center(string: str, *, columns=os.get_terminal_size().columns):
+
+    if not columns:
+        return string
+
     def genexp():
         for line in string.splitlines():
             for piece in line_chop(line, columns):
