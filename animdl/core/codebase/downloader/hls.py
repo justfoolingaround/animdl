@@ -144,6 +144,7 @@ def hls_yield(session, q_dicts, preferred_quality,
                 ts_response = session.get(
                     stream.human_repr(), headers=origin_m3u8.get(
                         'headers', {}))
+                ts_response.raise_for_status()
                 ts_data = ts_response.content
                 
                 if encryption_state:
@@ -152,7 +153,7 @@ def hls_yield(session, q_dicts, preferred_quality,
                 yield {'bytes': ts_data, 'total': total_streams, 'current': current_count}
                 
                 sucessful_yield = True
-            except httpx.HTTPError as e:
+            except httpx.RequestError as e:
                 logger.error(
                     'HLS downloading error due to "{!r}", retrying.'.format(e))
                 time.sleep(auto_retry)

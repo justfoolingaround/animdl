@@ -91,12 +91,14 @@ def standard_download(session: httpx.Client, url: str, content_dir: pathlib.Path
                 temporary_headers.update({'Ranges': 'bytes={}-'.format(downloaded)})
             try:
                 with session.stream('GET', url, allow_redirects=True, headers=headers) as http_stream:
+                    http_stream.raise_for_status()
+
                     for chunks in http_stream.iter_bytes():
                         size = len(chunks)
                         outstream.write(chunks)
                         progress_bar.update(size)
                         downloaded += size
-            except httpx.HTTPError as e:
+            except httpx.RequestError as e:
                 if not ranges:
                     downloaded = 0
                     outstream.seek(0)
