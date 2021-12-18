@@ -43,7 +43,7 @@ def portion_check(portions):
             continue
         
         if isinstance(portion, regex.Pattern):
-            yield lambda stream, k=key, p=portion: bool(p.search(stream.get(k, "")))
+            yield lambda stream, k=key, p=portion: bool(p.search(str(stream.get(k, ""))))
             continue
 
         yield lambda stream, k=key, p=portion: stream.get(k, "") == p
@@ -109,7 +109,7 @@ def split_portion(string, splitters=['/'], escape='\\', quoters=["'", '"'], pare
                     if not is_initiator:
                         parenthesis_context[pair] = False
             
-            if content in splitters and not any(multiquote_context.values()) and not any(v for k, v in parenthesis_context.items()):    
+            if content in splitters and not any(multiquote_context.values()) and not any(parenthesis_context.values()):    
                 yield current_context.strip()
                 yield_this_loop = True
 
