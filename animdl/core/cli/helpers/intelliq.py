@@ -158,12 +158,12 @@ def parse_quality_only(quality):
 def finalise_check(quality_check, parsed_parenthesized_portions, fallback=parse_quality_only('best')):
 
     def internal(streams):
-        streams = list(stream for stream in quality_check(streams) if all(_(stream) for _ in portion_check(parsed_parenthesized_portions)))
+        streams = list(stream for stream in streams if all(_(stream) for _ in portion_check(parsed_parenthesized_portions)))
         
-        if streams:
-            return streams
-
-        return []
+        if not streams:
+            return []
+        
+        return quality_check(streams)
 
     return internal
 
