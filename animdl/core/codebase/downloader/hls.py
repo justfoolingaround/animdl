@@ -6,6 +6,7 @@ import httpx
 import yarl
 from Cryptodome.Cipher import AES
 
+from ...cli.helpers import intelliq
 
 ENCRYPTION_DETECTION_REGEX = regex.compile(r"#EXT-X-KEY:METHOD=([^,]+),")
 ENCRYPTION_URL_IV_REGEX = regex.compile(
@@ -70,30 +71,13 @@ def m3u8_generation(session_init, m3u8_uri):
         yield {'quality': extract_resolution(stream_info), 'stream_url': content_uri}
 
 
-def sort_by_best(q_dicts, preferred_quality):
-    return (
-        sorted(
-            [
-             q for q in q_dicts if get_extension(
-                q.get('stream_url')) in [
-                    'm3u', 'm3u8'] and q.get(
-                        'quality', '0').isdigit() and int(
-                            q.get(
-                                'quality', 0)) <= preferred_quality], key=lambda q: int(
-                                    q.get(
-                                        'quality', 0)), reverse=True) or q_dicts)
-
-
-def resolve_stream(session, logger, q_dicts, preferred_quality):
-    for origin_m3u8 in sort_by_best(q_dicts, preferred_quality):
+def resolve_stream(session, logger, q_dicts, quality_string):
+    for origin_m3u8 in intelliq.filter_quality(q_dicts, quality_string):
         headers = origin_m3u8.get('headers', {})
-        for m3u8 in sort_by_best(m3u8_generation(lambda s: session.get(
-                str(s), headers=headers), origin_m3u8.get('stream_url')), preferred_quality):
-            if preferred_quality != int(m3u8.get('quality') or 0):
-                logger.warning('Could not find the quality {}, falling back to {}.'.format(
-                    preferred_quality, m3u8.get('quality') or "an unknown quality"))
-            content_response = session.get(
-                str(m3u8.get('stream_url')), headers=headers)
+        
+        m3u8s = list(m3u8_generation(lambda s: session.get(str(s), headers=headers), origin_m3u8.get('stream_url')))
+        for m3u8 in intelliq.filter_quality(m3u8s, quality_string):
+            content_response = session.get(str(m3u8.get('stream_url')), headers=headers)
             if content_response.status_code < 400:
                 return content_response, origin_m3u8
         content_response = session.get(
@@ -102,13 +86,13 @@ def resolve_stream(session, logger, q_dicts, preferred_quality):
             return content_response, origin_m3u8
 
 
-def hls_yield(session, q_dicts, preferred_quality,
+def hls_yield(session, q_dicts, quality_string,
               auto_retry=2, *, continuation_index=1):
 
     logger = logging.getLogger("hls/internal")
     
     content_response, origin_m3u8 = resolve_stream(
-        session, logger, q_dicts, preferred_quality)
+        session, logger, q_dicts, quality_string)
     
     m3u8_data = content_response.content.decode('utf-8', errors='ignore')
     

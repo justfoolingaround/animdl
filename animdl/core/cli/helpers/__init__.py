@@ -66,11 +66,10 @@ DOWNLOAD_ERROR_MESSAGE = """
 \x1b[34mDownload failure #{0:02d}\x1b[39m
 
 Download Arguments: {1}
-Quality: {2}
 
-Raw exception: {3!r}
+Raw exception: {2!r}
 
-Complete traceback: {4}\
+Complete traceback: {3}\
 """
 
 
@@ -82,7 +81,7 @@ def download(session, logger, content_dir, outfile_name, stream_urls, quality, *
 
     errors = []
 
-    for (download_data, quality_) in iter(downloadable_content):
+    for download_data in iter(downloadable_content):
         if "further_extraction" in download_data:
             try:
                 further_status, further_yield = download(session, logger, content_dir, outfile_name, further_extraction(session, download_data), quality, **kwargs)
@@ -101,15 +100,14 @@ def download(session, logger, content_dir, outfile_name, stream_urls, quality, *
         except Exception as e:
             logger.critical("Oops, due to {!r}, this stream has been rendered unable to download.".format(e))
 
-            errors.append(((download_data, quality_), e, traceback.format_exc()))
+            errors.append((download_data, e, traceback.format_exc()))
         
     logger.critical("No downloads were done. Use log level DEBUG or, -ll 0 to get complete tracebacks for the failed downloads.")
 
-    for count, ((download_data, quality_), exception, tb) in enumerate(errors, 1):
+    for count, (download_data, exception, tb) in enumerate(errors, 1):
         logger.debug(DOWNLOAD_ERROR_MESSAGE.format(
             count,
             download_data,
-            quality_,
             exception,
             tb
         ))
