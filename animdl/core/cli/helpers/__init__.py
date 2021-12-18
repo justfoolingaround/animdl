@@ -9,7 +9,9 @@ from ...codebase import downloader, extractors
 from .fun import (bannerify, choice, create_random_titles, stream_judiciary,
                   to_stdout)
 from .player import *
+from .searcher import link as processor_link
 from .processors import get_searcher, process_query
+from .intelliq import filter_quality
 
 fe_logger = logging.getLogger("further-extraction")
 
@@ -41,36 +43,6 @@ def ensure_extraction(session, stream_uri_caller):
             yield stream
 
 
-def get_quality(the_dict):
-    key = the_dict.get('quality')
-
-    if not key:
-        return 0
-
-    if isinstance(key, int):
-        return key
-
-    if isinstance(key, str) and key.isdigit():
-        return int(key)
-
-    digits = regex.search(key, r'[0-9]+')
-    if digits:
-        return int(digits.group(0))
-    
-    return 0
-
-
-def filter_urls(stream_urls, *, download=False):
-    for _ in sorted(stream_urls, reverse=True, key=get_quality):
-        if (download and (_.get('download') or _.get('download') is None)):
-            yield _, get_quality(_) 
-
-
-def filter_quality(stream_urls, preferred_quality, *, download=False):
-    for _, quality in filter_urls(stream_urls, download=download):
-        if preferred_quality >= quality:
-            yield _, quality
-
 def get_range_conditions(range_string):
     for matches in regex.finditer(r"(?:([0-9]*)[:\-.]([0-9]*)|([0-9]+))", range_string):
         start, end, singular = matches.groups()
@@ -85,7 +57,7 @@ def get_check(range_string):
 
 def ask(log_level, **prompt_kwargs):
 
-    if log_level < 20:
+    if log_level > 20:
         return prompt_kwargs.get('default')
 
     return prompt(**prompt_kwargs)
@@ -103,8 +75,7 @@ Complete traceback: {4}\
 
 
 def download(session, logger, content_dir, outfile_name, stream_urls, quality, **kwargs):
-    downloadable_content = [*filter_quality(stream_urls, quality, download=True)] or \
-        [*filter_urls(stream_urls, download=True)]
+    downloadable_content = filter_quality(stream_urls, quality)
 
     if not downloadable_content:
         return False, "No downloadable content found."

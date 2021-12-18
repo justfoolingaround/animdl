@@ -48,7 +48,7 @@ DEFAULT_CONFIG = {
         'twist': 'https://twist.moe/',
         'zoro': 'https://zoro.to/',
     },
-    'preferred_quality': 1080,
+    'quality_string': 'best[subtitle]/best',
     'default_player': 'mpv',
     'players': {
         'mpv': {
@@ -110,7 +110,7 @@ HENTAISTREAM = SITE_URLS.get('hentaistream')
 TWIST = SITE_URLS.get('twist')
 ZORO = SITE_URLS.get('zoro')
 
-QUALITY = CONFIG.get('preferred_quality')
+QUALITY = CONFIG.get('quality_string')
 
 DEFAULT_PLAYER = CONFIG.get('default_player')
 PLAYERS = CONFIG.get('players')

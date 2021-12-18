@@ -18,10 +18,10 @@ from .. import exit_codes, helpers, http_client
               type=str)
 @click.option('-q',
               '--quality',
-              help='Select a preferred quality if available.',
+              help='Use quality strings.',
               required=False,
               default=QUALITY,
-              type=int)
+)
 @click.option('-d',
               '--download-folder',
               help="Download folder name for the anime.",

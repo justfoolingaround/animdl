@@ -4,8 +4,9 @@ from collections import defaultdict
 import click
 
 from ...codebase import providers
-from ...config import DEFAULT_PLAYER
+from ...config import DEFAULT_PLAYER, QUALITY
 from .. import exit_codes, helpers, http_client
+from ..helpers.intelliq import filter_quality
 
 
 def quality_prompt(log_level, logger, stream_list):
@@ -38,6 +39,12 @@ def quality_prompt(log_level, logger, stream_list):
 @click.option('--player-opts',
               help='Arguments that are to be passed to the player call.',
               required=False)
+@click.option('-q',
+              '--quality',
+              help='Use quality strings.',
+              required=False,
+              default=QUALITY,
+)
 @click.option('--mpv', is_flag=True, default=DEFAULT_PLAYER == 'mpv',
               flag_value=True, help="Force mpv (defaults to True) for streaming.")
 @click.option('--vlc', is_flag=True, default=DEFAULT_PLAYER ==
@@ -60,6 +67,7 @@ def quality_prompt(log_level, logger, stream_list):
 def animdl_stream(
     query,
     player_opts,
+    quality,
     mpv,
     vlc,
     iina,
@@ -107,7 +115,7 @@ def animdl_stream(
 
             window_title = "Episode {:02d}".format(episode_number)
 
-            stream_urls = list(helpers.ensure_extraction(session, stream_urls_caller))
+            stream_urls = filter_quality(list(helpers.ensure_extraction(session, stream_urls_caller)), quality)
 
             if not stream_urls:
                 logger.warning(
