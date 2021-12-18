@@ -119,6 +119,7 @@ def split_portion(string, splitters=['/'], escape='\\', quoters=["'", '"'], pare
             current_context += content
 
         escaping = content in escape
+        yield_this_loop = False
 
     yield current_context.strip()
 

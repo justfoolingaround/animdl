@@ -6,6 +6,7 @@ import json
 
 import lxml.html as htmlparser
 
+from ...codebase.helper import uwu
 from ...config import *
 from .fuzzysearch import search
 
@@ -127,6 +128,7 @@ def search_nyaasi(session, query):
 
 
 def search_tenshi(session, query):
+    uwu.bypass_ddos_guard(session, TENSHI)
     tenshi_page = session.get(TENSHI)
     session_id = tenshi_page.cookies.get('tenshimoe_session')
     token = htmlparser.fromstring(tenshi_page.text).xpath(

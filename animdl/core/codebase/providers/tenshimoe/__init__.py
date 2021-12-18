@@ -5,7 +5,7 @@ from functools import partial
 import lxml.html as htmlparser
 
 from ....config import TENSHI
-from ...helper import construct_site_based_regex
+from ...helper import construct_site_based_regex, uwu
 
 REGEX = construct_site_based_regex(
     TENSHI, extra_regex=r'/anime/([^?&/]+)')
@@ -18,7 +18,7 @@ def extract_urls(session, episode_page):
     yield from ({'quality': int(_.group(2)), 'stream_url': _.group(1)} for _ in regex.finditer(r"src: '(.+?)'.+?size: (\d+)", streams_page.text, flags=regex.S))
 
 def fetcher(session, url, check, match):
-
+    uwu.bypass_ddos_guard(session, TENSHI)
     url = match.group(0)
 
     episode_list_page = session.get(url)

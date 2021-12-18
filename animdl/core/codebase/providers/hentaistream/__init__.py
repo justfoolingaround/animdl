@@ -5,22 +5,15 @@ import lxml.html as htmlparser
 import regex
 
 from ....config import HENTAISTREAM
-from ...helper import construct_site_based_regex
+from ...helper import construct_site_based_regex, uwu
 
 EPISODE_REGEX = regex.compile(r"/\d+/[^&?/]+")
 
 REGEX = construct_site_based_regex(
     HENTAISTREAM, extra_regex=r'/(anime|\d+)/([^?&/]+)')
 
-def bypass_ddos_guard(session, base_uri='https://hentaistream.moe/'):
-    js_bypass_uri = regex.search(
-        r"'(.*?)'",
-        session.get('https://check.ddos-guard.net/check.js').text).group(1)
-    
-    session.get(base_uri + js_bypass_uri)
-
 def get_episodes_page(session, url):
-    bypass_ddos_guard(session)
+    uwu.bypass_ddos_guard(session, HENTAISTREAM)
     return htmlparser.fromstring(session.get(url).text).cssselect('li[itemscope] > a[href^="https://hentaistream.moe/anime/"]')[0].get('href')
 
 
