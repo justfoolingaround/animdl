@@ -3,6 +3,7 @@ import logging
 
 SKEY_RE = regex.compile(r"skey = '(?P<skey>[^']+)';")
 
+
 def extract(session, url, **opts):
     headers = opts.pop('headers', {})
 

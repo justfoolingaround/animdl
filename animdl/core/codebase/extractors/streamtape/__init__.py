@@ -1,7 +1,9 @@
 import regex
 import logging
 
-STREAMTAPE_REGEX = regex.compile(r"'robotlink'\)\.innerHTML = '(.+?)'\+ \('xcd(.+?)'\)")
+STREAMTAPE_REGEX = regex.compile(
+    r"'robotlink'\)\.innerHTML = '(.+?)'\+ \('xcd(.+?)'\)")
+
 
 def extract(session, url, **opts):
     """

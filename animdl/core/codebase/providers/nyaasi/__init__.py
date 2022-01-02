@@ -6,7 +6,8 @@ from ....config import NYAASI
 from ...helper import construct_site_based_regex
 
 REGEX = construct_site_based_regex(
-        NYAASI, extra_regex=r'/view/([^?&/]+)')
+    NYAASI, extra_regex=r'/view/([^?&/]+)')
+
 
 def fetcher(session, url, check):
 

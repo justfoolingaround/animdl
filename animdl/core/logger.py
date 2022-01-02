@@ -18,14 +18,16 @@ class LoggingFormatter(logging.Formatter):
         super().__init__(fmt=self.logging_format)
 
     def format(self, record: logging.LogRecord) -> str:
-        
+
         if self.use_color:
             color = COLORS.get(record.levelname)
-            record.levelname = "{}{}\x1b[39m".format(color, record.levelname[0])
+            record.levelname = "{}{}\x1b[39m".format(
+                color, record.levelname[0])
             if record.name:
                 record.name = "{}{}\x1b[39m".format(color, record.name)
 
         return super().format(record)
+
 
 class FileLoggingFormatter(logging.Formatter):
 
@@ -34,15 +36,17 @@ class FileLoggingFormatter(logging.Formatter):
     def __init__(self):
         super().__init__(fmt=self.logging_format)
 
+
 class Logger(logging.Logger):
     def __init__(self, name):
         super().__init__(name)
         self.propagate = False
-        
+
         formatter = LoggingFormatter()
 
         if self.FILE_STREAM is not None:
-            file_stream_handler = logging.FileHandler(self.FILE_STREAM, 'a', encoding='utf-8')
+            file_stream_handler = logging.FileHandler(
+                self.FILE_STREAM, 'a', encoding='utf-8')
             file_stream_handler.setFormatter(FileLoggingFormatter())
             self.addHandler(file_stream_handler)
         else:

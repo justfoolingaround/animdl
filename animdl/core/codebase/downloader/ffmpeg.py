@@ -19,7 +19,8 @@ import regex
 from tqdm import tqdm
 
 executable = 'ffmpeg'
-has_ffmpeg = lambda: bool(shutil.which(executable))
+def has_ffmpeg(): return bool(shutil.which(executable))
+
 
 FFMPEG_EXTENSIONS = ['mpd', 'm3u8', 'm3u']
 
@@ -53,7 +54,7 @@ def iter_audio(stderr):
         A generator, that is made for sorting and sending to another generator.
         """
         for match in regex.finditer(b'Stream #(\d+):(\d+): Audio:.+ (\d+) Hz', stderr):
-            program, stream_id, freq = (_.decode() for _ in match.groups()) 
+            program, stream_id, freq = (_.decode() for _ in match.groups())
             yield "{}:a:{}".format(program, stream_id), int(freq)
     yield from sorted(it(), key=lambda x: x[1], reverse=True)
 
@@ -61,9 +62,9 @@ def iter_audio(stderr):
 def analyze_stream(logger: logging.Logger, url: str, headers: dict):
     """
     Converts the output of `ffmpeg -i $URL` to a partial stream info default dict.
-    
+
     In logging level DEBUG, it shows the ffmpeg output.
-    
+
     Returns
     ---
 
@@ -71,31 +72,35 @@ def analyze_stream(logger: logging.Logger, url: str, headers: dict):
 
     """
     info = defaultdict(lambda: defaultdict(lambda: defaultdict(defaultdict)))
-    
+
     args = [executable, '-hide_banner']
 
     if headers:
-        args.extend(('-headers', '\r\n'.join('{}:{}'.format(k, v) for k, v in headers.items())))
+        args.extend(('-headers', '\r\n'.join('{}:{}'.format(k, v)
+                    for k, v in headers.items())))
 
     args.extend(('-i', url))
 
     logger.debug('Calling PIPE child process for ffmpeg: {}'.format(args))
-    process = subprocess.Popen(args, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
-    
+    process = subprocess.Popen(
+        args, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
+
     stderr = b''.join(iter(process.stdout))
 
     duration = regex.search(b'Duration: ((?:\d+:)+\d+)', stderr)
     if duration:
         info['duration'] = parse_ffmpeg_duration(duration.group(1).decode())
-    
+
     audio = [*iter_audio(stderr)]
 
     for match in regex.finditer(b'Stream #(\d+):(\d+): Video: .+x(\d+)', stderr):
-        program, stream_index, resolution = (int(_.decode()) for _ in match.groups())
+        program, stream_index, resolution = (
+            int(_.decode()) for _ in match.groups())
         info['streams'][program][stream_index]['quality'] = resolution
         info['streams'][program][stream_index]['audio'] = audio
 
     return info
+
 
 def iter_quality(quality_dict):
     """
@@ -105,6 +110,7 @@ def iter_quality(quality_dict):
         for stream, stream_info in streams.items():
             yield "{}:v:{}".format(programs, stream), stream_info.get('quality') or 0, (stream_info.get('audio') or [None, 0])[0][0]
 
+
 def get_last(iterable):
     """
     Gets the last element from the iterable. Pretty self-explanatory.
@@ -112,6 +118,7 @@ def get_last(iterable):
     expansion = [*iterable]
     if expansion:
         return expansion[-1]
+
 
 def ffmpeg_to_tqdm(logger: logging.Logger, process: subprocess.Popen, duration: int, outfile_name: str) -> subprocess.CompletedProcess:
     """
@@ -131,17 +138,19 @@ def ffmpeg_to_tqdm(logger: logging.Logger, process: subprocess.Popen, duration: 
     `subprocess.Popen` but completed
 
     """
-    progress_bar = tqdm(desc="HLS, FFMPEG / GET {}.mkv".format(outfile_name), total=duration, unit='segment')
+    progress_bar = tqdm(
+        desc="HLS, FFMPEG / GET {}.mkv".format(outfile_name), total=duration, unit='segment')
     previous_span = 0
 
     for stream in process.stdout:
         logger.debug('[ffmpeg] {}'.format(stream.decode().strip()))
         current = get_last(regex.finditer(b'\stime=((?:\d+:)+\d+)', stream))
         if current:
-            in_seconds = parse_ffmpeg_duration(current.group(1).decode()) - previous_span
+            in_seconds = parse_ffmpeg_duration(
+                current.group(1).decode()) - previous_span
             previous_span += in_seconds
             progress_bar.update(in_seconds)
-    
+
     progress_bar.close()
     return process
 
@@ -165,43 +174,50 @@ def ffmpeg_download(url: str, headers: dict, outfile_name: str, content_dir, pre
     `int` The ffmpeg child process' return code.
 
     """
-    
-    logger = logging.getLogger('ffmpeg-hls-download[{}.mkv]'.format(outfile_name))
+
+    logger = logging.getLogger(
+        'ffmpeg-hls-download[{}.mkv]'.format(outfile_name))
     logger.debug("Using ffmpeg to download content.")
 
     stream_info = analyze_stream(logger, url, headers)
-    
+
     file = content_dir / ("{}.mkv".format(outfile_name))
-    
+
     with contextlib.suppress(FileNotFoundError, OSError):
         os.remove(file)
 
     args = [executable, '-hide_banner']
 
     if headers:
-        args.extend(('-headers', '\r\n'.join('{}:{}'.format(k, v) for k, v in headers.items())))
+        args.extend(('-headers', '\r\n'.join('{}:{}'.format(k, v)
+                    for k, v in headers.items())))
 
     args.extend(('-i', url, '-c', 'copy', file.as_posix()))
 
     for video, quality, audio in filter(lambda x: x[1] <= preferred_quality, sorted(iter_quality(stream_info), key=lambda x: x[1], reverse=True)):
         if quality < preferred_quality:
-            logger.warning('Could not find the stream of desired quality {}, currently downloading {}.'.format(preferred_quality, quality or 'an unknown quality'))
+            logger.warning('Could not find the stream of desired quality {}, currently downloading {}.'.format(
+                preferred_quality, quality or 'an unknown quality'))
 
-        child = subprocess.Popen(args + ['-map', video, '-map', audio], stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
+        child = subprocess.Popen(
+            args + ['-map', video, '-map', audio], stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
 
         if log_level > 20:
             return child.wait()
 
         return ffmpeg_to_tqdm(logger, child, duration=stream_info.get('duration'), outfile_name=outfile_name).returncode
 
+
 def merge_subtitles(video_path, out_path, subtitle_paths, log_level=20):
-    
-    args = [executable, '-hide_banner', '-i', video_path, "-c:v", "copy", out_path, "-y"]
+
+    args = [executable, '-hide_banner', '-i',
+            video_path, "-c:v", "copy", out_path, "-y"]
 
     for subtitle in subtitle_paths:
         args.extend(('-i', subtitle))
 
-    child = subprocess.Popen(args, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
+    child = subprocess.Popen(
+        args, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
 
     if log_level > 20:
         child.wait()

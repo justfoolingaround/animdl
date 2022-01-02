@@ -10,12 +10,14 @@ def prompt_user(logger, anime_list_genexp, provider):
 
     if not expansion:
         return logger.critical("Failed to find anything of that query on {!r}. Try searching on other providers.".format(provider)) or ({}, None)
-        
+
     for n, anime in enumerate(expansion, 1):
-        logger.info("{0:02d}: {1[name]} \x1b[33m{1[anime_url]}\x1b[39m".format(n, anime))
+        logger.info(
+            "{0:02d}: {1[name]} \x1b[33m{1[anime_url]}\x1b[39m".format(n, anime))
 
     if len(expansion) == 1:
-        logger.debug("Only a single search result found, automatically resorting to it.")
+        logger.debug(
+            "Only a single search result found, automatically resorting to it.")
         return expansion[0], provider
 
     index = prompt(
@@ -41,7 +43,7 @@ def process_query(
         auto_index=1):
 
     _, module, provider_name = get_provider(query, raise_on_failure=False)
-    
+
     if module:
         return {'anime_url': query}, provider_name
 

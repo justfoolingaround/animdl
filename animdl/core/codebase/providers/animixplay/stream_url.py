@@ -21,20 +21,25 @@ URL_ALIASES = {
     'ssload.info': 'gogocdn.club',
 }
 
+
 def url_update(url):
     for key, item in URL_ALIASES.items():
         if key in url:
-            animixplay_logger.debug("Replacing {!r} to {!r} in {!r}.".format(key, item, url))
+            animixplay_logger.debug(
+                "Replacing {!r} to {!r} in {!r}.".format(key, item, url))
             url = url.replace(key, item)
     return url
 
+
 def extract_from_url(embed_url):
-    on_url = EMBED_M3U8_MATCHER.search(embed_url) or EMBED_B64_MATCHER.search(embed_url)
+    on_url = EMBED_M3U8_MATCHER.search(
+        embed_url) or EMBED_B64_MATCHER.search(embed_url)
 
     if not on_url:
-        animixplay_logger.debug("Failed to find stream on {!r}, will fallback to API based m3u8.".format(embed_url))
+        animixplay_logger.debug(
+            "Failed to find stream on {!r}, will fallback to API based m3u8.".format(embed_url))
         return []
-    
+
     return [{'stream_url': url_update(b64decode(on_url.group(1)).decode())}]
 
 
@@ -49,12 +54,14 @@ def extract_from_embed(session, embed_url):
         return []
 
     on_site = EMBED_VIDEO_MATCHER.search(embed_page.text)
-    
+
     if on_site:
-        animixplay_logger.debug("Regex matched a video on the site: {!r}, extracting.".format(on_site))
+        animixplay_logger.debug(
+            "Regex matched a video on the site: {!r}, extracting.".format(on_site))
         return extract_from_url(on_site.group(1))
 
     return extract_from_url(str(embed_page.url))
+
 
 def from_content_id(session, content_id, *, endpoint="https://api.gogocdn.club/"):
     animixplay_logger.debug("Using {!r} to for m3u8.".format(endpoint))
@@ -63,14 +70,16 @@ def from_content_id(session, content_id, *, endpoint="https://api.gogocdn.club/"
 
 def get_stream_url(session, data_url):
     content_id = ID_MATCHER.search(data_url)
-    
+
     if content_id:
         return extract_from_embed(session, EMBED_URL_BASE + b64encode("{}LTXs3GrU8we9O{}".format(content_id.group(1), b64encode(content_id.group(1).encode()).decode()).encode()).decode()) or [{'stream_url': url_update(from_content_id(session, content_id.group(1)))}]
 
     return extract_from_url(data_url)
 
+
 def fetcher(session, url, check, match):
-    data = json.loads(htmlparser.fromstring(session.get(url).content).cssselect('#epslistplace')[0].text)
+    data = json.loads(htmlparser.fromstring(session.get(
+        url).content).cssselect('#epslistplace')[0].text)
 
     for value in range(data.get('eptotal')):
         if check(value + 1):

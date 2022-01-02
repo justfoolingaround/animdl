@@ -40,15 +40,19 @@ def get_stream_urls(episode_data):
 
                 yield yield_content
 
+
 def group_content(slug, html_element):
-    
+
     episodes = defaultdict(list)
 
     for element in html_element.cssselect('a.episode')[::-1]:
-        episode_match = (regex.search('^/{}/episode-(\d+)'.format(regex.escape(slug)), element.get('href')))
-        episodes[int(episode_match.group(1)) if episode_match else 0].append((CRUNCHYROLL + element.get('href', '').strip('/'), element.get('title')))
+        episode_match = (regex.search(
+            '^/{}/episode-(\d+)'.format(regex.escape(slug)), element.get('href')))
+        episodes[int(episode_match.group(1)) if episode_match else 0].append(
+            (CRUNCHYROLL + element.get('href', '').strip('/'), element.get('title')))
 
     return episodes
+
 
 def fetcher(session, url, check, match):
 

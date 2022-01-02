@@ -10,6 +10,7 @@ from .inner.indexer import index_by_url
 
 REGEX = construct_site_based_regex(ANIMEOUT, extra_regex=r'/([^?&/]+)')
 
+
 def group_episodes(contents):
     grouped = defaultdict(list)
     for r in contents:

@@ -21,7 +21,8 @@ def get_content(url, js_content):
 def fetcher(session, url, check, match):
     html_page = htmlparser.fromstring(session.get(url).text)
 
-    mainjs = session.get(ANIMTIME + html_page.cssselect('script[src^="main"]')[0].get('src'))
+    mainjs = session.get(
+        ANIMTIME + html_page.cssselect('script[src^="main"]')[0].get('src'))
     content = mainjs.text
 
     content = content[content.index('tm=function(t)'):]
@@ -34,5 +35,6 @@ def fetcher(session, url, check, match):
     for episode in range(1, episodes + 1):
         if check(episode):
             yield partial(lambda x: [{'stream_url': x, 'referer': ANIMTIME}], constructor + "{:03d}".format(episode) + end), episode
+
 
 fetcher.fast_enqueue = True

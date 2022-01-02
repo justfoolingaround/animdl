@@ -13,18 +13,21 @@ QUALITY = {
     'hd': 720
 }
 
+
 def extract(session, url, **opts):
     response = session.get(url)
-    
+
     if response.status_code >= 400:
         return []
 
-    metadata = htmlparser.fromstring(response.text).cssselect('div[data-module="OKVideo"]')
+    metadata = htmlparser.fromstring(
+        response.text).cssselect('div[data-module="OKVideo"]')
 
     if not metadata:
         return []
 
-    data_opts = json.loads(json.loads(unescape(metadata[0].get('data-options'))).get('flashvars', {}).get('metadata'))
+    data_opts = json.loads(json.loads(unescape(metadata[0].get(
+        'data-options'))).get('flashvars', {}).get('metadata'))
 
     def fast_yield():
         for videos in data_opts.get('videos', []):

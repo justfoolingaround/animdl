@@ -10,6 +10,7 @@ def get_quality(url_text):
 
     return int(match.group(1))
 
+
 def extract(session, url, **opts):
     """
     Extract content off of GogoAnime.
@@ -18,8 +19,9 @@ def extract(session, url, **opts):
 
     if not parsed_url.scheme:
         parsed_url = parsed_url.with_scheme('https')
-    
-    content_url = parsed_url.with_name('download').with_query(parsed_url.query).human_repr()
+
+    content_url = parsed_url.with_name(
+        'download').with_query(parsed_url.query).human_repr()
 
     response = session.get(
         content_url,

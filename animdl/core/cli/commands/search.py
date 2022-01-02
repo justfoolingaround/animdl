@@ -19,8 +19,8 @@ from ..http_client import client
               type=int,
               default=20)
 @click.option('--log-file',
-            help='Set a log file to log everything to.',
-            required=False,)
+              help='Set a log file to log everything to.',
+              required=False,)
 @click.option('-j',
               '--json',
               help="An integer that determines where to begin the grabbing from.",
@@ -40,4 +40,5 @@ def animdl_search(query, json, provider, **kwargs):
     genexp = link.get(provider)(session, query)
 
     for i, search_data in enumerate(genexp):
-        logger.info('[#{:02d}] {name} \x1b[33m{anime_url}\x1b[39m'.format(i, **search_data)) if not json else print(json_.dumps(search_data))
+        logger.info('[#{:02d}] {name} \x1b[33m{anime_url}\x1b[39m'.format(
+            i, **search_data)) if not json else print(json_.dumps(search_data))

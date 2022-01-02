@@ -18,10 +18,11 @@ from ..http_client import client
 from .constants import LABELS, LANGUAGE
 
 
-terminal_columns = 0 
+terminal_columns = 0
 
 with suppress(Exception):
     terminal_columns = os.get_terminal_size().columns
+
 
 def line_chop(string: str, max_length, separators=[' ', '\n']):
     if not string:
@@ -31,7 +32,8 @@ def line_chop(string: str, max_length, separators=[' ', '\n']):
         yield string
         return
 
-    sep, sep_index = max(((_, string[:max_length].rfind(_)) for _ in separators), key=lambda x: x[1])
+    sep, sep_index = max(((_, string[:max_length].rfind(_))
+                         for _ in separators), key=lambda x: x[1])
 
     if sep_index == -1:
         sep, sep_index = '', max_length
@@ -50,6 +52,7 @@ def terminal_center(string: str, *, columns=terminal_columns):
             for piece in line_chop(line, columns):
                 yield piece.center(columns)
     return '\n'.join(genexp())
+
 
 package_banner = terminal_center("""\
 justfoolingaround/animdl - v{}
@@ -104,8 +107,10 @@ def stream_judiciary(url):
 
 
 def check_for_update(*, current=__core__, git_version_url="https://raw.githubusercontent.com/justfoolingaround/animdl/master/animdl/core/__version__.py"):
-    upstream_version = regex.search( r'__core__ = "(.*?)"', client.get(git_version_url).text).group(1)
+    upstream_version = regex.search(
+        r'__core__ = "(.*?)"', client.get(git_version_url).text).group(1)
     return upstream_version == current, upstream_version
+
 
 def bannerify(f):
     def internal(*args, **kwargs):
@@ -115,13 +120,14 @@ def bannerify(f):
                 print("\x1b[35m{}\x1b[39m".format(package_banner))
                 latest, version = check_for_update()
                 if not latest:
-                    print("\x1b[31m{}\x1b[39m".format(update_banner.format(version, __core__)))
+                    print("\x1b[31m{}\x1b[39m".format(
+                        update_banner.format(version, __core__)))
             logging.basicConfig(
                 level=quiet_state,
                 format="[\x1b[35m%(filename)s:%(lineno)d\x1b[39m - %(asctime)s - %(name)s: %(levelname)s] %(message)s",
                 filename=kwargs.get('log_file'),
                 filemode='a'
-                )
+            )
 
             logger = logging.getLoggerClass()
             logger.FILE_STREAM = kwargs.get('log_file')

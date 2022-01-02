@@ -30,8 +30,8 @@ from ..http_client import client
 @click.option('-i', '--index', required=False, default=0,
               show_default=False, type=int, help="Index for the auto flag.")
 @click.option('--log-file',
-            help='Set a log file to log everything to.',
-            required=False,)
+              help='Set a log file to log everything to.',
+              required=False,)
 @click.option('-ll',
               '--log-level',
               help='Set the integer log level.',
@@ -56,11 +56,13 @@ def animdl_grab(query, file, auto, index, log_level, **kwargs):
         file += ".json" if not file.endswith('.json') else ''
 
     for stream_url_caller, episode in providers.get_appropriate(session, anime.get('anime_url'), check=get_check(r)):
-        stream_url = list(helpers.ensure_extraction(session, stream_url_caller))
-        
+        stream_url = list(helpers.ensure_extraction(
+            session, stream_url_caller))
+
         if file:
-            collected_streams.append({'episode': episode, 'streams': stream_url})
-        
+            collected_streams.append(
+                {'episode': episode, 'streams': stream_url})
+
         if file:
             logger.info('{} => {!r}'.format('E%02d' % episode, file))
             try:

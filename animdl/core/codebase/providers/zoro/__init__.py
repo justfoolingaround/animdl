@@ -3,7 +3,6 @@ THANKS FOR ADDING STREAMSB AND STREAMTAPE DUMMIES
 """
 
 from functools import partial
-from re import S
 from ...helper import construct_site_based_regex
 from ....config import ZORO
 
@@ -11,10 +10,12 @@ import lxml.html as htmlparser
 
 REGEX = construct_site_based_regex(ZORO, extra_regex=r'(/watch)?/[\w-]+-(\d+)')
 
+
 def int_or(string, *, default=0):
     if string.isdigit():
         return int(string)
     return default
+
 
 SERVER_IDS = {
     4: 'rapidvideo',
@@ -26,7 +27,8 @@ SERVER_IDS = {
 
 def extract_episode(session, data_id, title):
     for server in htmlparser.fromstring(session.get('https://zoro.to/ajax/v2/episode/servers', params={'episodeId': data_id}).json().get('html')).cssselect('div.server-item'):
-        source_data = session.get('https://zoro.to/ajax/v2/episode/sources', params={'id': server.get('data-id')}).json()
+        source_data = session.get(
+            'https://zoro.to/ajax/v2/episode/sources', params={'id': server.get('data-id')}).json()
         if source_data.get('type') != 'iframe':
             yield {
                 'stream_url': source_data.get('link'),
@@ -42,7 +44,7 @@ def extract_episode(session, data_id, title):
 
 def fetcher(session, url, check, match):
     slug = match.group(2)
-    
+
     for episode in htmlparser.fromstring(session.get(ZORO + "/ajax/v2/episode/list/{}".format(slug)).json().get('html')).cssselect('a[title][data-number][data-id]'):
         episode_number = int_or(episode.get('data-number', '') or '')
         if check(episode_number):

@@ -15,6 +15,7 @@ ANIME_RE = construct_site_based_regex(
 EPISODE_LOAD_AJAX = "https://ajax.gogo-load.com/ajax/load-list-episode"
 SITE_URL = GOGOANIME
 
+
 def get_episode_list(session, anime_id):
     """
     Fetch all the episodes' url from GogoAnime using.
@@ -51,10 +52,12 @@ def get_quality(url_text):
         return None
     return int(match.group(1))
 
+
 def get_embed_page(session, episode_url):
     response = session.get(episode_url)
     content_parsed = htmlparser.fromstring(response.text)
     return "https:{}".format(content_parsed.cssselect('iframe')[0].get('src'))
+
 
 def fetcher(session, url, check, match):
     url = convert_to_anime_page(url)
@@ -66,4 +69,4 @@ def fetcher(session, url, check, match):
 
     for index, episode in enumerate(episodes, 1):
         if check(index):
-            yield partial(lambda e: [{'stream_url': get_embed_page(session, e), 'further_extraction': ('gogoplay', {})}] , episode), index
+            yield partial(lambda e: [{'stream_url': get_embed_page(session, e), 'further_extraction': ('gogoplay', {})}], episode), index

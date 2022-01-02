@@ -6,7 +6,8 @@ from ....config import TWIST
 from ...helper import construct_site_based_regex
 
 REGEX = construct_site_based_regex(
-        TWIST, extra_regex=r'/a/([^?&/]+)')
+    TWIST, extra_regex=r'/a/([^?&/]+)')
+
 
 def fetcher(session, url, check, match):
     anime_name = match.group(1)

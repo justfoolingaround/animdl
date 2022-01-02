@@ -30,8 +30,10 @@ HAHO_URL_SEARCH_POST = HAHO + "anime/search"
 TWIST_URL_CONTENT_API = "https://api.twist.moe/api/anime"
 TWIST_URL_CONTENT = TWIST + "a/"
 
+
 def placeholder(session, query):
     yield from []
+
 
 def search_9anime(session, query):
     nineanime_results = session.get(
@@ -43,6 +45,7 @@ def search_9anime(session, query):
             '//ul[@class="anime-list"]/li/a[@class="name"]'):
         yield {'anime_url': NINEANIME.rstrip('/') + results.get('href'), 'name': results.text_content()}
 
+
 def search_animekaizoku(session, query):
     animekaizoku_results = htmlparser.fromstring(session.get(
         ANIMEKAIZOKU,
@@ -51,16 +54,19 @@ def search_animekaizoku(session, query):
     for results in animekaizoku_results.cssselect('.post-title'):
         yield {'anime_url': ANIMEKAIZOKU + results.cssselect('a')[0].get('href'), 'name': results.text_content()}
 
+
 def search_allanime(session, query):
 
-    gql_response = session.get(ALLANIME + 'graphql', params={'variables': '{"search":{"allowAdult":true,"query":"%s"},"translationType":"sub"}' % query.replace('"', '\\"'), 'extensions': '{"persistedQuery":{"version":1,"sha256Hash":"9343797cc3d9e3f444e2d3b7db9a84d759b816a4d84512ea72d079f85bb96e98"}}'})
+    gql_response = session.get(ALLANIME + 'graphql', params={'variables': '{"search":{"allowAdult":true,"query":"%s"},"translationType":"sub"}' % query.replace(
+        '"', '\\"'), 'extensions': '{"persistedQuery":{"version":1,"sha256Hash":"9343797cc3d9e3f444e2d3b7db9a84d759b816a4d84512ea72d079f85bb96e98"}}'})
 
     for result in gql_response.json().get('data', {}).get('shows', {}).get('edges', []):
         if any(a for k, a in result.get('availableEpisodes', {}).items()):
             yield {'anime_url': ALLANIME + "anime/{[_id]}".format(result), 'name': result.get('name')}
 
+
 def search_animepahe(session, query):
-    
+
     animepahe_results = session.get(
         ANIMEPAHE_URL_SEARCH_AJAX, params={
             'q': query, 'm': 'search'})
@@ -97,9 +103,11 @@ def search_gogoanime(session, query):
     for results in parsed.xpath('//p[@class="name"]/a'):
         yield {'anime_url': GOGOANIME.strip('/') + results.get('href'), 'name': results.get('title')}
 
+
 def search_kawaiifu(session, query):
     for results in htmlparser.fromstring(session.get(KAWAIIFU + "search-movie", params={'keyword': query}).text).cssselect('.info > h4 > a:last-child'):
         yield {'anime_url': results.get('href'), 'name': results.text_content().strip()}
+
 
 def search_twist(session, query):
     content = session.get(
@@ -121,6 +129,7 @@ def search_crunchyroll(session, query):
     for _, anime in search(query, content.get(
             'data', []), processor=lambda r: r.get('name')):
         yield {'anime_url': anime.get('link', '').strip('/'), 'name': anime.get('name', '')}
+
 
 def search_nyaasi(session, query):
     for anime in htmlparser.fromstring(session.get(NYAASI, params={'q': query, 's': 'seeders', 'o': 'desc'}).text).cssselect('tr > td[colspan="2"] > a[title]:last-child	'):
@@ -147,6 +156,7 @@ def search_tenshi(session, query):
 
     for result in results:
         yield {'name': result.get('title'), 'anime_url': result.get('url')}
+
 
 def search_zoro(session, query):
     for result in htmlparser.fromstring(session.get(ZORO + "/search", params={'keyword': query}).text).cssselect('a.item-qtip[title][data-id]'):
@@ -177,6 +187,7 @@ def search_haho(session, query):
     for result in results:
         yield {'name': result.get('title'), 'anime_url': result.get('url')}
 
+
 link = {
     '9anime': search_9anime,
     'animekaizoku': search_animekaizoku,
@@ -193,6 +204,7 @@ link = {
     'twist': search_twist,
     'zoro': search_zoro,
 }
+
 
 def get_searcher(provider):
     searcher = link.get(provider)

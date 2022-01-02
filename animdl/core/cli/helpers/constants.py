@@ -354,5 +354,5 @@ LANGUAGE = {
 LABELS = {
     'storage.googleapis.com': "Google API Storage",
     'v.vrv.co': 'VRV',
-    'pl.crunchyroll.com': 'Crunchyroll' 
+    'pl.crunchyroll.com': 'Crunchyroll'
 }

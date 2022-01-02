@@ -12,6 +12,7 @@ EPISODE_REGEX = regex.compile(r"/\d+/[^&?/]+")
 REGEX = construct_site_based_regex(
     HENTAISTREAM, extra_regex=r'/(anime|\d+)/([^?&/]+)')
 
+
 def get_episodes_page(session, url):
     uwu.bypass_ddos_guard(session, HENTAISTREAM)
     return htmlparser.fromstring(session.get(url).text).cssselect('li[itemscope] > a[href^="https://hentaistream.moe/anime/"]')[0].get('href')
@@ -26,28 +27,30 @@ def extract_from_site(session, episode_url, **opts):
         subtitle = list(base + _ + ".vtt" for _ in _sub)
 
         yield from ({**_, **opts, **({'subtitle': subtitle} if subtitle else {})} for _ in
-            ({
-                'quality': 720,
-                'stream_url': base + "x264.720p.mp4",
-            },
+                    ({
+                        'quality': 720,
+                        'stream_url': base + "x264.720p.mp4",
+                    },
             {
-                'quality': 1080,
-                'stream_url': base + "av1.1080p.webm",
-            },
+                        'quality': 1080,
+                        'stream_url': base + "av1.1080p.webm",
+                    },
             {
-                'quality': 2160,
-                'stream_url': base + "av1.2160p.webm",
-            })
-        )
+                        'quality': 2160,
+                        'stream_url': base + "av1.2160p.webm",
+                    })
+                    )
+
 
 def fetcher(session, url, check, match):
-    
+
     if match.group(1).isdigit():
         url = get_episodes_page(session, url)
-    
+
     for episode_page in htmlparser.fromstring(session.get(url).text).cssselect('li[data-index] > a')[::-1]:
-        number, title, date = (_.text_content() for _ in episode_page.cssselect('div[class^="epl"]'))
+        number, title, date = (_.text_content()
+                               for _ in episode_page.cssselect('div[class^="epl"]'))
         episode_number = int(number) if number.isdigit() else 0
-        
+
         if check(episode_number):
             yield partial(lambda ep, **opts: list(extract_from_site(session, ep, **opts)), episode_page.get('href'), title="{} ({})".format(title, date)), episode_number

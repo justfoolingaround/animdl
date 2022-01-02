@@ -11,6 +11,7 @@ if '__path__' in globals():
 else:
     __this_path__ = pathlib.Path()
 
+
 def iter_extractors(*, exempt=EXEMPT):
     for path in __this_path__.glob('*/'):
         if path.name not in exempt:

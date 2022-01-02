@@ -6,7 +6,8 @@ from .inner import get_stream_url_from_kwik
 
 from functools import partial, lru_cache
 
-REGEX = construct_site_based_regex(ANIMEPAHE, extra_regex=r'/(?:anime|play)/([^?&/]+)')
+REGEX = construct_site_based_regex(
+    ANIMEPAHE, extra_regex=r'/(?:anime|play)/([^?&/]+)')
 
 
 API_URL = ANIMEPAHE + "api"
