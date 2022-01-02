@@ -1,13 +1,3 @@
-"""
-A ffmpeg download wrapper for ffmpeg and tqdm.
-
-Wrapper was created in favor of [animdl](https://github.com/justfoolingaround/animdl.git) 
-and since the developer doesn't care about you copying and pasting this code somewhere, 
-you may do it. No need for credit. You might feel guilty though.
-
-Hope **your** project becomes easier.
-"""
-
 import contextlib
 import logging
 import os
