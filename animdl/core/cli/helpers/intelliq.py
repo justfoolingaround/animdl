@@ -72,7 +72,7 @@ def parenthesized_portions(string, escape='\\', quoters=["'", '"'], parenthesis=
             if content == endpoint and not any(multiquote_context.values()):    
 
                 yield parse_parenthesized_portions(current_context.strip())
-                yield from parenthesized_portions(string[current_pos:], escape='\\', quoters=["'", '"'], parenthesis=[('[', ']'), ('(', ')'), ('{', '}')])
+                yield from parenthesized_portions(string[current_pos:], escape=escape, quoters=quoters, parenthesis=parenthesis)
                 return
 
         current_context += content
