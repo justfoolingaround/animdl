@@ -9,14 +9,13 @@ import regex
 import yarl
 from tqdm import tqdm
 
+from ...config import FFMPEG_EXECUTABLE, FFMPEG_HLS, FFMPEG_SUBMERGE
 from .content_mt import mimetypes
 from .ffmpeg import (FFMPEG_EXTENSIONS, ffmpeg_download, has_ffmpeg,
-                     merge_subtitles, executable as ffmpeg_executable)
+                     merge_subtitles)
 from .hls import HLS_STREAM_EXTENSIONS, hls_yield
 from .torrent import MAGNET_URI_REGEX, download_torrent
 from .torrent import is_supported as torrent_is_supported
-
-from ...config import (FFMPEG_HLS, FFMPEG_SUBMERGE, FFMPEG_EXECUTABLE)
 
 if FFMPEG_EXECUTABLE:
     ffmpeg_executable = FFMPEG_EXECUTABLE
@@ -41,7 +40,7 @@ def guess_extension(content_type):
     if not content_type:
         return ''
     
-    for name, cd, extension in mimetypes:
+    for _, cd, extension in mimetypes:
         if cd == content_type:
             return (extension or '').lstrip('.')
 
