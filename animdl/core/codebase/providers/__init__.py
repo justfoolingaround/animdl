@@ -9,10 +9,7 @@ EXEMPT = [
     '__pycache__'
 ]
 
-try:
-    __this_path__ = pathlib.Path(__path__[0])
-except:
-    __this_path__ = pathlib.Path()
+__this_path__ = pathlib.Path('.').resolve()
 
 def iter_providers(*, exempt=EXEMPT):
     for path in __this_path__.glob('*/'):
@@ -31,5 +28,5 @@ def get_provider(url, *, raise_on_failure=True):
     return None, None, None
 
 def get_appropriate(session, url, check=lambda *args: True):
-    regex_match, provider_module, provider_name = get_provider(append_protocol(url))
+    regex_match, provider_module, _ = get_provider(append_protocol(url))
     return provider_module.fetcher(session, url, check, match=regex_match)
