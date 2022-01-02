@@ -16,6 +16,8 @@
 
 ## Installation
 
+[![Codacy Badge](https://api.codacy.com/project/badge/Grade/8320379373f743acb169e9fad94e5341)](https://app.codacy.com/gh/justfoolingaround/animdl?utm_source=github.com&utm_medium=referral&utm_content=justfoolingaround/animdl&utm_campaign=Badge_Grade_Settings)
+
 Installation of [**animdl**](https://www.github.com/justfoolingaround/animdl) can be done using:
 
 ```sh
