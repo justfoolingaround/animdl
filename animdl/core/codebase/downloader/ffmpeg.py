@@ -8,14 +8,14 @@ you may do it. No need for credit. You might feel guilty though.
 Hope **your** project becomes easier.
 """
 
+import contextlib
 import logging
 import os
-import regex
 import shutil
 import subprocess
-
 from collections import defaultdict
 
+import regex
 from tqdm import tqdm
 
 executable = 'ffmpeg'
@@ -173,10 +173,8 @@ def ffmpeg_download(url: str, headers: dict, outfile_name: str, content_dir, pre
     
     file = content_dir / ("{}.mkv".format(outfile_name))
     
-    try:
+    with contextlib.suppress(FileNotFoundError, OSError):
         os.remove(file)
-    except:
-        pass
 
     args = [executable, '-hide_banner']
 
