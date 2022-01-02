@@ -11,7 +11,9 @@
 <code>
 <img src="https://img.shields.io/discord/925000668824080474.svg?color=%237289DA&label=Support%20Server&logo=Discord&style=for-the-badge" height="30px">
 </code>
-</a></p>
+</a>
+</p>
+
 
 
 ## Installation
@@ -182,3 +184,10 @@ ffmpeg is set as optional because:
 
 The disclaimer of this project can be found [here.](./disclaimer.md)
 
+<p align="center">
+<code>
+<a href="https://www.codacy.com/gh/justfoolingaround/animdl/dashboard">
+<img src="https://app.codacy.com/project/badge/Grade/a3a66c513f6949fb9f4aeb5fd26db937">
+</a>
+</code>
+</p>
