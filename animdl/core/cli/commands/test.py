@@ -52,7 +52,7 @@ def animdl_test(x, e, **kwargs):
             links = [*providers.get_appropriate(session, site, lambda r: r == e)]
             if not links:
                 raise Exception('No stream urls found on {!r}.'.format(site))
-            for link_cb, en in links:
+            for link_cb, _ in links:
                 for stream in ensure_extraction(session, link_cb):
                     print(
                         '\t - \x1b[32m{stream_url}\x1b[39m'.format_map(stream))
