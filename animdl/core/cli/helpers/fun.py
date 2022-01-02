@@ -20,8 +20,8 @@ from .constants import LABELS, LANGUAGE
 
 terminal_columns = 0 
 
-with suppress():
-    terminal_columns = os.get_terminal_size(terminal_columns)
+with suppress(Exception):
+    terminal_columns = os.get_terminal_size().columns
 
 def line_chop(string: str, max_length, separators=[' ', '\n']):
     if not string:
