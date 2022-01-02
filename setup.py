@@ -12,6 +12,7 @@ setup(
     keywords=['stream', 'anime', 'download', 'anime-downloader', 'twist', '9anime',
               'gogoanime', 'animepahe', '4anime', 'anime-streamer', 'fouranime', 'animixplay'],
     install_requires=[
+        'anitopy',
         'click',
         'comtypes',
         'cssselect',
