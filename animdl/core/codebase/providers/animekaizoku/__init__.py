@@ -28,7 +28,7 @@ def get_indexed(elements):
         yield name_index(element)
 
 def group_episodes(iterab):
-    episode_dict = defaultdict(lambda: list())
+    episode_dict = defaultdict(list)
     for content in sorted(iterab, key=lambda x: x.get('episode', 0)):
         episode_dict[content.get('episode') or 0].append(content)
     

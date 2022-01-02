@@ -74,4 +74,4 @@ def fetcher(session, url, check, match):
 
     for value in range(data.get('eptotal')):
         if check(value + 1):
-            yield partial(lambda s, data_url: get_stream_url(s, data_url), session, data[str(value)]), value + 1
+            yield partial(get_stream_url, session, data[str(value)]), value + 1

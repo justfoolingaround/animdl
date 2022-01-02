@@ -42,7 +42,7 @@ def get_stream_urls(episode_data):
 
 def group_content(slug, html_element):
     
-    episodes = defaultdict(lambda: list())
+    episodes = defaultdict(list)
 
     for element in html_element.cssselect('a.episode')[::-1]:
         episode_match = (regex.search('^/{}/episode-(\d+)'.format(regex.escape(slug)), element.get('href')))
