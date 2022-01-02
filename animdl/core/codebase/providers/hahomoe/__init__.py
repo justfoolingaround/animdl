@@ -4,7 +4,6 @@ import lxml.html as htmlparser
 
 from ....config import HAHO
 from ...helper import construct_site_based_regex
-from ..tenshimoe import extract_urls
 
 REGEX = construct_site_based_regex(
     HAHO, extra_regex=r'/anime/([^?&/]+)')
