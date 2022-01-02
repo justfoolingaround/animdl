@@ -5,6 +5,8 @@ from base64 import b64decode
 
 TWISTMOE_SECRET = b'267041df55ca2b36f2e322d05ee2c9cf'
 
+TWISTMOE_CDN = "https://{}cdn.twist.moe"
+TWISTMOE_API = "https://api.twist.moe/api/anime/"
 
 def unpad_content(content):
     return content[:-(content[-1] if isinstance(content[-1],
@@ -32,46 +34,21 @@ def decipher(encoded_url: str):
         s1[16:])).decode('utf-8', 'ignore').lstrip(' ')
 
 
-def __internal_get_uri(session, stream_url):
-    """
-    Sadly this has no need but since it references previous algorithm, this shall remain unremoved from the code itself.
-    """
-    return session.get(
-        stream_url,
-        headers={
-            'referer': 'https://twist.moe'},
-        allow_redirects=False).headers.get(
-            'location',
-        'https://twist.moe/404')
+def api(session, endpoint, content_slug):
+    return session.get(TWISTMOE_API + content_slug + endpoint, headers={'x-access-token': '0df14814b9e590a1f26d3071a4ed7974'})
 
-
-def get_twistmoe_anime_uri(
+def iter_episodes(
         session,
-        anime_name,
-        *,
-        api_url='https://api.twist.moe/api/anime/{anime_name}'):
+        content_slug):
+    
+    ongoing = api(session, "/", content_slug).json().get('ongoing')
 
-    base_url = 'https://air-cdn.twist.moe%s' if session.get(
-        api_url.format(
-            anime_name=anime_name), headers={
-            'x-access-token': '0df14814b9e590a1f26d3071a4ed7974'}).json().get(
-                'ongoing', 0) else "https://cdn.twist.moe%s"
+    source_base = TWISTMOE_CDN.format('air-' if ongoing else '')
 
-    r = session.get(
-        "%s/sources" %
-        api_url.format(
-            anime_name=anime_name),
-        headers={
-            'x-access-token': '0df14814b9e590a1f26d3071a4ed7974'})
+    episodes_page = api(session, '/sources', content_slug)
 
-    if r.status_code != 200:
-        return []
+    if episodes_page.status_code >= 400:
+        return
 
-    return [
-        {
-            'episode_number': anime_episode_info.get(
-                'number', 0), 'stream_url': (
-                base_url %
-                decipher(
-                    anime_episode_info.get(
-                        'source', '')))} for anime_episode_info in r.json()]
+    for episode in api(session, '/sources', content_slug).json():
+        yield episode.get('number', 0), source_base + decipher(episode.get('source'))        

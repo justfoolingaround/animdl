@@ -1,9 +1,10 @@
 from functools import partial
 
-from .stream_url import *
+import yarl
 
 from ....config import TWIST
-from ...helper import construct_site_based_regex
+from ...helper import construct_site_based_regex, parse_from_content
+from .stream_url import *
 
 REGEX = construct_site_based_regex(
     TWIST, extra_regex=r'/a/([^?&/]+)')
@@ -11,8 +12,10 @@ REGEX = construct_site_based_regex(
 
 def fetcher(session, url, check, match):
     anime_name = match.group(1)
-    for index, data in enumerate(
-            get_twistmoe_anime_uri(
-            session, anime_name), 1):
-        if check(index):
-            yield partial(lambda u: ([{'stream_url': u, 'headers': {'referer': 'https://twist.moe/'}}]), data.get('stream_url')), index
+
+
+
+
+    for episode, stream in sorted(iter_episodes(session, anime_name), key=lambda k: k[0]):
+        if check(episode):
+            yield partial(lambda s: [parse_from_content(yarl.URL(s), name_processor=lambda u: u.name, stream_url_processor=lambda u: u.human_repr(), overrides={'referer': 'https://twist.moe/'}, episode_parsed=True)], stream), episode

@@ -1,28 +1,23 @@
 from collections import defaultdict
 from functools import partial
-from urllib.parse import unquote
 
 import lxml.html as htmlparser
+import yarl
 
 from ....config import ANIMEOUT
-from ...helper import construct_site_based_regex
-from .inner.indexer import index_by_url
+from ...helper import construct_site_based_regex, parse_from_content, group_episodes
 
 REGEX = construct_site_based_regex(ANIMEOUT, extra_regex=r'/([^?&/]+)')
 
-
-def group_episodes(contents):
-    grouped = defaultdict(list)
-    for r in contents:
-        grouped[r.get('episode') or 0].append(r)
-    return grouped
-
+def animeout_stream_url(url):
+    return 'https://public.animeout.xyz/' + url.with_scheme('').human_repr().lstrip('/')
 
 def fetcher(session, url, check, match):
     animeout_page = session.get(url)
     parsed = htmlparser.fromstring(animeout_page.text)
+    
+    downloadables = (yarl.URL(_.get('href')) for _ in parsed.cssselect('.article-content a[href$="mkv"]') if "Download" in _.text_content())
 
-    for episode, content in sorted(group_episodes([index_by_url(unquote(_.get(
-            'href'))) for _ in parsed.cssselect('.article-content a[href$="mkv"]') if "Download" in _.text_content()]).items()):
+    for episode, content in sorted((group_episodes(parse_from_content(content, name_processor=lambda c: c.name, stream_url_processor=animeout_stream_url) for content in downloadables).items()), key=lambda x: x[0]):
         if check(episode):
-            yield partial(lambda x: x, [{'quality': _.get('quality') or 'unknown', 'stream_url': 'https://public.animeout.xyz/' + _.get('url', '').removeprefix('https://').removeprefix('http://')} for _ in content]), episode
+            yield partial(list, content), episode
