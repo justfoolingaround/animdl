@@ -74,9 +74,7 @@ def wait_until_download(
         download_folder.as_posix(),
         lflag=5)
     while not (download_folder / filename).exists():
-        """IDM doesn't save the file until download completion."""
         try:
             time.sleep(.5)
         except KeyboardInterrupt:
-            return print(
-                "[IDM] Interrupted the wait for current download completion. Continuing with the next in queue.")
+            return print("[IDM] Interrupted the wait for current download completion. Continuing with the next in queue.")

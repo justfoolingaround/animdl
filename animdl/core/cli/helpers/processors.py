@@ -40,7 +40,7 @@ def process_query(
         auto=False,
         auto_index=1):
 
-    match, module, provider_name = get_provider(query, raise_on_failure=False)
+    _, module, provider_name = get_provider(query, raise_on_failure=False)
     
     if module:
         return {'anime_url': query}, provider_name

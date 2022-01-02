@@ -23,7 +23,7 @@ HLS_STREAM_EXTENSIONS = ['m3u8', 'm3u']
 
 
 def get_extension(url):
-    initial, _, extension = yarl.URL(url).name.rpartition('.')
+    _, _, extension = yarl.URL(url).name.rpartition('.')
     return extension
 
 

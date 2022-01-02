@@ -1,4 +1,3 @@
-import functools
 import logging
 import os
 import pathlib
@@ -176,7 +175,7 @@ def subautomatic(f):
                 handle_download(session, subtitle, headers=headers, content_dir=content_dir, outfile_name="{}_SUB_{}".format(outfile_name, count))
             return callback
 
-        extension, content_size, ranges = process_url(session, url, headers)
+        extension, _, _ = process_url(session, url, headers)
         resolved_path = (content_dir / "{}.{}".format(outfile_name, extension)).resolve()
         subout_path = (content_dir / "{} [CC].{}".format(outfile_name, extension)).resolve()
 

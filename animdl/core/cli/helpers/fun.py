@@ -7,6 +7,7 @@ Credits for the functions:
 
 import logging
 import os
+from contextlib import suppress
 from random import choice
 
 import regex
@@ -14,8 +15,13 @@ import yarl
 
 from ...__version__ import __core__
 from ..http_client import client
-from .constants import *
+from .constants import LABELS, LANGUAGE
 
+
+terminal_columns = 0 
+
+with suppress():
+    terminal_columns = os.get_terminal_size(terminal_columns)
 
 def line_chop(string: str, max_length, separators=[' ', '\n']):
     if not string:
@@ -34,7 +40,7 @@ def line_chop(string: str, max_length, separators=[' ', '\n']):
     yield from line_chop(string[sep_index + len(sep):], max_length, separators=separators)
 
 
-def terminal_center(string: str, *, columns=os.get_terminal_size().columns):
+def terminal_center(string: str, *, columns=terminal_columns):
 
     if not columns:
         return string
@@ -91,7 +97,7 @@ def stream_judiciary(url):
 
     try:
         url = yarl.URL(url)
-    except Exception as e:
+    except Exception:
         return "Unknown [URL Parsing error.]"
 
     return "{!r} from {}".format(url.name or "Unknown", LABELS.get(url.host, url.host))
