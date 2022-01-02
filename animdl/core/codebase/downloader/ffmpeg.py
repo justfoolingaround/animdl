@@ -30,7 +30,7 @@ def parse_ffmpeg_duration(dt: str) -> float:
 
 def iter_audio(stderr):
     """
-    Goes over the audio part of the ffmpeg output and gets the mapping index and 
+    Goes over the audio part of the ffmpeg output and gets the mapping index and
     the frequency.
 
     Returns
@@ -152,7 +152,7 @@ def ffmpeg_download(url: str, headers: dict, outfile_name: str, content_dir, pre
 
     Initally, it fetches content information for the stream using `analyze_stream`.
 
-    Then after, it selects the quality preferred by the user and maps it to the best 
+    Then after, it selects the quality preferred by the user and maps it to the best
     audio. The stream is then passed to tqdm if the logging level is less than INFO.
     If the logging level is greater than INFO, it simply runs the command and waits.
 
