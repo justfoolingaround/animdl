@@ -1,5 +1,6 @@
 import regex
 
+
 def bypass_ddos_guard(session, base_uri):
     js_bypass_uri = regex.search(
         r"'(.*?)'",

@@ -8,6 +8,7 @@ TWISTMOE_SECRET = b'267041df55ca2b36f2e322d05ee2c9cf'
 TWISTMOE_CDN = "https://{}cdn.twist.moe"
 TWISTMOE_API = "https://api.twist.moe/api/anime/"
 
+
 def unpad_content(content):
     return content[:-(content[-1] if isinstance(content[-1],
                       int) else ord(content[-1]))]
@@ -37,10 +38,11 @@ def decipher(encoded_url: str):
 def api(session, endpoint, content_slug):
     return session.get(TWISTMOE_API + content_slug + endpoint, headers={'x-access-token': '0df14814b9e590a1f26d3071a4ed7974'})
 
+
 def iter_episodes(
         session,
         content_slug):
-    
+
     ongoing = api(session, "/", content_slug).json().get('ongoing')
 
     source_base = TWISTMOE_CDN.format('air-' if ongoing else '')
@@ -51,4 +53,4 @@ def iter_episodes(
         return
 
     for episode in api(session, '/sources', content_slug).json():
-        yield episode.get('number', 0), source_base + decipher(episode.get('source'))        
+        yield episode.get('number', 0), source_base + decipher(episode.get('source'))

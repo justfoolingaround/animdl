@@ -27,19 +27,20 @@ DDL_POSTID = regex.compile(r'"postId":"(\d+)"')
 def graceful_ajax(session, data):
     return session.post(ANIMEKAIZOKU + "wp-admin/admin-ajax.php", headers={'x-requested-with': 'XMLHttpRequest', 'referer': ANIMEKAIZOKU}, data=data)
 
+
 def walk(session, post_id, div_id, tab_id, num, folder):
-    
+
     loaded_page = graceful_ajax(
-            session, 
-            {
-                'action': 'DDL',
-                'post_id': post_id,
-                'div_id': div_id,
-                'tab_id': tab_id,
-                'num': num,
-                'folder': folder
-            },
-        ).text
+        session,
+        {
+            'action': 'DDL',
+            'post_id': post_id,
+            'div_id': div_id,
+            'tab_id': tab_id,
+            'num': num,
+            'folder': folder
+        },
+    ).text
 
     for match in ANIMEKAIZOKU_DDL.finditer(loaded_page):
         yield from walk(session, post_id, *match.groups())
