@@ -244,6 +244,6 @@ def handle_download(session, url, headers, content_dir, outfile_name, idm=False,
         return hls_download(session, url, content_dir, outfile_name, headers or {}, **opts)
 
     if idm:
-        return idm_download(url, headers or {}, content_dir, outfile_name, extension, **opts)
+        return idm_download(url, headers or {}, content_dir.resolve(), outfile_name, extension, **opts)
 
     return standard_download(session, url, content_dir, outfile_name, extension, content_size, headers or {}, ranges, **opts)
