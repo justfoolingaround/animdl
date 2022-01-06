@@ -65,6 +65,10 @@ DEFAULT_CONFIG = {
             'executable': 'iina-cli',
             'opts': [],
         },
+        'celluloid': {
+            'executable': 'celluloid',
+            'opts': [],
+        },
     },
     'qbittorrent': {
         'endpoint_url': "http://127.0.0.1:8080",

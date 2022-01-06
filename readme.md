@@ -162,6 +162,9 @@ players:
   iina:
     executable: "iina-cli"
     opts: []
+  celluloid:
+    executable: "celluloid"
+    opts: []
 ```
 
 ### Using ffmpeg

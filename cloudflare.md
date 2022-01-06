@@ -73,4 +73,4 @@ As of right now, the following providers may not be able to stream content witho
 - AnimeOut
 
 > Note: `player-opts` set to
-`--http-header-fields=cookie=cf_clearance={cf_clearance} user-agent={user-agent}` will work for `mpv` / `iina` in case of AnimeOut.
+`--http-header-fields=cookie=cf_clearance={cf_clearance} user-agent={user-agent}` will work for ( `mpv` / `celluloid` ) / `iina` in case of AnimeOut.

@@ -51,6 +51,8 @@ def quality_prompt(log_level, logger, stream_list):
               'vlc', flag_value=True, help="Force vlc for streaming.")
 @click.option('--iina', is_flag=True, default=DEFAULT_PLAYER ==
               'iina', flag_value=True, help="Force iina for streaming.")
+@click.option('--celluloid', is_flag=True, default=DEFAULT_PLAYER ==
+              'celluloid', flag_value=True, help="Force celluloid for streaming.")
 @click.option('--auto', is_flag=True, default=False,
               help="Select the first given index without asking for prompts.")
 @click.option('-i', '--index', required=False, default=0,
@@ -71,6 +73,7 @@ def animdl_stream(
     mpv,
     vlc,
     iina,
+    celluloid,
     auto,
     index,
     log_level,
@@ -84,7 +87,7 @@ def animdl_stream(
     session = http_client.client
     logger = logging.getLogger('streamer')
     streamer = helpers.handle_streamer(click.parser.split_arg_string(
-        player_opts or '') or [], vlc=vlc, mpv=mpv, iina=iina)
+        player_opts or '') or [], vlc=vlc, mpv=mpv, iina=iina, celluloid=celluloid)
 
     if streamer is False:
         logger.critical(

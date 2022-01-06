@@ -48,7 +48,7 @@ def start_streaming_celluloid(
         *,
         headers=None,
         **kwargs):
-    args = [executable, stream_url, '--mpv-force-window=immediate'] + (opts or [])
+    args = [executable, stream_url, ] + (opts or [])
 
     if headers:
         args.append(
@@ -63,9 +63,9 @@ def start_streaming_celluloid(
     subtitles = kwargs.pop('subtitles', []) or []
 
     if content_title:
-        args.append('--title=%s' % content_title)
+        args.append('--mpv-title=%s' % content_title)
 
-    args.extend('--sub-file={}'.format(sub) for sub in subtitles)
+    args.extend('--mpv-sub-file={}'.format(sub) for sub in subtitles)
 
     return subprocess.Popen(args)
 
@@ -126,6 +126,7 @@ PLAYER_MAPPING = {
     'mpv': start_streaming_mpv,
     'iina': start_streaming_iina,
     'vlc': start_streaming_vlc,
+    'celluloid': start_streaming_celluloid,
 }
 
 
