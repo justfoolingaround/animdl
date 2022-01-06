@@ -9,7 +9,7 @@ headers = httpx.Headers(
         b"Accept-Encoding": b"gzip, deflate",
         b"Connection": b"keep-alive",
         b"Referer": "https://google.com/",
-        b"User-Agent": b"animdl/1.4.20"
+        b"User-Agent": b"animdl/1.4.20",
     }
 )
 
@@ -19,6 +19,7 @@ def get_safeoverride(f):
         with suppress():
             return f(*args, **kwargs)
         return
+
     return inner
 
 

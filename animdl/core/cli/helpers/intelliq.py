@@ -7,10 +7,11 @@ import logging
 import regex
 
 PORTION_PARSER = regex.compile(r'(.+?)=(r?)("|\')((?:\\\3|.)*?)\3')
-SEGMENT_PARSER = regex.compile('(best|worst|\d+)?(.*)')
+SEGMENT_PARSER = regex.compile("(best|worst|\d+)?(.*)")
 
 
-def NO_PROCESS(stream): return stream
+def NO_PROCESS(stream):
+    return stream
 
 
 def get_pair(target, pairs):
@@ -47,16 +48,24 @@ def portion_check(portions):
             continue
 
         if isinstance(portion, regex.Pattern):
-            yield lambda stream, k=key, p=portion: bool(p.search(str(stream.get(k, ""))))
+            yield lambda stream, k=key, p=portion: bool(
+                p.search(str(stream.get(k, "")))
+            )
             continue
 
         yield lambda stream, k=key, p=portion: stream.get(k, "") == p
 
 
-def parenthesized_portions(string, escape='\\', quoters=["'", '"'], parenthesis=[('[', ']'), ('(', ')'), ('{', '}')]):
+def parenthesized_portions(
+    string,
+    escape="\\",
+    quoters=["'", '"'],
+    parenthesis=[("[", "]"), ("(", ")"), ("{", "}")],
+):
 
-    initiator, endpoint = min(parenthesis, key=lambda x: (
-        string.find(x[0]) + 1) or float('inf'))
+    initiator, endpoint = min(
+        parenthesis, key=lambda x: (string.find(x[0]) + 1) or float("inf")
+    )
 
     escaping = False
     current_context = ""
@@ -68,7 +77,7 @@ def parenthesized_portions(string, escape='\\', quoters=["'", '"'], parenthesis=
     if pos == -1:
         return
 
-    for current_pos, content in enumerate(string[pos + 1:], pos + 1):
+    for current_pos, content in enumerate(string[pos + 1 :], pos + 1):
 
         if not escaping:
             if content in quoters:
@@ -77,14 +86,25 @@ def parenthesized_portions(string, escape='\\', quoters=["'", '"'], parenthesis=
             if content == endpoint and not any(multiquote_context.values()):
 
                 yield parse_parenthesized_portions(current_context.strip())
-                yield from parenthesized_portions(string[current_pos:], escape=escape, quoters=quoters, parenthesis=parenthesis)
+                yield from parenthesized_portions(
+                    string[current_pos:],
+                    escape=escape,
+                    quoters=quoters,
+                    parenthesis=parenthesis,
+                )
                 return
 
         current_context += content
         escaping = content in escape
 
 
-def split_portion(string, splitters=['/'], escape='\\', quoters=["'", '"'], parenthesis=[('[', ']'), ('(', ')'), ('{', '}')]):
+def split_portion(
+    string,
+    splitters=["/"],
+    escape="\\",
+    quoters=["'", '"'],
+    parenthesis=[("[", "]"), ("(", ")"), ("{", "}")],
+):
     """
     Writing a regex is possible, I just happen to not take pleasure from such things.
     """
@@ -112,7 +132,11 @@ def split_portion(string, splitters=['/'], escape='\\', quoters=["'", '"'], pare
                     if not is_initiator:
                         parenthesis_context[pair] = False
 
-            if content in splitters and not any(multiquote_context.values()) and not any(parenthesis_context.values()):
+            if (
+                content in splitters
+                and not any(multiquote_context.values())
+                and not any(parenthesis_context.values())
+            ):
                 yield current_context.strip()
                 yield_this_loop = True
 
@@ -138,7 +162,7 @@ def get_int(key):
     if isinstance(key, str) and key.isdigit():
         return int(key)
 
-    digits = regex.search(key, r'[0-9]+')
+    digits = regex.search(key, r"[0-9]+")
 
     if digits:
         return int(digits.group(0))
@@ -147,23 +171,35 @@ def get_int(key):
 
 
 def parse_quality_only(quality):
-    if quality == 'best':
-        return lambda streams: [max(streams, key=lambda stream: get_int(stream.get('quality', 0)))]
+    if quality == "best":
+        return lambda streams: [
+            max(streams, key=lambda stream: get_int(stream.get("quality", 0)))
+        ]
 
-    if quality == 'worst':
-        return lambda streams: [min(streams, key=lambda stream: get_int(stream.get('quality', 0)))]
+    if quality == "worst":
+        return lambda streams: [
+            min(streams, key=lambda stream: get_int(stream.get("quality", 0)))
+        ]
 
     if quality and quality.isdigit():
         return NO_PROCESS
 
-    return lambda streams: list(stream for stream in streams if get_int(stream.get('quality', 0)) >= int(quality or 0))
+    return lambda streams: list(
+        stream
+        for stream in streams
+        if get_int(stream.get("quality", 0)) >= int(quality or 0)
+    )
 
 
-def finalise_check(quality_check, parsed_parenthesized_portions, fallback=parse_quality_only('best')):
-
+def finalise_check(
+    quality_check, parsed_parenthesized_portions, fallback=parse_quality_only("best")
+):
     def internal(streams):
-        streams = list(stream for stream in streams if all(_(stream)
-                       for _ in portion_check(parsed_parenthesized_portions)))
+        streams = list(
+            stream
+            for stream in streams
+            if all(_(stream) for _ in portion_check(parsed_parenthesized_portions))
+        )
 
         if not streams:
             return []
@@ -179,12 +215,15 @@ def parse_quality_string(quality_string: str):
 
     for segment in split_portion(quality_string):
         match = SEGMENT_PARSER.search(segment)
-        yield segment, finalise_check(parse_quality_only(match.group(1)), list(parenthesized_portions(match.group(2))))
+        yield segment, finalise_check(
+            parse_quality_only(match.group(1)),
+            list(parenthesized_portions(match.group(2))),
+        )
 
 
 def filter_quality(streams, quality_string):
 
-    logger = logging.getLogger('utils/intelliq')
+    logger = logging.getLogger("utils/intelliq")
 
     logger.debug("Parsing {!r} in {!r}".format(quality_string, streams))
 
@@ -192,12 +231,10 @@ def filter_quality(streams, quality_string):
         filtered = check(streams)
 
         if filtered:
-            logger.info("{} streams fulfill {!r}.".format(
-                len(filtered), segment))
+            logger.info("{} streams fulfill {!r}.".format(len(filtered), segment))
             return filtered
 
         logger.warning("No streams fulfill {!r}.".format(segment))
 
-    logger.warning(
-        "Quality checks have failed miserably. Returning everything back.")
+    logger.warning("Quality checks have failed miserably. Returning everything back.")
     return streams

@@ -20,7 +20,7 @@ def is_supported(session, endpoint):
 
 
 def authenticate(session, endpoint, login_data):
-    return session.post(endpoint + "/api/v2/auth/login", data=login_data).text == 'Ok.'
+    return session.post(endpoint + "/api/v2/auth/login", data=login_data).text == "Ok."
 
 
 def wrap_with_tqdm(session, btih, endpoint, torrent_name, log_level):
@@ -31,21 +31,30 @@ def wrap_with_tqdm(session, btih, endpoint, torrent_name, log_level):
     uri = endpoint + "/api/v2/torrents/properties?hash={}".format(btih)
     torrent = session.get(uri).json()
 
-    progress_bar = tqdm(disable=log_level > 20, total=torrent.get('total_size', 0), unit='B', unit_divisor=1024,
-                        unit_scale=True, desc='qBittorrent / {}'.format(torrent_name), initial=torrent.get('total_downloaded', 0))
-    current = torrent.get('total_downloaded', 0)
+    progress_bar = tqdm(
+        disable=log_level > 20,
+        total=torrent.get("total_size", 0),
+        unit="B",
+        unit_divisor=1024,
+        unit_scale=True,
+        desc="qBittorrent / {}".format(torrent_name),
+        initial=torrent.get("total_downloaded", 0),
+    )
+    current = torrent.get("total_downloaded", 0)
 
-    while torrent.get('eta') > 0:
+    while torrent.get("eta") > 0:
         torrent = session.get(uri).json()
-        progress_bar.update(torrent.get('total_downloaded', 0) - current)
-        current = torrent.get('total_downloaded')
+        progress_bar.update(torrent.get("total_downloaded", 0) - current)
+        current = torrent.get("total_downloaded")
 
-        progress_bar.total = progress_bar.total or torrent.get('total_size', 0)
+        progress_bar.total = progress_bar.total or torrent.get("total_size", 0)
 
         time.sleep(1)
 
 
-def download_torrent(_, magnet_uri, content_dir, torrent_name, endpoint, login_data, *, log_level=20):
+def download_torrent(
+    _, magnet_uri, content_dir, torrent_name, endpoint, login_data, *, log_level=20
+):
     """
     Enqueues the torrent to the qBittorrent client. If already there, doesn't but shows the status of the torrent.
     """
@@ -63,14 +72,20 @@ def download_torrent(_, magnet_uri, content_dir, torrent_name, endpoint, login_d
     btih = magnet_match.group(1)
 
     existent = session.post(
-        endpoint + "/api/v2/torrents/properties", params={'hash': btih})
+        endpoint + "/api/v2/torrents/properties", params={"hash": btih}
+    )
 
     if existent.status_code in [404, 400]:
-        status = session.post(endpoint + "/api/v2/torrents/add", data={
-                              'urls': magnet_uri, 'savepath': content_dir.resolve().as_posix()}).text
+        status = session.post(
+            endpoint + "/api/v2/torrents/add",
+            data={"urls": magnet_uri, "savepath": content_dir.resolve().as_posix()},
+        ).text
 
-        if status == 'Fails.':
-            raise Exception("Could not add to the client: ({!r}, {!r})".format(
-                magnet_uri, content_dir))
+        if status == "Fails.":
+            raise Exception(
+                "Could not add to the client: ({!r}, {!r})".format(
+                    magnet_uri, content_dir
+                )
+            )
 
     return wrap_with_tqdm(session, btih, endpoint, torrent_name, log_level)

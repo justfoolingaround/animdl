@@ -7,18 +7,18 @@ import lxml.html as htmlparser
 import regex
 import time
 
-animixplay_logger = logging.getLogger('provider:animixplay')
+animixplay_logger = logging.getLogger("provider:animixplay")
 
 ID_MATCHER = regex.compile(r"\?id=([^&]+)")
 EMBED_URL_BASE = "https://animixplay.to/api/live"
-EMBED_M3U8_MATCHER = regex.compile(r'player\.html[?#](.+?)#')
+EMBED_M3U8_MATCHER = regex.compile(r"player\.html[?#](.+?)#")
 EMBED_B64_MATCHER = regex.compile(r"#(aHR0[^#]+)")
 EMBED_VIDEO_MATCHER = regex.compile(r'iframesrc="(.+?)"')
 
 URL_ALIASES = {
-    'bestanimescdn': 'omega.kawaiifucdn.xyz/anime3',
-    'anicdn.stream': 'gogocdn.club',
-    'ssload.info': 'gogocdn.club',
+    "bestanimescdn": "omega.kawaiifucdn.xyz/anime3",
+    "anicdn.stream": "gogocdn.club",
+    "ssload.info": "gogocdn.club",
 }
 
 
@@ -26,21 +26,24 @@ def url_update(url):
     for key, item in URL_ALIASES.items():
         if key in url:
             animixplay_logger.debug(
-                "Replacing {!r} to {!r} in {!r}.".format(key, item, url))
+                "Replacing {!r} to {!r} in {!r}.".format(key, item, url)
+            )
             url = url.replace(key, item)
     return url
 
 
 def extract_from_url(embed_url):
-    on_url = EMBED_M3U8_MATCHER.search(
-        embed_url) or EMBED_B64_MATCHER.search(embed_url)
+    on_url = EMBED_M3U8_MATCHER.search(embed_url) or EMBED_B64_MATCHER.search(embed_url)
 
     if not on_url:
         animixplay_logger.debug(
-            "Failed to find stream on {!r}, will fallback to API based m3u8.".format(embed_url))
+            "Failed to find stream on {!r}, will fallback to API based m3u8.".format(
+                embed_url
+            )
+        )
         return []
 
-    return [{'stream_url': url_update(b64decode(on_url.group(1)).decode())}]
+    return [{"stream_url": url_update(b64decode(on_url.group(1)).decode())}]
 
 
 def extract_from_embed(session, embed_url):
@@ -57,7 +60,8 @@ def extract_from_embed(session, embed_url):
 
     if on_site:
         animixplay_logger.debug(
-            "Regex matched a video on the site: {!r}, extracting.".format(on_site))
+            "Regex matched a video on the site: {!r}, extracting.".format(on_site)
+        )
         return extract_from_url(on_site.group(1))
 
     return extract_from_url(str(embed_page.url))
@@ -65,22 +69,41 @@ def extract_from_embed(session, embed_url):
 
 def from_content_id(session, content_id, *, endpoint="https://api.gogocdn.club/"):
     animixplay_logger.debug("Using {!r} to for m3u8.".format(endpoint))
-    return session.post(endpoint + "v/{}".format(content_id), headers={'x-requested-with': 'XMLHttpRequest'}).json().get('m3u8')
+    return (
+        session.post(
+            endpoint + "v/{}".format(content_id),
+            headers={"x-requested-with": "XMLHttpRequest"},
+        )
+        .json()
+        .get("m3u8")
+    )
 
 
 def get_stream_url(session, data_url):
     content_id = ID_MATCHER.search(data_url)
 
     if content_id:
-        return extract_from_embed(session, EMBED_URL_BASE + b64encode("{}LTXs3GrU8we9O{}".format(content_id.group(1), b64encode(content_id.group(1).encode()).decode()).encode()).decode()) or [{'stream_url': url_update(from_content_id(session, content_id.group(1)))}]
+        return extract_from_embed(
+            session,
+            EMBED_URL_BASE
+            + b64encode(
+                "{}LTXs3GrU8we9O{}".format(
+                    content_id.group(1),
+                    b64encode(content_id.group(1).encode()).decode(),
+                ).encode()
+            ).decode(),
+        ) or [{"stream_url": url_update(from_content_id(session, content_id.group(1)))}]
 
     return extract_from_url(data_url)
 
 
 def fetcher(session, url, check, match):
-    data = json.loads(htmlparser.fromstring(session.get(
-        url).content).cssselect('#epslistplace')[0].text)
+    data = json.loads(
+        htmlparser.fromstring(session.get(url).content)
+        .cssselect("#epslistplace")[0]
+        .text
+    )
 
-    for value in range(data.get('eptotal')):
+    for value in range(data.get("eptotal")):
         if check(value + 1):
             yield partial(get_stream_url, session, data[str(value)]), value + 1
