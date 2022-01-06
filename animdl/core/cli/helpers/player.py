@@ -41,6 +41,34 @@ def start_streaming_mpv(
 
     return subprocess.Popen(args)
 
+def start_streaming_celluloid(
+        executable,
+        stream_url,
+        opts,
+        *,
+        headers=None,
+        **kwargs):
+    args = [executable, stream_url, '--mpv-force-window=immediate'] + (opts or [])
+
+    if headers:
+        args.append(
+            '--mpv-http-header-fields=%s' %
+            '\r\n'.join(
+                '{}:{}'.format(
+                    k,
+                    v) for k,
+                v in headers.items()))
+
+    content_title = kwargs.pop('content_title', '')
+    subtitles = kwargs.pop('subtitles', []) or []
+
+    if content_title:
+        args.append('--title=%s' % content_title)
+
+    args.extend('--sub-file={}'.format(sub) for sub in subtitles)
+
+    return subprocess.Popen(args)
+
 
 def start_streaming_iina(
         executable,
