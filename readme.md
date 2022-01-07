@@ -104,7 +104,7 @@ Streaming **One Piece**'s episode 1 on [**AnimeOut**](https://animepahe.com/) di
 
 **Downloading** and **grabbing** is the same as the examples, except the `download` and the `grab` command should be used.
 
-**Note:** Downloading will take place in the working directory of this project!
+**Note:** Downloads will be saved to `C:\Users\<user>\<title>`.
 
 ### Range / `-r` option
 
