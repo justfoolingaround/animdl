@@ -122,24 +122,23 @@ will select episodes from 3 to 10 (inclusive), 12, 20 and from 40 to 50 (inclusi
 
 ### Supported Sites
 
-<!--Working: https://i.imgur.com/tG9nb8s.png, !Working: https://i.imgur.com/bTLO7LJ.png !-->
+| Website                                      | Searcher Prefix      | Available Qualities | Status / Elapsed Time | Content Extension |
+| :------------------------------------------: | :-----------------: | :-----------------:  | :----: | :-----------------: |
+| [9Anime](https://9anime.to/)                 | `9anime`             | 720p, 1080p | <img height="25" src="https://github.com/justfoolingaround/animdl-provider-benchmarks/raw/master/api/providers/nineanime.png">  | MP4 / TS  |
+| [AllAnime](https://allanime.site/)           | `allanime`            | 720p, 1080p | <img height="25" src="https://github.com/justfoolingaround/animdl-provider-benchmarks/raw/master/api/providers/allanime.png">  | MP4 / TS          |
+| [AnimePahe](https://www.animepahe.com/)      | `animepahe`          | 720p, 1080p         | <img height="25" src="https://github.com/justfoolingaround/animdl-provider-benchmarks/raw/master/api/providers/animepahe.png">  | MP4               |
+| [AnimeOut](https://www.animeout.xyz/)        | `animeout`           | 720p, 1080p         | <img height="25" src="https://github.com/justfoolingaround/animdl-provider-benchmarks/raw/master/api/providers/animeout.png">  | MKV               |
+| [Animixplay](https://www.animixplay.to/)     | `animixplay`         | 480p, 720p, 1080p   | <img height="25" src="https://github.com/justfoolingaround/animdl-provider-benchmarks/raw/master/api/providers/animixplay.png">  | MP4 / TS          |
+| [Animtime](https://animtime.com/)            | No searcher included | 720p, 1080p         |  <img height="25" src="https://github.com/justfoolingaround/animdl-provider-benchmarks/raw/master/api/providers/animtime.png">   | MP4               |
+| [Crunchyroll](https://www.crunchyroll.com/)  | `crunchyroll`        | All                 |  <img height="25" src="https://github.com/justfoolingaround/animdl-provider-benchmarks/raw/master/api/providers/crunchyroll.png">   | TS                |
+| [Kawaiifu](https://www.kawaiifu.com/) (NSFW) | `kawaiifu`           | 720p, 1080p         |  <img height="25" src="https://github.com/justfoolingaround/animdl-provider-benchmarks/raw/master/api/providers/kawaiifu.png">   | MP4               |
+| [GogoAnime](https://www.gogoanime.pe/)       | `gogoanime`          | 480p, 720p, 1080p   | <img height="25" src="https://github.com/justfoolingaround/animdl-provider-benchmarks/raw/master/api/providers/gogoanime.png">  | MP4 / TS          |
+| [Nyaa](https://nyaa.si/)       | `nyaa`      | All |  `-` | Torrent        |
+| [Haho](https://www.haho.moe/) (NSFW)         | `haho`           | 720p, 1080p         | <img height="25" src="https://github.com/justfoolingaround/animdl-provider-benchmarks/raw/master/api/providers/haho.png">  | MP4               |
+| [Tenshi](https://www.tenshi.moe/)            | `tenshi`             | 720p, 1080p         | <img height="25" src="https://github.com/justfoolingaround/animdl-provider-benchmarks/raw/master/api/providers/tenshi.png">  | MP4               |
+| [Twist](https://www.twist.moe/)              | `twist`              | 720p, 1080p         | <img height="25" src="https://github.com/justfoolingaround/animdl-provider-benchmarks/raw/master/api/providers/twist.png">  | MP4               |
+| [Zoro](https://www.zoro.to/)                 | `zoro`   | 720p, 1080p         | <img height="25" src="https://github.com/justfoolingaround/animdl-provider-benchmarks/raw/master/api/providers/zoro.png">  | MP4 |
 
-| Website                                      | Searcher Prefix      | Available Qualities | Status                                                                                     | Content Fetch Speed <br> (Per Episode) | Content Extension |
-| -------------------------------------------- | -------------------- | ------------------- | ------------------------------------------------------------------------------------------ | -------------------------------------- | ----------------- |
-| [9Anime](https://9anime.to/)                 | `9anime`             | 720p, 1080p         | <p align="center"><code><img height="20" src="https://i.imgur.com/bTLO7LJ.png"></code></p> | <p align="center">3.27s</p>            | MP4 / TS          |
-| [AllAnime](https://allanime.site/)           | `allanime`            | 720p, 1080p         | <p align="center"><code><img height="20" src="https://i.imgur.com/tG9nb8s.png"></code></p> | <p align="center">0s</p>               | MP4 / TS          |
-| [AnimePahe](https://www.animepahe.com/)      | `animepahe`          | 720p, 1080p         | <p align="center"><code><img height="20" src="https://i.imgur.com/tG9nb8s.png"></code></p> | <p align="center">4.15s</p>            | MP4               |
-| [AnimeOut](https://www.animeout.xyz/)        | `animeout`           | 720p, 1080p         | <p align="center"><code><img height="20" src="https://i.imgur.com/tG9nb8s.png"></code></p> | <p align="center">0s</p>               | MKV               |
-| [Animixplay](https://www.animixplay.to/)     | `animixplay`         | 480p, 720p, 1080p   | <p align="center"><code><img height="20" src="https://i.imgur.com/tG9nb8s.png"></code></p> | <p align="center">4.17s</p>            | MP4 / TS          |
-| [Animtime](https://animtime.com/)            | No searcher included | 720p, 1080p         | <p align="center"><code><img height="20" src="https://i.imgur.com/tG9nb8s.png"></code></p> | <p align="center">0s</p>               | MP4               |
-| [Crunchyroll](https://www.crunchyroll.com/)  | `crunchyroll`        | All                 | <p align="center"><code><img height="20" src="https://i.imgur.com/tG9nb8s.png"></code></p> | <p align="center">0s</p>               | TS                |
-| [Kawaiifu](https://www.kawaiifu.com/) (NSFW) | `kawaiifu`           | 720p, 1080p         | <p align="center"><code><img height="20" src="https://i.imgur.com/tG9nb8s.png"></code></p> | <p align="center">0s</p>               | MP4               |
-| [GogoAnime](https://www.gogoanime.pe/)       | `gogoanime`          | 480p, 720p, 1080p   | <p align="center"><code><img height="20" src="https://i.imgur.com/tG9nb8s.png"></code></p> | <p align="center">2.34s</p>            | MP4 / TS          |
-| [Nyaa](https://nyaa.si/)       | `nyaa`      | All   | <p align="center"><code><img height="20" src="https://i.imgur.com/tG9nb8s.png"></code></p> | <p align="center">0s</p>            | Torrent        |
-| [Haho](https://www.haho.moe/) (NSFW)         | `haho`           | 720p, 1080p         | <p align="center"><code><img height="20" src="https://i.imgur.com/tG9nb8s.png"></code></p> | <p align="center">0s</p>               | MP4               |
-| [Tenshi](https://www.tenshi.moe/)            | `tenshi`             | 720p, 1080p         | <p align="center"><code><img height="20" src="https://i.imgur.com/tG9nb8s.png"></code></p> | <p align="center">0s</p>               | MP4               |
-| [Twist](https://www.twist.moe/)              | `twist`              | 720p, 1080p         | <p align="center"><code><img height="20" src="https://i.imgur.com/tG9nb8s.png"></code></p> | <p align="center">0s</p>               | MP4               |
-| [Zoro](https://www.zoro.to/)                 | `zoro`   | 720p, 1080p         | <p align="center"><code><img height="20" src="https://i.imgur.com/tG9nb8s.png"></code></p> | <p align="center">0s</p>               | MP4 |
 
 ### More sites?
 
