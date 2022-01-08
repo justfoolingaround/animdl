@@ -122,8 +122,8 @@ will select episodes from 3 to 10 (inclusive), 12, 20 and from 40 to 50 (inclusi
 
 ### Supported Sites
 
-| Website                                      | Searcher Prefix      | Available Qualities | Status | Content Extension |
-| -------------------------------------------- | -------------------- | -------------------  | :----: | ----------------- |
+| Website                                      | Searcher Prefix      | Available Qualities | Status / Elapsed Time | Content Extension |
+| :------------------------------------------: | :-----------------: | :-----------------:  | :----: | :-----------------: |
 | [9Anime](https://9anime.to/)                 | `9anime`             | 720p, 1080p | <img height="25" src="https://github.com/justfoolingaround/animdl-provider-benchmarks/raw/master/api/providers/nineanime.png">  | MP4 / TS  |
 | [AllAnime](https://allanime.site/)           | `allanime`            | 720p, 1080p | <img height="25" src="https://github.com/justfoolingaround/animdl-provider-benchmarks/raw/master/api/providers/allanime.png">  | MP4 / TS          |
 | [AnimePahe](https://www.animepahe.com/)      | `animepahe`          | 720p, 1080p         | <img height="25" src="https://github.com/justfoolingaround/animdl-provider-benchmarks/raw/master/api/providers/animepahe.png">  | MP4               |

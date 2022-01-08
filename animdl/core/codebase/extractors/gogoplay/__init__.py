@@ -1,3 +1,37 @@
+"""
+Hello, stranger, if you're here to copy the code
+yes, you've reached the best and top of the efficiency
+chart gogoanime-scraper now. Feel free.
+
+A lot of braincells were used and lost throughout the 
+process and for this, if you're going to copy the code, 
+have some respect and credit the following developers below:
+
+Without these people, you would have to resort to poo-poo,
+inefficient, weird and unreliable alternatives.
+
+(I'm looking at you pystardust/ani-cli, love you guys though)
+
+- brahmkshatriya (https://github.com/brahmkshatriya)
+
+    Associated project: https://github.com/saikou-app/saikou
+
+- KR (https://github.com/justfoolingaround)
+
+    Associated project: https://github.com/justfoolingaround/animdl
+
+I recommend you to not mention anything of "decrypted" or 
+"fixed" in your code commits to avoid the site devs to change
+algorithms or even reCaptcha gate the encrypted endpoint.
+
+This is encryption, uncharted seas for most of the developer
+community and things are hard.
+
+Need some help or just want to talk: 
+    https://discord.gg/gaX2Snst2j
+
+"""
+
 import base64
 
 import lxml.html as htmlparser
