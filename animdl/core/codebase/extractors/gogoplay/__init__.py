@@ -34,7 +34,6 @@ Need some help or just want to talk:
 
 import base64
 
-import lxml.html as htmlparser
 import regex
 import yarl
 from Cryptodome.Cipher import AES
@@ -58,19 +57,16 @@ def extract(session, url, **opts):
     Extract content off of GogoAnime.
     """
     parsed_url = yarl.URL(url)
-
-    if not parsed_url.scheme:
-        parsed_url = parsed_url.with_scheme('https')
-
     next_host = "https://{}/".format(parsed_url.host)
 
-    streaming_page = htmlparser.fromstring(session.get(parsed_url.human_repr(), headers={'referer': next_host}).text)
-
-    site_iv = streaming_page.cssselect('script[data-name="ts"]')[0].get('data-value').encode()
-    encrypted_ajax = base64.b64encode(AES.new(GOGOANIME_SECRET, AES.MODE_CBC, iv=site_iv).encrypt(pad(parsed_url.query.get('id').replace('%3D', '=')).encode()))
+    encrypted_ajax = base64.b64encode(AES.new(GOGOANIME_SECRET, AES.MODE_CBC, iv=b'4206913378008135').encrypt(pad(parsed_url.query.get('id').replace('%3D', '=')).encode()))
 
     content = (session.get(
-        "{}encrypt-ajax.php?id={}&time=00{}00".format(next_host, encrypted_ajax.decode(), site_iv.decode()),
+        "{}encrypt-ajax.php".format(next_host),
+        params={
+            'id': encrypted_ajax.decode(),
+            'time': '69420691337800813569'
+        },
         headers={'x-requested-with': 'XMLHttpRequest'}
     ).json())
 
