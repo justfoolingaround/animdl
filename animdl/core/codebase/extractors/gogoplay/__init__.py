@@ -32,17 +32,11 @@ def extract(session, url, **opts):
 
     streaming_page = htmlparser.fromstring(session.get(parsed_url.human_repr(), headers={'referer': next_host}).text)
 
-    crypto_code = streaming_page.cssselect('meta[name="crypto"]')[0].get('content')
     site_iv = streaming_page.cssselect('script[data-name="ts"]')[0].get('data-value').encode()
-
-    content_id, _, next_args = AES.new(GOGOANIME_SECRET, AES.MODE_CBC, iv=site_iv).decrypt(
-        base64.b64decode(crypto_code)
-    ).decode('utf-8').rstrip('\x00\x01\x02\x03\x04\x05\x06\x07\x08\t\n\x0b\x0c\r\x0e\x0f').partition('&')
-
-    encrypted_ajax = base64.b64encode(AES.new(GOGOANIME_SECRET, AES.MODE_CBC, iv=site_iv).encrypt(pad(content_id.replace('%3D', '=')).encode()))
+    encrypted_ajax = base64.b64encode(AES.new(GOGOANIME_SECRET, AES.MODE_CBC, iv=site_iv).encrypt(pad(parsed_url.query.get('id').replace('%3D', '=')).encode()))
 
     content = (session.get(
-        "{}encrypt-ajax.php?id={}&{}&time=00{}00".format(next_host, encrypted_ajax.decode(), next_args, site_iv.decode()),
+        "{}encrypt-ajax.php?id={}&time=00{}00".format(next_host, encrypted_ajax.decode(), site_iv.decode()),
         headers={'x-requested-with': 'XMLHttpRequest'}
     ).json())
 
