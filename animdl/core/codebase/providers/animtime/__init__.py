@@ -1,7 +1,6 @@
-import regex
 from functools import partial
 
-import lxml.html as htmlparser
+import regex
 
 from ....config import ANIMTIME
 from ...helper import construct_site_based_regex
@@ -18,15 +17,9 @@ def get_content(url, js_content):
 
 
 def fetcher(session, url, check, match):
-    html_page = htmlparser.fromstring(session.get(url).text)
 
-    mainjs = session.get(
-        ANIMTIME + html_page.cssselect('script[src^="main"]')[0].get("src")
-    )
-    content = mainjs.text
-
-    content = content[content.index("tm=function(t)") :]
-
+    content = session.get(ANIMTIME + '/main.fe2f7537e4a9d7929fe6.js', headers={'range': 'bytes=386216-'}).text
+    
     anime = get_content(url, content)
     episodes = int(
         regex.search(
@@ -41,10 +34,4 @@ def fetcher(session, url, check, match):
     ).groups()
     for episode in range(1, episodes + 1):
         if check(episode):
-            yield partial(
-                lambda x: [{"stream_url": x, "referer": ANIMTIME}],
-                constructor + "{:03d}".format(episode) + end,
-            ), episode
-
-
-fetcher.fast_enqueue = True
+            yield partial(lambda x: [{'stream_url': x, 'headers': {'referer': ANIMTIME}}], constructor + "{:03d}".format(episode) + end), episode
