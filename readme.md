@@ -8,9 +8,7 @@
 
 <p align="center">
 <a href="https://discord.gg/gaX2Snst2j">
-<code>
-<img src="https://img.shields.io/discord/925000668824080474.svg?color=%237289DA&label=Support%20Server&logo=Discord&style=for-the-badge" height="30px">
-</code>
+<img src="https://invidget.switchblade.xyz/gaX2Snst2j">
 </a>
 </p>
 
