@@ -4,21 +4,20 @@ import pathlib
 
 from ..helper import append_protocol
 
-EXEMPT = [
-    '__init__.py',
-    '__pycache__'
-]
+EXEMPT = ["__init__.py", "__pycache__"]
 
-if '__path__' in globals():
+if "__path__" in globals():
     __this_path__ = pathlib.Path(__path__[0])
 else:
     __this_path__ = pathlib.Path()
 
 
 def iter_providers(*, exempt=EXEMPT):
-    for path in __this_path__.glob('*/'):
+    for path in __this_path__.glob("*/"):
         if path.name not in exempt:
-            yield importlib.import_module('.{.name}'.format(path), package=__name__), path.name
+            yield importlib.import_module(
+                ".{.name}".format(path), package=__name__
+            ), path.name
 
 
 def get_provider(url, *, raise_on_failure=True):

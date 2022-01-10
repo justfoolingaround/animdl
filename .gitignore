@@ -17,3 +17,6 @@ downloadsdev/
 
 # Cache
 http_cache.sqlite
+
+# Editor local configs
+.vscode/

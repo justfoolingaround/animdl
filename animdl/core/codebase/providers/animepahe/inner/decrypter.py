@@ -1,4 +1,3 @@
-
 CHARACTER_MAP = "0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ+/"
 
 
@@ -8,14 +7,14 @@ def get_string(content, s1, s2):
 
     acc = 0
     for n, i in enumerate(content[::-1]):
-        acc += int(i if i.isdigit() else 0) * s1**n
+        acc += int(i if i.isdigit() else 0) * s1 ** n
 
-    k = ''
+    k = ""
     while acc > 0:
         k = slice_2[int(acc % s2)] + k
         acc = (acc - (acc % s2)) / s2
 
-    return k or '0'
+    return k or "0"
 
 
 def decrypt(full_string, key, v1, v2):
@@ -24,7 +23,7 @@ def decrypt(full_string, key, v1, v2):
     i = 0
     while i < len(full_string):
         s = ""
-        while (full_string[i] != key[v2]):
+        while full_string[i] != key[v2]:
             s += full_string[i]
             i += 1
         j = 0

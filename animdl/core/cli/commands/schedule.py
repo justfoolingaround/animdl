@@ -112,25 +112,31 @@ def arrange_template(data):
     content = defaultdict(lambda: defaultdict(list))
 
     for airing in data[::-1]:
-        dtobj = datetime.fromtimestamp(airing.get('airingAt', 0))
+        dtobj = datetime.fromtimestamp(airing.get("airingAt", 0))
         d, t = dtobj.strftime(DATE_FORMAT), dtobj.strftime(TIME_FORMAT)
-        titles = airing.get('media', {}).get('title', {})
-        content[d][t].append({'anime': titles.get('english') or titles.get('romanji') or titles.get('native'), 'episode': airing.get(
-            'episode', 0), 'datetime_object': dtobj})
+        titles = airing.get("media", {}).get("title", {})
+        content[d][t].append(
+            {
+                "anime": titles.get("english")
+                or titles.get("romanji")
+                or titles.get("native"),
+                "episode": airing.get("episode", 0),
+                "datetime_object": dtobj,
+            }
+        )
 
     return content
 
 
-@click.command(name='schedule',
-               help="Know which animes are going over the air when.")
-@click.option('--log-file',
-              help='Set a log file to log everything to.',
-              required=False,)
-@click.option('-ll',
-              '--log-level',
-              help='Set the integer log level.',
-              type=int,
-              default=20)
+@click.command(name="schedule", help="Know which animes are going over the air when.")
+@click.option(
+    "--log-file",
+    help="Set a log file to log everything to.",
+    required=False,
+)
+@click.option(
+    "-ll", "--log-level", help="Set the integer log level.", type=int, default=20
+)
 @bannerify
 def animdl_schedule(log_level):
 
@@ -144,36 +150,37 @@ def animdl_schedule(log_level):
         schedule_data = session.post(
             ANICHART,
             json={
-                'query': gql,
-                'variables': {
-                    'weekStart': unix_time,
-                    'weekEnd': unix_time + 24 * 7 * 60 * 60,
-                    'page': page}})
+                "query": gql,
+                "variables": {
+                    "weekStart": unix_time,
+                    "weekEnd": unix_time + 24 * 7 * 60 * 60,
+                    "page": page,
+                },
+            },
+        )
         data = schedule_data.json()
         schedules.extend(
-            data.get(
-                'data',
-                {}).get(
-                'Page',
-                {}).get(
-                'airingSchedules',
-                []))
-        has_next_page = data.get(
-            'data',
-            {}).get(
-            'Page',
-            {}).get(
-            'pageInfo',
-            {}).get(
-            'hasNextPage',
-            False)
+            data.get("data", {}).get("Page", {}).get("airingSchedules", [])
+        )
+        has_next_page = (
+            data.get("data", {})
+            .get("Page", {})
+            .get("pageInfo", {})
+            .get("hasNextPage", False)
+        )
         page += 1
 
     for date, _content in arrange_template(schedules).items():
         print("On \x1b[33m{}\x1b[39m,".format(date))
         for time, __content in sorted(
-                _content.items(), key=lambda d: d[1][0].get('datetime_object'), reverse=True):
+            _content.items(), key=lambda d: d[1][0].get("datetime_object"), reverse=True
+        ):
             print(
                 "\t\x1b[95m{}\x1b[39m - {}".format(
-                    time, ', '.join(
-                        "{anime} [\x1b[94mE{episode}\x1b[39m]".format_map(___content) for ___content in __content)))
+                    time,
+                    ", ".join(
+                        "{anime} [\x1b[94mE{episode}\x1b[39m]".format_map(___content)
+                        for ___content in __content
+                    ),
+                )
+            )

@@ -4,7 +4,7 @@ import time
 DOODSTREAM = "https://dood.la/"
 
 PASS_MD5_RE = regex.compile(r"/(pass_md5/.+?)'")
-TOKEN_RE = regex.compile(r'\?token=([^&]+)')
+TOKEN_RE = regex.compile(r"\?token=([^&]+)")
 
 
 def extract(session, url):
@@ -23,7 +23,15 @@ def extract(session, url):
     if not has_token:
         return []
 
-    return [{"stream_url": "{}doodstream?token={}&expiry={}".format(
-        session.get(DOODSTREAM + has_md5.group(1),
-                    headers={'referer': DOODSTREAM}).text,
-        has_token.group(1), int(time.time() * 1000)), 'headers': {'referer': DOODSTREAM}}]
+    return [
+        {
+            "stream_url": "{}doodstream?token={}&expiry={}".format(
+                session.get(
+                    DOODSTREAM + has_md5.group(1), headers={"referer": DOODSTREAM}
+                ).text,
+                has_token.group(1),
+                int(time.time() * 1000),
+            ),
+            "headers": {"referer": DOODSTREAM},
+        }
+    ]

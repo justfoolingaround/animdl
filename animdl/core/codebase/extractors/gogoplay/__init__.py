@@ -42,6 +42,7 @@ GOGOANIME_SECRET = b"257465385929383"b"96764662879833288"
 
 def get_quality(url_text):
     match = regex.search(r'(\d+) P', url_text)
+
     if not match:
         return None
 
