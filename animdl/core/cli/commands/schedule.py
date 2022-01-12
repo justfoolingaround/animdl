@@ -138,7 +138,7 @@ def arrange_template(data):
     "-ll", "--log-level", help="Set the integer log level.", type=int, default=20
 )
 @bannerify
-def animdl_schedule(log_level):
+def animdl_schedule(**kwargs):
 
     has_next_page, page = True, 1
     schedules = []
