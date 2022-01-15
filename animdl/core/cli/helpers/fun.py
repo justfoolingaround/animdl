@@ -68,22 +68,7 @@ A highly efficient anime downloader and streamer\
 )
 
 
-update_banner = terminal_center(
-    """\
-Version mismatch with upstream [↑ {}, ↓ {}]
-
-Please consider updating to the latest version for ensuring bug fixes, code optimizations and new features. This can be done by using:
-
-pip install git+https://github.com/justfoolingaround/animdl.git
-
-Or,
-
-py -m pip install git+https://github.com/justfoolingaround/animdl.git
-
-(OCD? Yeah, can't fix that.)
-"""
-)
-
+update_banner = terminal_center("Update available: {}")
 
 def create_random_titles():
 
@@ -136,8 +121,8 @@ def bannerify(f):
                 latest, version = check_for_update()
                 if not latest:
                     print(
-                        "\x1b[31m{}\x1b[39m".format(
-                            update_banner.format(version, __core__)
+                        "\x1b[36m{}\x1b[39m".format(
+                            update_banner.format(version)
                         )
                     )
             logging.basicConfig(
