@@ -51,7 +51,7 @@ DEFAULT_CONFIG = {
         "zoro": "https://zoro.to/",
     },
     "quality_string": "best[subtitle]/best",
-    "default_player": "ffplay",
+    "default_player": "mpv",
     "players": {
         "mpv": {
             "executable": "mpv",
