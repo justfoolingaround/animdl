@@ -98,6 +98,13 @@ def quality_prompt(log_level, logger, stream_list):
     help="Force celluloid for streaming.",
 )
 @click.option(
+    "--ffplay",
+    is_flag=True,
+    default=DEFAULT_PLAYER == "ffplay",
+    flag_value=True,
+    help="Force ffplay for streaming.",
+)
+@click.option(
     "--auto",
     is_flag=True,
     default=False,
@@ -129,6 +136,7 @@ def animdl_stream(
     vlc,
     iina,
     celluloid,
+    ffplay,
     auto,
     index,
     log_level,
@@ -147,6 +155,7 @@ def animdl_stream(
         mpv=mpv,
         iina=iina,
         celluloid=celluloid,
+        ffplay=ffplay,
     )
 
     if streamer is False:

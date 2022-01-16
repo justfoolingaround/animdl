@@ -12,6 +12,21 @@ def supported_streamers():
         ):
             yield player, player_info
 
+def start_streaming_ffplay(executable, stream_url, opts, *, headers=None, **kwargs):
+    args = [executable, stream_url] + (opts or [])
+    
+    if headers:
+        args.append("-headers")
+        args.append("\r\n".join("{}:{}".format(k, v) for k, v in headers.items()))
+    
+    subtitles = kwargs.pop("subtitles", []) or []
+
+    if subtitles:
+        args.append(
+            "-vf \"subtitles='{}'\"".format(sub) for sub in subtitles
+        )
+    return subprocess.Popen(args)
+
 
 def start_streaming_mpv(executable, stream_url, opts, *, headers=None, **kwargs):
     args = [executable, stream_url, "--force-window=immediate"] + (opts or [])
@@ -94,6 +109,7 @@ PLAYER_MAPPING = {
     "iina": start_streaming_iina,
     "vlc": start_streaming_vlc,
     "celluloid": start_streaming_celluloid,
+    "ffplay": start_streaming_ffplay,
 }
 
 
