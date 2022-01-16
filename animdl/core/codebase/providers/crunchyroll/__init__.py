@@ -20,10 +20,10 @@ def get_subtitle(subtitles, lang="enUS"):
             yield sub.get("url")
 
 
-def get_stream_urls(episode_data):
+def get_stream_urls(session, episode_data):
     for episode_page, title in episode_data:
         json_content = json.loads(
-            CONTENT_METADATA.search(geobypass_response(episode_page).text).group(1)
+            CONTENT_METADATA.search(geobypass_response(session, episode_page).text).group(1)
         )
         metadata = json_content.get("metadata")
 
@@ -74,9 +74,7 @@ def fetcher(session, url, check, match):
     url = CRUNCHYROLL + slug
 
     for episode_number, episode_data in sorted(
-        group_content(slug, htmlparser.fromstring(geobypass_response(url).text)).items()
+        group_content(slug, htmlparser.fromstring(geobypass_response(session, url).text)).items()
     ):
         if check(episode_number):
-            yield partial(
-                (lambda e: [*get_stream_urls(e)]), episode_data
-            ), episode_number
+            yield partial(lambda e: list(get_stream_urls(session, e)), episode_data), episode_number
