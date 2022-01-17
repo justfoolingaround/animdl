@@ -2,6 +2,8 @@ import shutil
 import subprocess
 from pathlib import Path
 
+from importlib_metadata import functools
+
 from ...config import PLAYERS
 
 
@@ -13,23 +15,19 @@ def supported_streamers():
             yield player, player_info
 
 def start_streaming_ffplay(executable, stream_url, opts, *, headers=None, **kwargs):
+    """
+    ffplay does not support subtitles from a url.
+    """
     args = [executable, stream_url] + (opts or [])
     
     if headers:
-        args.extend(["-headers", "\r\n".join("{}:{}".format(k, v) for k, v in headers.items())])
-        # args.append("-headers")
-        # args.append("\r\n".join("{}:{}".format(k, v) for k, v in headers.items()))
+        args.extend(("-headers", "\r\n".join("{}:{}".format(k, v) for k, v in headers.items())))
     
-    subtitles = kwargs.pop("subtitles", []) or []
     content_title = kwargs.pop("content_title", "")
 
     if content_title:
         args.extend(["-metadata", "title={}".format(content_title)])
-
-    if subtitles:
-        args.append(
-            "-vf \"subtitles='{}'\"".format(subtitles) # Can only have one subtrack, selects first only
-        )
+        
     return subprocess.Popen(args)
 
 
