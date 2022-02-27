@@ -1,0 +1,11 @@
+anitopy
+click
+comtypes
+cssselect
+httpx==0.22.0
+lxml
+tqdm
+pycryptodomex
+regex==2021.10.8
+yarl
+pyyaml

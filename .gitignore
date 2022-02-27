@@ -1,0 +1,22 @@
+__pycache__/
+
+# Shader files
+*.glsl
+
+# Session files
+cli_session_animdl.json
+
+# Configs
+animdl-config.*
+
+# justfoolingaround's test anime downloads
+downloadsdev/
+
+# Tests
+*-test.*
+
+# Cache
+http_cache.sqlite
+
+# Editor local configs
+.vscode/

@@ -1,0 +1,28 @@
+name: Publish version changes to PyPI
+on:
+  push:
+    paths:
+      - "animdl/core/__version__.py"
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checking out repository content
+        uses: actions/checkout@v2
+
+      - name: Setting up Python 3.9
+        uses: actions/setup-python@v2
+        with:
+          python-version: '3.9'
+
+      - name: Build the file
+        run: |
+          pip install setuptools wheel
+          python setup.py sdist
+
+      - name: Publish a Python distribution to PyPI
+        uses: pypa/gh-action-pypi-publish@release/v1
+        with:
+          user: __token__
+          password: ${{ secrets.PYPI_API_TOKEN }}
