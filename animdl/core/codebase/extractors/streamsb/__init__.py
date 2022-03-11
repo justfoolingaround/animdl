@@ -15,7 +15,7 @@ def extract(session, url, **opts):
     sources = (
         session.get(
             content_url
-            + "sources37/{}".format(
+            + "sources41/{}".format(
                 PAYLOAD.format(binascii.hexlify(content_id.encode()).decode())
             ),
             headers={"watchsb": "streamsb"},
