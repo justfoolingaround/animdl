@@ -1,3 +1,4 @@
+import time
 from collections import defaultdict
 from datetime import datetime
 
@@ -6,7 +7,6 @@ import click
 from ...config import ANICHART, DATE_FORMAT, TIME_FORMAT
 from ..helpers import bannerify
 from ..http_client import client
-
 
 gql = """query (
         $weekStart: Int,
@@ -26,83 +26,12 @@ gql = """query (
                         episode
                         airingAt
                         media {
-
-id
-idMal
 title {
         romaji
         native
         english
 }
-startDate {
-        year
-        month
-        day
-}
-endDate {
-        year
-        month
-        day
-}
-status
-season
-format
-genres
-synonyms
-duration
-popularity
-episodes
-source(version: 2)
-countryOfOrigin
-hashtag
-averageScore
-siteUrl
-description
-bannerImage
-isAdult
-coverImage {
-        extraLarge
-        color
-}
-trailer {
-        id
-        site
-        thumbnail
-}
-externalLinks {
-        site
-        url
-}
-rankings {
-        rank
-        type
-        season
-        allTime
-}
-studios(isMain: true) {
-        nodes {
-                id
-                name
-                siteUrl
-        }
-}
-relations {
-        edges {
-                relationType(version: 2)
-                node {
-                        id
-                        title {
-                                romaji
-                                native
-                                english
-                        }
-                        siteUrl
-                }
-        }
-}
-
-
-                        }
+                   }
                 }
         }
 }"""
@@ -140,14 +69,15 @@ def arrange_template(data):
 @bannerify
 def animdl_schedule(**kwargs):
 
-    has_next_page, page = True, 1
+    page = 1
     schedules = []
-    session = client
 
-    unix_time = int((datetime.utcnow() - datetime(1970, 1, 1)).total_seconds())
+    unix_time = int(time.time())
 
-    while has_next_page:
-        schedule_data = session.post(
+    data = {}
+
+    while data.get("pageInfo", {}).get("hasNextPage", True):
+        schedule_data = client.post(
             ANICHART,
             json={
                 "query": gql,
@@ -158,26 +88,18 @@ def animdl_schedule(**kwargs):
                 },
             },
         )
-        data = schedule_data.json()
-        schedules.extend(
-            data.get("data", {}).get("Page", {}).get("airingSchedules", [])
-        )
-        has_next_page = (
-            data.get("data", {})
-            .get("Page", {})
-            .get("pageInfo", {})
-            .get("hasNextPage", False)
-        )
+        data = schedule_data.json().get("data", {}).get("Page", {})
+        schedules.extend(data.get("airingSchedules", []))
         page += 1
 
     for date, _content in arrange_template(schedules).items():
         print("On \x1b[33m{}\x1b[39m,".format(date))
-        for time, __content in sorted(
+        for time_, __content in sorted(
             _content.items(), key=lambda d: d[1][0].get("datetime_object"), reverse=True
         ):
             print(
                 "\t\x1b[95m{}\x1b[39m - {}".format(
-                    time,
+                    time_,
                     ", ".join(
                         "{anime} [\x1b[94mE{episode}\x1b[39m]".format_map(___content)
                         for ___content in __content

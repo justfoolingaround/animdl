@@ -58,6 +58,14 @@ def quality_prompt(log_level, logger, stream_list):
     type=str,
 )
 @click.option(
+    "-s",
+    "--special",
+    help="Special range selection.",
+    required=False,
+    default="",
+    type=str,
+)
+@click.option(
     "--player-opts",
     help="Arguments that are to be passed to the player call.",
     required=False,
@@ -106,7 +114,7 @@ def quality_prompt(log_level, logger, stream_list):
 )
 @helpers.bannerify
 def animdl_stream(
-    query, player_opts, quality, player, auto, index, log_level, **kwargs
+    query, special, player_opts, quality, player, auto, index, log_level, **kwargs
 ):
     """
     Streamer call for animdl streaming session.
@@ -137,13 +145,14 @@ def animdl_stream(
     logger.debug("Will scrape from {}".format(anime))
     logger.info("Now initiating your stream session")
 
-    enqueuer = providers.get_appropriate(
-        session, anime.get("anime_url"), helpers.get_check(r)
+    streams = list(
+        providers.get_appropriate(session, anime.get("anime_url"), helpers.get_check(r))
     )
 
-    streams = list(enqueuer)
-    total = len(streams)
+    if special:
+        streams = list(helpers.special_parser(streams, special))
 
+    total = len(streams)
     for count, (stream_urls_caller, episode_number) in enumerate(streams, 1):
 
         playing = True
@@ -169,12 +178,6 @@ def animdl_stream(
                 if len(stream_urls) > 1
                 else stream_urls[0]
             )
-
-            if selection.pop("is_torrent", False):
-                logging.warning(
-                    "Obtained torrent in streaming, please download the torrent and stream it. (Torrent downloads take place in sequential order.)"
-                )
-                continue
 
             logger.debug("Calling streamer for {!r}".format(stream_urls))
 

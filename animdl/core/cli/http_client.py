@@ -1,7 +1,12 @@
-import httpx
 import logging
+import sys
 
-from contextlib import suppress
+import httpx
+
+try:
+    from .exit_codes import INTERNET_ISSUE
+except ImportError:
+    from exit_codes import INTERNET_ISSUE
 
 headers = httpx.Headers(
     {
@@ -19,4 +24,27 @@ class AnimeHttpClient(httpx.Client):
     http_logger = logging.getLogger("animdl-http")
 
 
-client = AnimeHttpClient(headers=headers, follow_redirects=True, timeout=30.0)
+def httpx_exception():
+    hook = sys.excepthook
+
+    def exception_hook(exctype: type[BaseException], value: BaseException, traceback):
+        if issubclass(exctype, (httpx.HTTPError)):
+            exit(
+                AnimeHttpClient.http_logger.critical(
+                    "{!r}, this issue originates due to connection issues on your or the servers' side. Retry after troubleshooting connection issues on your side.".format(
+                        value
+                    )
+                )
+                or INTERNET_ISSUE
+            )
+
+        return hook(exctype, value, traceback)
+
+    sys.excepthook = exception_hook
+
+
+httpx_exception()
+
+client = AnimeHttpClient(
+    headers=headers, follow_redirects=True, timeout=30.0, http2=True
+)

@@ -19,6 +19,14 @@ from .. import exit_codes, helpers, http_client
     type=str,
 )
 @click.option(
+    "-s",
+    "--special",
+    help="Special range selection.",
+    required=False,
+    default="",
+    type=str,
+)
+@click.option(
     "-q",
     "--quality",
     help="Use quality strings.",
@@ -60,7 +68,7 @@ from .. import exit_codes, helpers, http_client
 )
 @helpers.bannerify
 def animdl_download(
-    query, quality, download_folder, idm, auto, index, log_level, **kwargs
+    query, special, quality, download_folder, idm, auto, index, log_level, **kwargs
 ):
 
     r = kwargs.get("range")
@@ -89,6 +97,10 @@ def animdl_download(
     streams = list(
         providers.get_appropriate(session, anime.get("anime_url"), helpers.get_check(r))
     )
+
+    if special:
+        streams = list(helpers.special_parser(streams, special))
+
     total = len(streams)
 
     logger.debug("Downloading to {!r}.".format(content_dir.as_posix()))

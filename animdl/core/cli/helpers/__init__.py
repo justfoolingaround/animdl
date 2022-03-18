@@ -6,12 +6,12 @@ import regex
 from click import prompt
 
 from ...codebase import downloader, extractors
-from .fun import (bannerify, choice, create_random_titles, stream_judiciary,
-                  to_stdout)
+from .fun import bannerify, choice, create_random_titles, stream_judiciary, to_stdout
 from .intelliq import filter_quality
 from .player import *
 from .processors import get_searcher, process_query
 from .searcher import link as processor_link
+from .special import special_parser
 
 fe_logger = logging.getLogger("further-extraction")
 

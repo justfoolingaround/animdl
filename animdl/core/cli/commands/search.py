@@ -15,8 +15,8 @@ from ..http_client import client
     "-p",
     "--provider",
     help="Provider to search in.",
-    required=False,
     default=DEFAULT_PROVIDER,
+    type=click.Choice(link.keys(), case_sensitive=False),
 )
 @click.option(
     "-ll", "--log-level", help="Set the integer log level.", type=int, default=20
@@ -29,26 +29,17 @@ from ..http_client import client
 @click.option(
     "-j",
     "--json",
-    help="An integer that determines where to begin the grabbing from.",
+    help="Output as json.",
     is_flag=True,
     flag_value=True,
 )
 @bannerify
 def animdl_search(query, json, provider, **kwargs):
     logger = logging.getLogger("searcher")
-    session = client
+    genexp = link.get(provider)(client, query)
 
-    if provider not in link:
-        logger.critical(
-            "{!r} is not supported at the moment. Selecting the default {!r}.".format(
-                provider, DEFAULT_PROVIDER
-            )
-        )
-        provider = DEFAULT_PROVIDER
-
-    genexp = link.get(provider)(session, query)
-
-    for i, search_data in enumerate(genexp):
-        logger.info(
-            "[#{:02d}] {name} \x1b[33m{anime_url}\x1b[39m".format(i, **search_data)
-        ) if not json else print(json_.dumps(search_data))
+    for count, search_data in enumerate(genexp, 1):
+        if json:
+            print(json_.dumps(search_data))
+        else:
+            logger.info("{0:02d}: {1[name]} {1[anime_url]}".format(count, search_data))
