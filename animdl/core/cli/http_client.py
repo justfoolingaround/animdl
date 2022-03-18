@@ -46,5 +46,5 @@ def httpx_exception():
 httpx_exception()
 
 client = AnimeHttpClient(
-    headers=headers, follow_redirects=True, timeout=30.0, http2=True
+    headers=headers, follow_redirects=True, timeout=30.0
 )
