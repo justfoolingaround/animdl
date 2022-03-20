@@ -27,7 +27,7 @@ class AnimeHttpClient(httpx.Client):
 def httpx_exception():
     hook = sys.excepthook
 
-    def exception_hook(exctype: type[BaseException], value: BaseException, traceback):
+    def exception_hook(exctype, value, traceback):
         if issubclass(exctype, (httpx.HTTPError)):
             exit(
                 AnimeHttpClient.http_logger.critical(
