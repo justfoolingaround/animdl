@@ -42,27 +42,17 @@ def extract(session, url, **opts):
     """
     Extract content off of GogoAnime.
     """
-
-    content_info = aes_decrypt(
-        htmlparser.fromstring(session.get(url).text)
-        .cssselect('[data-name="episode"]')[0]
-        .get("data-value")
-    )
-    content_id = content_info[: content_info.index(b"&")].decode()
-
     parsed_url = yarl.URL(url)
     next_host = "https://{}/".format(parsed_url.host)
 
     response = session.get(
         "{}encrypt-ajax.php".format(next_host),
-        params={"id": aes_encrypt(content_id).decode()},
+        params={"id": aes_encrypt(parsed_url.query.get('id')).decode()},
         headers={"x-requested-with": "XMLHttpRequest"},
     )
     content = json.loads(
         aes_decrypt(response.json().get("data"))
-        .replace(b'o"<P{#meme":', b'e":[{"file":')
-        .decode("utf-8")
-        .strip("\x00\x01\x02\x03\x04\x05\x06\x07\x08\t\n\x0b\x0c\r\x0e\x0f\x10")
+        .strip(b"\x00\x01\x02\x03\x04\x05\x06\x07\x08\t\n\x0b\x0c\r\x0e\x0f\x10")
     )
 
     def yielder():
