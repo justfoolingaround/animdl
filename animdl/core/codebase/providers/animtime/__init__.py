@@ -40,3 +40,10 @@ def fetcher(session, url, check, match):
                 lambda x: [{"stream_url": x, "headers": {"referer": ANIMTIME}}],
                 constructor + "{:03d}".format(episode) + end,
             ), episode
+
+
+def metadata_fetcher(session, url, match):
+    content = session.get(
+        ANIMTIME + "/main.fe2f7537e4a9d7929fe6.js", headers={"range": "bytes=386216-"}
+    ).text
+    return {"titles": [get_content(url, content)]}

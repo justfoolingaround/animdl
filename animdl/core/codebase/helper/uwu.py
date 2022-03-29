@@ -29,7 +29,14 @@ def bypass_recaptcha(session, url, headers):
     if site_key_match is None:
         return {}
 
-    response = {'token': get_token_recaptcha(session, domain, site_key_match.group(1), "{0.scheme}://{0.host}/".format(yarl.URL(url)))}
+    response = {
+        "token": get_token_recaptcha(
+            session,
+            domain,
+            site_key_match.group(1),
+            "{0.scheme}://{0.host}/".format(yarl.URL(url)),
+        )
+    }
 
     number_match = regex.search(r"recaptchaNumber = '(\d+?)'", initial_page.text)
 
@@ -41,7 +48,6 @@ def bypass_recaptcha(session, url, headers):
 
 @functools.lru_cache()
 def get_token_recaptcha(session, domain, recaptcha_site_key, url):
-
 
     recaptcha_out = session.get(
         RECAPTCHA_API_JS,

@@ -4,9 +4,15 @@ from collections import defaultdict
 import click
 
 from ...codebase import providers
-from ...config import DEFAULT_PLAYER, QUALITY
+from ...config import DEFAULT_PLAYER, QUALITY, DISCORD_PRESENCE
 from .. import exit_codes, helpers, http_client
 from ..helpers.intelliq import filter_quality
+
+if DISCORD_PRESENCE:
+    try:
+        from ..helpers.rpc import set_streaming_episode
+    except ImportError:
+        raise ImportError("Discord RPC was set to be enabled but `pypresence` is not installed, install it with `pip install pypresence`.")
 
 
 def quality_prompt(log_level, logger, stream_list):
@@ -145,12 +151,28 @@ def animdl_stream(
     logger.debug("Will scrape from {}".format(anime))
     logger.info("Now initiating your stream session")
 
+    match, provider_module, _ = providers.get_provider(
+        providers.append_protocol(anime.get("anime_url"))
+    )
+
     streams = list(
-        providers.get_appropriate(session, anime.get("anime_url"), helpers.get_check(r))
+        provider_module.fetcher(
+            session, anime.get("anime_url"), helpers.get_check(r), match
+        )
     )
 
     if special:
         streams = list(helpers.special_parser(streams, special))
+
+    if "name" not in anime:
+        anime["name"] = (
+            provider_module.metadata_fetcher(session, anime.get("anime_url"), match)[
+                "titles"
+            ]
+            or [None]
+        )[0] or ""
+
+    content_title = anime["name"]
 
     total = len(streams)
     for count, (stream_urls_caller, episode_number) in enumerate(streams, 1):
@@ -158,7 +180,7 @@ def animdl_stream(
         playing = True
         while playing:
 
-            window_title = "Episode {:02d}".format(int(episode_number))
+            window_title = content_title + ": Episode {}".format(episode_number)
 
             stream_urls = filter_quality(
                 list(helpers.ensure_extraction(session, stream_urls_caller)), quality
@@ -190,12 +212,18 @@ def animdl_stream(
                 )
             )
 
+            if "title" in selection:
+                window_title += " ({})".format(selection["title"])
+
             player_process = streamer(
                 selection.get("stream_url"),
                 headers=headers,
-                content_title=selection.get("title") or window_title,
+                content_title=window_title,
                 subtitles=selection.get("subtitle", []),
             )
+            if DISCORD_PRESENCE:
+                set_streaming_episode(session, content_title, episode_number)
+
             player_process.wait()
 
             if player_process.returncode:

@@ -47,12 +47,13 @@ def extract(session, url, **opts):
 
     response = session.get(
         "{}encrypt-ajax.php".format(next_host),
-        params={"id": aes_encrypt(parsed_url.query.get('id')).decode()},
+        params={"id": aes_encrypt(parsed_url.query.get("id")).decode()},
         headers={"x-requested-with": "XMLHttpRequest"},
     )
     content = json.loads(
-        aes_decrypt(response.json().get("data"))
-        .strip(b"\x00\x01\x02\x03\x04\x05\x06\x07\x08\t\n\x0b\x0c\r\x0e\x0f\x10")
+        aes_decrypt(response.json().get("data")).strip(
+            b"\x00\x01\x02\x03\x04\x05\x06\x07\x08\t\n\x0b\x0c\r\x0e\x0f\x10"
+        )
     )
 
     def yielder():

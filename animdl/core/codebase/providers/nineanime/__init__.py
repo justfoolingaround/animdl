@@ -1,15 +1,17 @@
-from functools import partial
 import json
-from .decipher import encrypt_url, decrypt_url
+from functools import partial
 
 import lxml.html as htmlparser
+import regex
 
 from ....config import NINEANIME
 from ...helper import construct_site_based_regex
+from .decipher import decrypt_url, encrypt_url
 
 REGEX = construct_site_based_regex(
     NINEANIME, extra_regex=r"/watch/[^&?/]+\.(?P<slug>[^&?/]+)"
 )
+TITLES_REGEX = regex.compile(r'<h1 itemprop="name" class="title" .+?>(.+?)</h1>')
 
 SOURCES = {
     "41": "vidstream",
@@ -54,3 +56,10 @@ def fetcher(session, url, check, match):
                 lambda data_sources: fetch_episode(session, data_sources),
                 data_sources=json.loads(episode.get("data-sources")),
             ), number
+
+
+def metadata_fetcher(session, url, match):
+
+    response = session.get(url).text
+
+    return {"titles": TITLES_REGEX.findall(response)}

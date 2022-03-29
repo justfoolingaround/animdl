@@ -7,7 +7,7 @@ def get_string(content, s1, s2):
 
     acc = 0
     for n, i in enumerate(content[::-1]):
-        acc += int(i if i.isdigit() else 0) * s1 ** n
+        acc += int(i if i.isdigit() else 0) * s1**n
 
     k = ""
     while acc > 0:

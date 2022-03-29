@@ -97,6 +97,7 @@ DEFAULT_CONFIG = {
         "hls_download": False,
         "submerge": True,
     },
+    "discord_presence": False,
 }
 
 CONFIG = DEFAULT_CONFIG
@@ -151,3 +152,5 @@ QBITTORENT_CONFIG = CONFIG.get("qbittorrent", {})
 
 QBITTORENT_ENDPOINT = QBITTORENT_CONFIG.get("endpoint_url")
 QBITTORENT_CREDENTIALS = QBITTORENT_CONFIG.get("credentials", {})
+
+DISCORD_PRESENCE = CONFIG.get("discord_presence", False)

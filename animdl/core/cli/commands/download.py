@@ -85,21 +85,38 @@ def animdl_download(
         raise SystemExit(exit_codes.NO_CONTENT_FOUND)
 
     logger.name = "{}/{}".format(provider, logger.name)
+
+    match, provider_module, _ = providers.get_provider(
+        providers.append_protocol(anime.get("anime_url"))
+    )
+
+    streams = list(
+        provider_module.fetcher(
+            session, anime.get("anime_url"), helpers.get_check(r), match
+        )
+    )
+
+    if special:
+        streams = list(helpers.special_parser(streams, special))
+
+    if "name" not in anime:
+        anime["name"] = (
+            provider_module.metadata_fetcher(session, anime.get("anime_url"), match)[
+                "titles"
+            ]
+            or [None]
+        )[0] or ""
+
+    content_title = anime["name"]
+
     content_name = (
-        anime.get("name")
-        or download_folder
+        download_folder
+        or anime["name"]
         or helpers.choice(helpers.create_random_titles())
     )
 
     content_dir = Path("./{}/".format(sanitize_filename(content_name.strip())))
     content_dir.mkdir(exist_ok=True)
-
-    streams = list(
-        providers.get_appropriate(session, anime.get("anime_url"), helpers.get_check(r))
-    )
-
-    if special:
-        streams = list(helpers.special_parser(streams, special))
 
     total = len(streams)
 
@@ -108,7 +125,7 @@ def animdl_download(
     for count, (stream_urls_caller, episode_number) in enumerate(streams, 1):
 
         content_title = "E{:02d}".format(int(episode_number))
-        stream_urls = stream_urls_caller()
+        stream_urls = helpers.ensure_extraction(session, stream_urls_caller)
 
         if not stream_urls:
             logger.warning(

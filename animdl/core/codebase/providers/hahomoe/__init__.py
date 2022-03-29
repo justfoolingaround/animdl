@@ -2,7 +2,10 @@ import lxml.html as htmlparser
 
 from ....config import HAHO
 from ...helper import construct_site_based_regex
-from ..tenshimoe import fetcher as tenshimoe_fetcher
+from ..tenshimoe import (
+    fetcher as tenshimoe_fetcher,
+    metadata_fetcher as tenshimoe_metadata_fetcher,
+)
 
 REGEX = construct_site_based_regex(HAHO, extra_regex=r"/anime/([^?&/]+)")
 
@@ -24,3 +27,7 @@ def fetcher(*args, **kwargs):
     yield from tenshimoe_fetcher(
         *args, **kwargs, post_processor=post_processor, domain=HAHO
     )
+
+
+def metadata_fetcher(*args, **kwargs):
+    return tenshimoe_metadata_fetcher(*args, **kwargs, domain=HAHO)

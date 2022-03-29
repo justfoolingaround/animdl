@@ -1,7 +1,6 @@
 from base64 import b64decode
 from functools import partial
 
-import httpx
 import lxml.html as htmlparser
 import regex
 
@@ -13,6 +12,8 @@ REGEX = construct_site_based_regex(
     extra_regex=r"/(?:anime/(?P<normal_slug>[^&?#/]+)|(?P<slug>.+?)-episode-\d+-.+?)",
 )
 
+
+TITLES_REGEX = regex.compile(r'<h2 itemprop="partOfSeries">(.+?)</h2>')
 IFRAME_SRC = regex.compile(r'src="(.+?)"')
 
 FURTHER_EXTRACTORS = {
@@ -87,3 +88,11 @@ def fetcher(session, url, check, match):
                 episode.get("href"),
                 title=name,
             ), number
+
+
+def metadata_fetcher(session, url, match):
+
+    if match.group("slug"):
+        url = ANIMEXIN + "anime/{}".format(match.group("slug"))
+
+    return {"titles": TITLES_REGEX.findall(session.get(url).text)}

@@ -3,12 +3,15 @@ THANKS FOR ADDING STREAMSB AND STREAMTAPE DUMMIES
 """
 
 from functools import partial
-from ...helper import construct_site_based_regex
-from ....config import ZORO
 
 import lxml.html as htmlparser
+import regex
+
+from ....config import ZORO
+from ...helper import construct_site_based_regex
 
 REGEX = construct_site_based_regex(ZORO, extra_regex=r"(/watch)?/[\w-]+-(\d+)")
+TITLES_REGEX = regex.compile(r'<h2 class="film-name dynamic-name" .+?>(.+?)</h2>')
 
 
 def int_or(string, *, default=0):
@@ -67,3 +70,7 @@ def fetcher(session, url, check, match):
                 d_id=episode.get("data-id"),
                 t=episode.get("title"),
             ), episode_number
+
+
+def metadata_fetcher(session, url, match):
+    return {"titles": TITLES_REGEX.findall(session.get(ZORO + match.group(2)).text)}

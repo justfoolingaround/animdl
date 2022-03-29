@@ -13,6 +13,7 @@ REGEX = construct_site_based_regex(ALLANIME, extra_regex=r"/anime/([^?&/]+)")
 
 SOURCE_URLS = regex.compile(r'sourceUrl[:=]"(.+?)"')
 EPISODES_REGEX = regex.compile(r'\\"availableEpisodesDetail\\":({.+?})')
+TITLES_REGEX = regex.compile(r'<span class="mr-1">(.+?);?</span>')
 
 SANITIZER = {
     "\\u002F": "/",
@@ -134,3 +135,9 @@ def fetcher(session, url: "str", check, match):
                 session,
                 content,
             ), episode
+
+
+def metadata_fetcher(session, url: "str", match):
+    animepage_url = (ALLANIME + "anime/{}").format(match.group(1))
+
+    return {"titles": TITLES_REGEX.findall(session.get(animepage_url).text)}

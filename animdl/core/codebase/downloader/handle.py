@@ -10,8 +10,7 @@ from tqdm import tqdm
 
 from ...config import FFMPEG_EXECUTABLE, FFMPEG_HLS, FFMPEG_SUBMERGE
 from .content_mt import mimetypes
-from .ffmpeg import (FFMPEG_EXTENSIONS, ffmpeg_download, has_ffmpeg,
-                     merge_subtitles)
+from .ffmpeg import FFMPEG_EXTENSIONS, ffmpeg_download, has_ffmpeg, merge_subtitles
 from .hls import HLS_STREAM_EXTENSIONS, hls_yield
 
 if FFMPEG_EXECUTABLE:
@@ -191,7 +190,7 @@ def hls_download(
 
             progress_bar.total = mean * total
             progress_bar.desc = "HLS GET / {}.ts [± {:.3f} MB]".format(
-                outfile_name, stddev / (1024 ** 2)
+                outfile_name, stddev / (1024**2)
             )
             progress_bar.update(size)
 
@@ -213,7 +212,6 @@ def idm_download(url, headers, content_dir, outfile_name, extension, **opts):
 
 
 def subautomatic(f):
-
     def __inner__(session, url, headers, content_dir, outfile_name, *args, **kwargs):
         logger = logging.getLogger("ffmpeg/submerge")
 

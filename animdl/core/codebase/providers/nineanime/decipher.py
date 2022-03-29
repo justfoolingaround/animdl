@@ -6,31 +6,6 @@ NORMAL_TABLE = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/
 BASE64_TABLE = "0wMrYU+ixjJ4QdzgfN2HlyIVAt3sBOZnCT9Lm7uFDovkb/EaKpRWhqXS5168ePcG"
 
 
-def encrypt_to_four(plaintext):
-
-    cipher = ""
-
-    for c in range(0, len(plaintext), 3):
-        mapping = [ord(plaintext[c]) >> 2, 3 & ord(plaintext[c]) << 4, None, None]
-
-        if len(plaintext) > (c + 1):
-            mapping[1] |= ord(plaintext[c + 1]) >> 4
-            mapping[2] = (15 & ord(plaintext[c + 1])) << 2
-
-        if len(plaintext) > (c + 2):
-            mapping[2] = (mapping[2] or 0) | ord(plaintext[c + 2]) >> 6
-            mapping[3] = 63 & ord(plaintext[c + 2])
-
-        for data in mapping:
-            if data is None:
-                cipher += "="
-            else:
-                if 0 <= data and data < 64:
-                    cipher += BASE64_TABLE[data]
-
-        return cipher
-
-
 def cipher_keyed(key, plaintext):
     cipher = ""
     xcrypto = 0
@@ -52,8 +27,8 @@ def cipher_keyed(key, plaintext):
 
 
 def get_salted_code(plaintext):
-    part_1 = encrypt_to_four((unquote(plaintext) + "000000")[:6])[::-1]
-    return part_1 + encrypt_to_four(cipher_keyed(part_1, unquote(plaintext))).replace(
+    part_1 = encrypt((unquote(plaintext) + "000000")[:6])[0:4][::-1]
+    return part_1 + encrypt(cipher_keyed(part_1, unquote(plaintext)))[0:4].replace(
         "=", ""
     )
 
@@ -79,8 +54,12 @@ def encrypt_url(url):
 
 def decrypt(data):
     return "".join(
-        chr(_)
-        for _ in base64.b64decode(
-            data.translate(str.maketrans(BASE64_TABLE, NORMAL_TABLE)).encode()
+        map(
+            chr,
+            base64.b64decode(
+                (data + "=" * (len(data) % 4))
+                .translate(str.maketrans(BASE64_TABLE, NORMAL_TABLE))
+                .encode()
+            ),
         )
     )

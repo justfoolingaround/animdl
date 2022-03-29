@@ -18,7 +18,7 @@ commands = {
     "search": search.animdl_search,
 }
 
-executable = [*supported_streamers()]
+executable = list(supported_streamers())
 
 if executable:
     commands.update({"stream": stream.animdl_stream})

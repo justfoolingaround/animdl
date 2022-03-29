@@ -8,6 +8,7 @@ from ....config import HENTAISTREAM
 from ...helper import construct_site_based_regex, uwu
 
 EPISODE_REGEX = regex.compile(r"/\d+/[^&?/]+")
+TITLES_REGEX = regex.compile(r'<h1 class="entry-title" itemprop="name">(.+?)</h1>')
 
 REGEX = construct_site_based_regex(HENTAISTREAM, extra_regex=r"/(anime|\d+)/([^?&/]+)")
 
@@ -73,3 +74,12 @@ def fetcher(session, url, check, match):
                 episode_page.get("href"),
                 title="{} ({})".format(title, date),
             ), episode_number
+
+
+def metadata_fetcher(session, url, match):
+    uwu.bypass_ddos_guard(session, HENTAISTREAM)
+
+    if match.group(1).isdigit():
+        url = get_episodes_page(session, url)
+
+    return {"titles": TITLES_REGEX.findall(session.get(url).text)}

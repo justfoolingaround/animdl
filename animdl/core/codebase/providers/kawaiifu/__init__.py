@@ -8,6 +8,7 @@ import yarl
 REGEX = regex.compile(
     r"(?:https?://)?(?:\S+\.)?(?P<host>domdom\.stream|bestanime3\.xyz|kawaiifu\.com)/(?P<episode_page>anime/)?(?P<type>season/[^/]+|.+)/(?P<slug>[^?&#]+)"
 )
+TITLES_REGEX = regex.compile(r'<h2 class="title">(.+?)</h2>')
 
 
 def get_int(content):
@@ -48,3 +49,11 @@ def fetcher(session, url, check, match):
             yield partial(
                 lambda s, x: [*extract_stream_urls(s, x)], session, episode_urls
             ), episode
+
+
+def metadata_fetcher(session, url, match):
+    return {
+        "titles": TITLES_REGEX.finditer(
+            session.get(yarl.URL(url).with_host("bestanime3.xyz").human_repr()).text
+        )
+    }

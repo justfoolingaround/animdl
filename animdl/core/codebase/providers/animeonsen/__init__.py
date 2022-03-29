@@ -1,29 +1,45 @@
 from functools import partial
 
-import regex
-import yarl
+import lxml.html as htmlparser
 
 from ....config import ANIMEONSEN
 from ...helper import construct_site_based_regex
 
-REGEX = construct_site_based_regex(ANIMEONSEN, extra_regex=r"/watch\?v=([^&?/]+)")
+REGEX = construct_site_based_regex(
+    ANIMEONSEN,
+    extra_regex=r"/(?:details/(?P<slug>[^?&/]+)|watch/(?P<watch_slug>[^?&/]+))",
+)
 
-METADATA_REGEX = regex.compile(r'url: "(.+?)"')
+API_ENDPOINT = "https://api.animeonsen.xyz/v4/"
+
+AUTHENTICATION = "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpcCI6IjI3LjM0LjY4LjEzOCIsImlhdCI6MTY0ODU1NTU4MiwiZXhwIjoxNjQ5MTYwMzgyLCJpc3MiOiJhbmltZW9uc2VuLWFwcCJ9.ZUy2zv_aRFtT_iqjEGtp5HO9EnkH71pM0TpcBQ0JcwU"
 
 
-def get_metadata(session, url):
-    return session.get(url, headers={"origin": ANIMEONSEN.rstrip("/")}).json()
+def get_stream_url(session, episode, slug):
 
+    response = session.get(
+        API_ENDPOINT + "content/{}/video/{}".format(slug, episode),
+        headers={"Authorization": AUTHENTICATION},
+    ).json()
 
-def stream_url_from_metadata(metadata):
-    uri = metadata.get("player", {}).get("uri", {})
+    metadata = response.get("metadata", {})
+    current, _, episodes = metadata.get("episode", [0, {}, {}])
+
+    episode_title = episodes.get(str(current), {}).get(
+        "contentTitle_episode_en"
+    ) or episodes.get(str(current), {}).get("contentTitle_episode_jp", "")
+    title = "Episode {}".format(current)
+
+    if episode_title:
+        title = "{}: {}".format(title, episode_title)
+
+    streams = response.get("uri", {})
+
     return [
         {
-            "stream_url": uri.get("stream"),
-            "subtitle": [
-                subtitle.get("location")
-                for subtitle in uri.get("subtitles", {}).values()
-            ],
+            "stream_url": streams.get("stream"),
+            "subtitles": list(streams.get("subtitles", {}).values()),
+            "title": title,
             "headers": {
                 "referer": ANIMEONSEN,
             },
@@ -33,30 +49,34 @@ def stream_url_from_metadata(metadata):
 
 def fetcher(session, url, check, match):
 
-    content_uri = yarl.URL(ANIMEONSEN + "watch")
+    slug = match.group("slug") or match.group("watch_slug")
 
-    episode_page = session.get(
-        content_uri.with_query({"v": match.group(1)}).human_repr()
-    )
-    metadata = get_metadata(session, METADATA_REGEX.search(episode_page.text).group(1))
+    for link in htmlparser.fromstring(
+        session.get(ANIMEONSEN + "details/" + slug).text
+    ).cssselect("div.episode-list > a"):
+        episode_element = link.cssselect("div.episode")[0]
 
-    if check(1):
-        yield partial(stream_url_from_metadata, metadata), 1
+        episode = int(episode_element.get("data-episode", 0))
 
-    for _ in range(2, int(metadata.get("metadata", {}).get("totalEpisodes", 2)) + 1):
-        if check(_):
-            yield partial(
-                lambda episode: stream_url_from_metadata(
-                    get_metadata(
-                        session,
-                        METADATA_REGEX.search(
-                            session.get(
-                                content_uri.with_query(
-                                    {"v": match.group(1), "ep": episode}
-                                ).human_repr()
-                            ).text
-                        ).group(1),
-                    )
-                ),
-                _,
-            ), _
+        if check(episode):
+            yield partial(get_stream_url, session, episode, slug), episode
+
+
+def metadata_fetcher(session, url, match):
+
+    slug = match.group("slug") or match.group("watch_slug")
+
+    response = session.get(
+        API_ENDPOINT + "content/{}/extensive".format(slug),
+        headers={"Authorization": AUTHENTICATION},
+    ).json()
+
+    titles = []
+
+    if "content_title" in response:
+        titles.append(response["content_title"])
+
+    if "content_title_en" in response:
+        titles.append(response["content_title_en"])
+
+    return {"titles": titles}

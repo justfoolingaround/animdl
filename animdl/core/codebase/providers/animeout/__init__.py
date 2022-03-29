@@ -1,12 +1,15 @@
 from functools import partial
 
 import lxml.html as htmlparser
+import regex
 import yarl
 
 from ....config import ANIMEOUT
 from ...helper import construct_site_based_regex, group_episodes, parse_from_content
 
 REGEX = construct_site_based_regex(ANIMEOUT, extra_regex=r"/([^?&/]+)")
+
+TITLES_REGEX = regex.compile(r'<h1 class="page-title">(.+?)</h1>')
 
 
 def animeout_stream_url(url: "yarl.URL") -> str:
@@ -38,3 +41,7 @@ def fetcher(session, url, check, match):
     ):
         if check(episode):
             yield partial(list, content), episode
+
+
+def metadata_fetcher(session, url, match):
+    return {"titles": TITLES_REGEX.findall(session.get(url).text)}

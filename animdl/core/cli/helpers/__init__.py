@@ -105,7 +105,8 @@ Complete traceback: {3}\
 def download(
     session, logger, content_dir, outfile_name, stream_urls, quality, **kwargs
 ):
-    downloadable_content = filter_quality(stream_urls, quality)
+
+    downloadable_content = filter_quality(list(stream_urls), quality)
 
     if not downloadable_content:
         return False, "No downloadable content found."

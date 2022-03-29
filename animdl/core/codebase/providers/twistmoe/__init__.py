@@ -28,3 +28,16 @@ def fetcher(session, url, check, match):
                 ],
                 stream,
             ), episode
+
+
+def metadata_fetcher(session, url, match):
+    return {
+        "titles": [
+            session.get(
+                "https://api.twist.moe/api/anime/{}".format(match.group(1)),
+                headers={"x-access-token": "0df14814b9e590a1f26d3071a4ed7974"},
+            )
+            .json()
+            .get("title")
+        ]
+    }

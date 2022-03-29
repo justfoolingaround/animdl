@@ -22,6 +22,8 @@ ANIMEKAIZOKU_DDL = regex.compile(r"DDL\((.+?), (.+?), '(.+?)', (.+?)\)")
 DDL_DIVID = regex.compile(r"glist-(\d+)")
 DDL_POSTID = regex.compile(r'"postId":"(\d+)"')
 
+TITLES_REGEX = regex.compile(r'<h1 class="post-title entry-title">(.+?)</h1>')
+
 
 def graceful_ajax(session, data):
     return session.post(
@@ -75,3 +77,7 @@ def fetcher(session, url, check, match):
     ):
         if check(episode):
             yield partial(list, streams), episode
+
+
+def metadata_fetcher(session, url: "str", match):
+    return {"titles": TITLES_REGEX.findall(session.get(url).text)}

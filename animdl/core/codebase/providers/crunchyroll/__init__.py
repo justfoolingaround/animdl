@@ -11,6 +11,7 @@ from ...helper import construct_site_based_regex
 REGEX = construct_site_based_regex(CRUNCHYROLL, extra_regex=r"/([^?/&]+)")
 
 CONTENT_METADATA = regex.compile(r"vilos\.config\.media = (\{.+\})")
+TITLES_REGEX = regex.compile(r'"mediaTitle":"(.+?)"')
 
 
 def get_subtitle(subtitles, lang="enUS"):
@@ -27,17 +28,13 @@ def get_stream_urls(session, episode_data):
         metadata = json_content.get("metadata")
 
         for stream in json_content.get("streams"):
-            if (
-                stream.get("format")
-                in [
-                    "adaptive_dash",
-                    "adaptive_hls",
-                    "multitrack_adaptive_hls_v2",
-                    "vo_adaptive_dash",
-                    "vo_adaptive_hls",
-                ]
-                and stream.get("hardsub_lang") in [None, "enUS"]
-            ):
+            if stream.get("format") in [
+                "adaptive_dash",
+                "adaptive_hls",
+                "multitrack_adaptive_hls_v2",
+                "vo_adaptive_dash",
+                "vo_adaptive_hls",
+            ] and stream.get("hardsub_lang") in [None, "enUS"]:
                 yield_content = {
                     "stream_url": stream.get("url"),
                     "title": "{} ({})".format(metadata.get("title"), title)
@@ -97,3 +94,9 @@ def fetcher(session, url, check, match):
             yield partial(
                 lambda e: list(get_stream_urls(session, e)), episode_data
             ), episode_number
+
+
+def metadata_fetcher(session, url, match):
+    return {
+        "titles": TITLES_REGEX.findall(session.get(CRUNCHYROLL + match.group(1)).text)
+    }

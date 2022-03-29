@@ -1,4 +1,4 @@
-import re
+import regex
 
 from ....config import ANIMEPAHE
 from ...helper import construct_site_based_regex
@@ -13,8 +13,10 @@ API_URL = ANIMEPAHE + "api"
 SITE_URL = ANIMEPAHE
 
 PLAYER_RE = construct_site_based_regex(ANIMEPAHE, extra_regex=r"/play/([^?&/]+)")
-ID_RE = re.compile(r"/api\?m=release&id=([^&]+)")
-KWIK_RE = re.compile(r"Plyr\|querySelector\|document\|([^\\']+)")
+ID_RE = regex.compile(r"/api\?m=release&id=([^&]+)")
+KWIK_RE = regex.compile(r"Plyr\|querySelector\|document\|([^\\']+)")
+
+TITLES_REGEX = regex.compile(r"<h1>(.+?)</h1>")
 
 
 @lru_cache()
@@ -85,7 +87,7 @@ def page_minimization(page_generator):
 
 
 def bypass_ddos_guard(session):
-    js_bypass_uri = re.search(
+    js_bypass_uri = regex.search(
         r"'(.*?)'", session.get("https://check.ddos-guard.net/check.js").text
     ).group(1)
     session.cookies.update(session.get(ANIMEPAHE + js_bypass_uri).cookies)
@@ -108,3 +110,14 @@ def fetcher(session, url, check, match):
 
     for page in page_minimization(predict_pages(fpd.get("total"), check)):
         yield from get_stream_urls_from_page(session, release_id, page, check)
+
+
+def metadata_fetcher(session, url, match):
+    player_match = PLAYER_RE.search(url)
+
+    if player_match:
+        url = "https://www.animepahe.com/anime/%s" % player_match.group(1)
+
+    return {
+        "titles": TITLES_REGEX.findall(session.get(url).text),
+    }

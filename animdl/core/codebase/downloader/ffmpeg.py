@@ -28,7 +28,7 @@ def parse_ffmpeg_duration(dt: str) -> float:
     `float`
     """
     hour, minute, seconds = (float(_) for _ in dt.split(":"))
-    return hour * (60 ** 2) + minute * 60 + seconds
+    return hour * (60**2) + minute * 60 + seconds
 
 
 def iter_audio(stderr):

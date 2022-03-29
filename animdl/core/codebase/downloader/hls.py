@@ -12,10 +12,10 @@ ENCRYPTION_URL_IV_REGEX = regex.compile(
 )
 
 
-STREAM_INFO_REGEX = regex.compile(r"#EXT-X-STREAM-INF(:.*?)?\s+(.+)")
+STREAM_INFO_REGEX = regex.compile(r"#EXT-X-STREAM-INF(:.*?)?\n+(.+)")
 QUALITY_REGEX = regex.compile(r"RESOLUTION=\d+x(\d+)")
 
-INTERNAL_STREAMS_REGEX = regex.compile(r"#EXTINF:.+?\s+(.+)")
+INTERNAL_STREAMS_REGEX = regex.compile(r"#EXTINF:.+?\n+(.+)")
 
 HLS_STREAM_EXTENSIONS = ["m3u8", "m3u"]
 
@@ -103,7 +103,6 @@ def hls_yield(session, q_dicts, quality_string, auto_retry=2, *, continuation_in
     m3u8_data = content_response.content.decode("utf-8", errors="ignore")
 
     base_uri = yarl.URL(str(content_response.url).rstrip("/") + "/").parent
-
     encryption_uri, encryption_iv, encryption_data = None, None, b""
     encryption_state = not unencrypted(m3u8_data)
 
