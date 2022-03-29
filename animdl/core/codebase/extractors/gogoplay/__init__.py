@@ -6,8 +6,8 @@ import regex
 import yarl
 from Cryptodome.Cipher import AES
 
-GOGOANIME_SECRET = b"25716538522938396164662278833288"
-GOGOANIME_IV = b"1285672985238393"
+GOGOANIME_SECRET = b"63976882873559819639988080820907"
+GOGOANIME_IV = b"4770478969418267"
 CUSTOM_PADDER = "\x08\x0e\x03\x08\t\x03\x04\t"
 
 
@@ -21,7 +21,7 @@ def get_quality(url_text):
 
 
 def pad(data):
-    return data + CUSTOM_PADDER[(len(CUSTOM_PADDER) - len(data) % 16) :]
+    return data + chr(len(data) % 16) * (16 - len(data) % 16)
 
 
 def aes_encrypt(data: str):
@@ -45,7 +45,7 @@ def extract(session, url, **opts):
 
     content_info = aes_decrypt(
         htmlparser.fromstring(session.get(url).text)
-        .cssselect('[data-name="crypto"]')[0]
+        .cssselect('[data-name="episode"]')[0]
         .get("data-value")
     )
     content_id = content_info[: content_info.index(b"&")].decode()
