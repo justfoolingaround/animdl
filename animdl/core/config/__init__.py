@@ -1,6 +1,8 @@
-import yaml
 import os
+import sys
 from pathlib import Path
+
+import yaml
 
 
 def merge_dicts(dict1, dict2):
@@ -19,8 +21,10 @@ def get_existent_path(*paths):
         if path_object.exists():
             return path_object
 
-
-USERPROFILE_ANIMDL_PATH = os.getenv("userprofile", ".") + "/.animdl/config.yml"
+if sys.platform == "win32":
+    USERPROFILE_ANIMDL_PATH = os.getenv("userprofile", ".") + "/.animdl/config.yml"
+else:
+    USERPROFILE_ANIMDL_PATH = os.getenv("HOME", ".") + "/animdl/config.yml"
 
 CONFIGURATION_FILE_PATH = get_existent_path(
     os.getenv("ANIMDL_CONFIG", "./animdl_config.yml"),
