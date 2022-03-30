@@ -67,7 +67,7 @@ DEFAULT_CONFIG = {
             "opts": [],
         },
         "iina": {
-            "executable": "iina-cli",
+            "executable": "iina",
             "opts": [],
         },
         "celluloid": {

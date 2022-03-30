@@ -131,6 +131,22 @@ will select episodes from 3 to 10 (inclusive), 12, 20 and from 40 to 50 (inclusi
 | [Zoro](https://www.zoro.to/)                 | `zoro`   | 720p, 1080p         | <img height="25" src="https://github.com/justfoolingaround/animdl-provider-benchmarks/raw/master/api/providers/zoro.png">  | TS |
 
 
+### Config File
+
+If you're on Linux or Mac OS, you can customize your configuration in `$HOME/~./config/animdl/config_yml` (The directory and file are not created by default). If you're on Windows, you can customize your configuration in `userprofile/.animdl/config.yml`
+
+Below is an example of a the custom settings you can set in the config file (to see all the settings you can modify, check `animdl/core/config/__init__.py`):
+
+```yaml
+default_provider: animixplay
+discord_presence: true
+default_player: iina
+quality_string: best[subtitle]/best
+```
+
+Alternatively, you can create a config file in your working directory, called `animdl_config.yml`
+
+
 ### More sites?
 
 Currently, there are no plans to add more sites as **AnimDL** supports top sites that stream anime. However, this does not mean that this is it for the sites. You can raise as many issues as possible for requesting a new site.
@@ -150,7 +166,7 @@ players:
     executable: "vlc"
     opts: []
   iina:
-    executable: "iina-cli"
+    executable: "iina"
     opts: []
   celluloid:
     executable: "celluloid"
