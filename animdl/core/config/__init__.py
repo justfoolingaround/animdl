@@ -24,7 +24,7 @@ def get_existent_path(*paths):
 if sys.platform == "win32":
     USERPROFILE_ANIMDL_PATH = os.getenv("userprofile", ".") + "/.animdl/config.yml"
 else:
-    USERPROFILE_ANIMDL_PATH = os.getenv("HOME", ".") + "/animdl/config.yml"
+    USERPROFILE_ANIMDL_PATH = os.getenv("HOME", ".") + "/.config/animdl/config.yml"
 
 CONFIGURATION_FILE_PATH = get_existent_path(
     os.getenv("ANIMDL_CONFIG", "./animdl_config.yml"),
