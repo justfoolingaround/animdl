@@ -133,7 +133,7 @@ will select episodes from 3 to 10 (inclusive), 12, 20 and from 40 to 50 (inclusi
 
 ### Config File
 
-If you're on Linux or Mac OS, you can customize your configuration in `$HOME/~./config/animdl/config_yml` (The directory and file are not created by default). If you're on Windows, you can customize your configuration in `userprofile/.animdl/config.yml`
+If you're on Linux or Mac OS, you can customize your configuration in `$HOME/~./config/animdl/config_yml` (The directory and file are not created by default). If you're on Windows, you can customize your configuration in `%USERPROFILE%\.animdl\config.yml`
 
 Below is an example of a the custom settings you can set in the config file (to see all the settings you can modify, check `animdl/core/config/__init__.py`):
 
