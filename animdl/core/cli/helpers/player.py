@@ -45,7 +45,7 @@ def start_streaming_mpv(executable, stream_url, opts, *, headers=None, **kwargs)
     subtitles = kwargs.pop("subtitles", []) or []
 
     if content_title:
-        args.append("--title=%s" % content_title)
+        args.extend(("--title=%s" % content_title, '--force-media-title={}'.format(content_title)))
 
     args.extend("--sub-file={}".format(sub) for sub in subtitles)
 
@@ -65,7 +65,8 @@ def start_streaming_celluloid(executable, stream_url, opts, *, headers=None, **k
     subtitles = kwargs.pop("subtitles", []) or []
 
     if content_title:
-        args.append("--mpv-title=%s" % content_title)
+        args.extend(("--mpv-title=%s" % content_title, '--mpv-force-media-title={}'.format(content_title)))
+
 
     args.extend("--mpv-sub-file={}".format(sub) for sub in subtitles)
 
