@@ -37,8 +37,7 @@ def aes_decrypt(data: str, *, key, iv):
 
 @functools.lru_cache()
 def get_encryption_keys(session):
-    value = session.get(ENCRYPTION_KEYS).json()
-    return value["key"].encode(), value["iv"].encode()
+    return {_: __.encode() for _, __ in session.get(ENCRYPTION_KEYS).json().items()}
 
 
 def extract(session, url, **opts):
@@ -48,15 +47,15 @@ def extract(session, url, **opts):
     parsed_url = yarl.URL(url)
     next_host = "https://{}/".format(parsed_url.host)
 
-    key, iv = get_encryption_keys(session)
+    keys = get_encryption_keys(session)
 
     response = session.get(
         "{}encrypt-ajax.php".format(next_host),
-        params={"id": aes_encrypt(parsed_url.query.get("id"), key=key, iv=iv).decode()},
+        params={"id": aes_encrypt(parsed_url.query.get("id"), key=keys["key"], iv=keys["iv"]).decode()},
         headers={"x-requested-with": "XMLHttpRequest"},
     )
     content = json.loads(
-        aes_decrypt(response.json().get("data"), key=key, iv=iv).strip(
+        aes_decrypt(response.json().get("data"), key=keys["second_key"], iv=keys["iv"]).strip(
             b"\x00\x01\x02\x03\x04\x05\x06\x07\x08\t\n\x0b\x0c\r\x0e\x0f\x10"
         )
     )
