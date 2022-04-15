@@ -51,8 +51,8 @@ def extract(session, url, **opts):
 
     response = session.get(
         "{}encrypt-ajax.php".format(next_host),
-        params={"id": aes_encrypt(parsed_url.query.get("id"), key=keys["key"], iv=keys["iv"]).decode()},
-        headers={"x-requested-with": "XMLHttpRequest"},
+        params={"id": aes_encrypt(parsed_url.query.get("id"), key=keys["key"], iv=keys["iv"]).decode(), "alias": parsed_url.query.get("id")},
+        headers={"x-requested-with": "XMLHttpRequest", "referer": next_host},
     )
     content = json.loads(
         aes_decrypt(response.json().get("data"), key=keys["second_key"], iv=keys["iv"]).strip(
