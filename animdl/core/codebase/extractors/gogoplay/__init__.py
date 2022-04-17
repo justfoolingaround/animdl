@@ -5,6 +5,7 @@ import functools
 import regex
 import yarl
 from Cryptodome.Cipher import AES
+from binascii import hexlify
 
 CUSTOM_PADDER = "\x08\x0e\x03\x08\t\x03\x04\t"
 ENCRYPTION_KEYS = "https://raw.githubusercontent.com/justfoolingaround/animdl-provider-benchmarks/master/api/gogoanime.json"
@@ -43,19 +44,31 @@ def get_encryption_keys(session):
 def extract(session, url, **opts):
     """
     Extract content off of GogoAnime.
+
+    Next time you dare change gogo, I'll add a trace to your
+    stupid site's JS and automate the Python code conversion
+    from there.
+
+    Now, now, there's no fun in the games where your opponent
+    is faster than you by a landslide, is it?
+
+    Resistance is futile.
     """
     parsed_url = yarl.URL(url)
     next_host = "https://{}/".format(parsed_url.host)
 
     keys = get_encryption_keys(session)
+    content_id = parsed_url.query.get("id")
+    
+    key = hexlify(base64.b64decode(content_id) + keys["iv"])[:32]
 
     response = session.get(
         "{}encrypt-ajax.php".format(next_host),
-        params={"id": aes_encrypt(parsed_url.query.get("id"), key=keys["key"], iv=keys["iv"]).decode(), "alias": parsed_url.query.get("id")},
+        params={"id": aes_encrypt(content_id, key=key, iv=keys["iv"]).decode(), "alias": content_id},
         headers={"x-requested-with": "XMLHttpRequest", "referer": next_host},
     )
     content = json.loads(
-        aes_decrypt(response.json().get("data"), key=keys["second_key"], iv=keys["iv"]).strip(
+        aes_decrypt(response.json().get("data"), key=key, iv=keys["iv"]).strip(
             b"\x00\x01\x02\x03\x04\x05\x06\x07\x08\t\n\x0b\x0c\r\x0e\x0f\x10"
         )
     )
