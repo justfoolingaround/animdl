@@ -5,6 +5,7 @@ import functools
 import regex
 import yarl
 from Cryptodome.Cipher import AES
+import re
 
 CUSTOM_PADDER = "\x08\x0e\x03\x08\t\x03\x04\t"
 ENCRYPTION_KEYS = "https://raw.githubusercontent.com/justfoolingaround/animdl-provider-benchmarks/master/api/gogoanime.json"
@@ -60,12 +61,12 @@ def extract(session, url, **opts):
     keys = get_encryption_keys(session)
     content_id = parsed_url.query.get("id")
 
+    token = aes_decrypt(re.findall(r'.data-value="(.*)">.',
+                        session.get(url).text)[0], key=keys["key"], iv=keys["iv"]).strip(b"\x00\x01\x02\x03\x04\x05\x06\x07\x08\t\n\x0b\x0c\r\x0e\x0f\x10").decode()
+
     response = session.get(
-        "{}encrypt-ajax.php".format(next_host),
-        params={
-            "id": aes_encrypt(content_id, key=keys["key"], iv=keys["iv"]).decode(),
-            "alias": content_id,
-        },
+        "{}encrypt-ajax.php?id={}&alias={}&{}".format(next_host, aes_encrypt(
+            content_id, key=keys["key"], iv=keys["iv"]).decode(), content_id, token),
         headers={"x-requested-with": "XMLHttpRequest", "referer": next_host},
     )
     content = json.loads(
