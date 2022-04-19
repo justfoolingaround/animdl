@@ -5,7 +5,6 @@ import functools
 import regex
 import yarl
 from Cryptodome.Cipher import AES
-from binascii import unhexlify
 
 CUSTOM_PADDER = "\x08\x0e\x03\x08\t\x03\x04\t"
 ENCRYPTION_KEYS = "https://raw.githubusercontent.com/justfoolingaround/animdl-provider-benchmarks/master/api/gogoanime.json"
@@ -37,7 +36,7 @@ def aes_decrypt(data: str, *, key, iv):
 @functools.lru_cache()
 def get_encryption_keys(session):
     return {
-        _: unhexlify(__.encode())
+        _: __.encode()
         for _, __ in session.get(ENCRYPTION_KEYS).json().items()
     }
 
