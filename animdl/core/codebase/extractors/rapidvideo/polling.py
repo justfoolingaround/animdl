@@ -1,5 +1,6 @@
 import sys
 import threading
+import time
 
 import httpx
 import regex
@@ -69,7 +70,7 @@ def thread_watcher():
     main_thead = threading.main_thread()
 
     while main_thead.is_alive():
-        pass
+        time.sleep(0.1)
     ws_thread.kill()
 
 threading.Thread(target=thread_watcher).start()
