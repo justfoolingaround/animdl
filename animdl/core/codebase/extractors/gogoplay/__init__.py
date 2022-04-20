@@ -1,13 +1,17 @@
 import base64
 import json
 
-import functools
 import regex
 import yarl
 from Cryptodome.Cipher import AES
 
-CUSTOM_PADDER = "\x08\x0e\x03\x08\t\x03\x04\t"
-ENCRYPTION_KEYS = "https://raw.githubusercontent.com/justfoolingaround/animdl-provider-benchmarks/master/api/gogoanime.json"
+
+KEYS_REGEX = regex.compile(rb"(?:container|videocontent)-(\d+)")
+ENCRYPTED_DATA_REGEX = regex.compile(rb'data-value="(.+?)"')
+
+COMPONENT_REGEX = regex.compile(
+    r"ip=(?P<ip>.+?)&refer=(?P<referer>.+?)&ch=(?P<ch>.+?)&token=(?P<token>.+?)&expires=(?P<expires>.+?)&op=(?P<op>.+)"
+)
 
 
 def get_quality(url_text):
@@ -30,15 +34,11 @@ def aes_encrypt(data: str, *, key, iv):
 
 
 def aes_decrypt(data: str, *, key, iv):
-    return AES.new(key, AES.MODE_CBC, iv=iv).decrypt(base64.b64decode(data))
-
-
-@functools.lru_cache()
-def get_encryption_keys(session):
-    return {
-        _: __.encode()
-        for _, __ in session.get(ENCRYPTION_KEYS).json().items()
-    }
+    return (
+        AES.new(key, AES.MODE_CBC, iv=iv)
+        .decrypt(base64.b64decode(data))
+        .strip(b"\x00\x01\x02\x03\x04\x05\x06\x07\x08\t\n\x0b\x0c\r\x0e\x0f\x10")
+    )
 
 
 def extract(session, url, **opts):
@@ -55,23 +55,34 @@ def extract(session, url, **opts):
     Resistance is futile.
     """
     parsed_url = yarl.URL(url)
+    content_id = parsed_url.query["id"]
     next_host = "https://{}/".format(parsed_url.host)
 
-    keys = get_encryption_keys(session)
-    content_id = parsed_url.query.get("id")
+    streaming_page = session.get(url).content
 
-    response = session.get(
-        "{}encrypt-ajax.php".format(next_host),
-        params={
-            "id": aes_encrypt(content_id, key=keys["key"], iv=keys["iv"]).decode(),
-            "alias": content_id,
-        },
-        headers={"x-requested-with": "XMLHttpRequest", "referer": next_host},
+    encryption_key, iv, decryption_key = (
+        _.group(1) for _ in KEYS_REGEX.finditer(streaming_page)
+    )
+
+    data = COMPONENT_REGEX.search(
+        aes_decrypt(
+            ENCRYPTED_DATA_REGEX.search(streaming_page).group(1),
+            key=encryption_key,
+            iv=iv,
+        ).decode()
+    ).groupdict()
+
+    data.update(
+        id=aes_encrypt(content_id, key=encryption_key, iv=iv).decode(), alias=content_id
+    )
+
+    ajax_response = session.get(
+        next_host + "encrypt-ajax.php",
+        params=data,
+        headers={"x-requested-with": "XMLHttpRequest"},
     )
     content = json.loads(
-        aes_decrypt(
-            response.json().get("data"), key=keys["second_key"], iv=keys["iv"]
-        ).strip(b"\x00\x01\x02\x03\x04\x05\x06\x07\x08\t\n\x0b\x0c\r\x0e\x0f\x10")
+        aes_decrypt(ajax_response.json().get("data"), key=decryption_key, iv=iv)
     )
 
     def yielder():
