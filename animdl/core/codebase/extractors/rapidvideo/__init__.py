@@ -2,12 +2,12 @@ import regex
 import yarl
 
 from ...helper import uwu
-from .polling import ws_stimulation
 
 CONTENT_ID_REGEX = regex.compile(r"embed-6/([^?#&/.]+)")
 
 
 def extract(session, url, **opts):
+    from .polling import ws_stimulation
 
     while ws_stimulation.session_sid is None:
         pass

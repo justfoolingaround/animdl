@@ -7,7 +7,7 @@ import regex
 
 
 class DeathThread(threading.Thread):
-    
+
     kill_state = threading.Event()
 
     def run(self):
@@ -72,5 +72,6 @@ def thread_watcher():
     while main_thead.is_alive():
         time.sleep(0.1)
     ws_thread.kill()
+
 
 threading.Thread(target=thread_watcher).start()

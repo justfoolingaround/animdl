@@ -72,13 +72,11 @@ def extract(session, url, **opts):
         ).decode()
     ).groupdict()
 
-    data.update(
-        id=aes_encrypt(content_id, key=encryption_key, iv=iv).decode(), alias=content_id
-    )
+    data.update(id=aes_encrypt(content_id, key=encryption_key, iv=iv).decode())
 
     ajax_response = session.get(
-        next_host + "encrypt-ajax.php",
-        params=data,
+        yarl.URL(next_host).with_path("encrypt-ajax.php").with_query(data).human_repr()
+        + "&alias={}".format(content_id),
         headers={"x-requested-with": "XMLHttpRequest"},
     )
     content = json.loads(

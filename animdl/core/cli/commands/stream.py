@@ -12,7 +12,9 @@ if DISCORD_PRESENCE:
     try:
         from ..helpers.rpc import set_streaming_episode
     except ImportError:
-        raise ImportError("Discord RPC was set to be enabled but `pypresence` is not installed, install it with `pip install pypresence`.")
+        raise ImportError(
+            "Discord RPC was set to be enabled but `pypresence` is not installed, install it with `pip install pypresence`."
+        )
 
 
 def quality_prompt(log_level, logger, stream_list):
