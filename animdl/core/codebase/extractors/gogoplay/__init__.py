@@ -10,7 +10,7 @@ KEYS_REGEX = regex.compile(rb"(?:container|videocontent)-(\d+)")
 ENCRYPTED_DATA_REGEX = regex.compile(rb'data-value="(.+?)"')
 
 COMPONENT_REGEX = regex.compile(
-    r"ip=(?P<ip>.+?)&refer=(?P<referer>.+?)&ch=(?P<ch>.+?)&token=(?P<token>.+?)&expires=(?P<expires>.+?)&op=(?P<op>.+)"
+    r"mip=(?P<mip>.+?)&refer=(?P<referer>.+?)&ch=(?P<ch>.+?)&token2=(?P<token2>.+?)&expires2=(?P<expires2>.+?)&op=(?P<op>.+)"
 )
 
 
