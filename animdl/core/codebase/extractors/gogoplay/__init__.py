@@ -9,10 +9,6 @@ from Cryptodome.Cipher import AES
 KEYS_REGEX = regex.compile(rb"(?:container|videocontent)-(\d+)")
 ENCRYPTED_DATA_REGEX = regex.compile(rb'data-value="(.+?)"')
 
-COMPONENT_REGEX = regex.compile(
-    r"ip=(?P<ip>.+?)&refer=(?P<referer>.+?)&ch=(?P<ch>.+?)&token=(?P<token>.+?)&expires=(?P<expires>.+?)&op=(?P<op>.+)"
-)
-
 
 def get_quality(url_text):
     match = regex.search(r"(\d+) P", url_text)
@@ -64,19 +60,18 @@ def extract(session, url, **opts):
         _.group(1) for _ in KEYS_REGEX.finditer(streaming_page)
     )
 
-    data = COMPONENT_REGEX.search(
-        aes_decrypt(
-            ENCRYPTED_DATA_REGEX.search(streaming_page).group(1),
-            key=encryption_key,
-            iv=iv,
-        ).decode()
-    ).groupdict()
+    component = aes_decrypt(
+        ENCRYPTED_DATA_REGEX.search(streaming_page).group(1),
+        key=encryption_key,
+        iv=iv,
+    ).decode() + "&id={}&alias={}".format(
+        aes_encrypt(content_id, key=encryption_key, iv=iv).decode(), content_id
+    )
 
-    data.update(id=aes_encrypt(content_id, key=encryption_key, iv=iv).decode())
+    _, component = component.split("&", 1)
 
     ajax_response = session.get(
-        yarl.URL(next_host).with_path("encrypt-ajax.php").with_query(data).human_repr()
-        + "&alias={}".format(content_id),
+        next_host + "encrypt-ajax.php?" + component,
         headers={"x-requested-with": "XMLHttpRequest"},
     )
     content = json.loads(
