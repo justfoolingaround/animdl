@@ -13,9 +13,9 @@ TITLES_REGEX = regex.compile(r'<h1 class="mb-3">(.+?)</h1>')
 
 def post_processor(session, stream_page):
     cookies = "__ddg1={}; __ddg2={}; __ddg2_={}".format(
-        session.cookies.get("__ddg1_", ''),
-        session.cookies.get("__ddg2", ''),
-        session.cookies.get("__ddg2_", ''),
+        session.cookies.get("__ddg1_", ""),
+        session.cookies.get("__ddg2", ""),
+        session.cookies.get("__ddg2_", ""),
     )
     yield from (
         {

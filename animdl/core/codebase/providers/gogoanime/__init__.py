@@ -37,7 +37,7 @@ def get_episode_list(session, anime_id):
 
     for (a, div) in zip(genexp, genexp):
         episode = div.text_content().split(" ")[1]
-        yield float(episode) if '.' in episode else int(episode), GOGOANIME + a.get(
+        yield float(episode) if "." in episode else int(episode), GOGOANIME + a.get(
             "href"
         ).strip(),
 
