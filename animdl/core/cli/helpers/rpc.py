@@ -70,7 +70,7 @@ def set_streaming_episode(session, anime_name, episode):
             start=int(time.time()),
         )
 
-    around = episode - (episode % 11)
+    around = episode - (episode % 10)
 
     current = get_episodes(session, anime["id"], around)[episode % 11 - 1]
 
