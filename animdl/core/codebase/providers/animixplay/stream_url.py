@@ -6,6 +6,7 @@ from functools import partial
 
 import lxml.html as htmlparser
 import regex
+import yarl
 
 animixplay_logger = logging.getLogger("provider:animixplay")
 
@@ -68,7 +69,13 @@ def extract_from_embed(session, embed_url):
 
 
 def get_stream_url(session, data_url):
-    content_id = ID_MATCHER.search(data_url)
+
+    component = yarl.URL(data_url)
+
+    if component.host == "www.dailymotion.com":
+        return [{"stream_url": data_url, "further_extraction": ("dailymotion", {})}]
+
+    content_id = component.query.get("id")
 
     if content_id:
         return extract_from_embed(
@@ -76,15 +83,13 @@ def get_stream_url(session, data_url):
             EMBED_URL_BASE
             + b64encode(
                 "{}LTXs3GrU8we9O{}".format(
-                    content_id.group(1),
-                    b64encode(content_id.group(1).encode()).decode(),
+                    content_id,
+                    b64encode(content_id.encode()).decode(),
                 ).encode()
             ).decode(),
         ) or [
             {
-                "stream_url": "https://gogoplay1.com/streaming.php?id={}".format(
-                    content_id.group(1)
-                ),
+                "stream_url": data_url,
                 "further_extraction": ("gogoplay", {}),
             }
         ]
