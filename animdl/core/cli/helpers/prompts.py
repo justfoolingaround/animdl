@@ -105,11 +105,13 @@ def fzf_prompt(
         [
             fzf_executable,
             "--header={}".format(
-                f"Select the {component_name} (automatically selects the top result)"
+                f"Select the {component_name} (automatically selects the top {component_name})"
             ),
             "--reverse",
             "+s",
             "--color=fg:#d60a79",
+            "--border=sharp",
+            "--height=50%"
         ],
         stdin=subprocess.PIPE,
         stdout=subprocess.PIPE,
