@@ -113,18 +113,15 @@ def fzf_prompt(
         ],
         stdin=subprocess.PIPE,
         stdout=subprocess.PIPE,
-        stderr=subprocess.DEVNULL,
+        stderr=subprocess.PIPE,
     )
 
     selection, _ = process.communicate(b"\n".join(map(str.encode, stdout_mapout)))
-    selection = selection.decode()[:-1]
 
-    if selection not in stdout_mapout:
-        retval = components[0]
-    else:
-        retval = stdout_mapout[selection]
+    if process.returncode in [1, 130]:
+        return components[0]
 
-    return retval
+    return stdout_mapout[selection.decode()[:-1]]
 
 
 def get_prompt_manager(*, fallback=default_prompt):
