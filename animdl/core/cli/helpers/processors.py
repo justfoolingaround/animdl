@@ -4,45 +4,22 @@ from ...codebase.providers import get_provider
 from ...config import DEFAULT_PROVIDER
 from .searcher import get_searcher
 
+from .prompts import get_prompt_manager
+
 
 def prompt_user(logger, anime_list_genexp, provider):
-    expansion = [*anime_list_genexp]
 
-    if not expansion:
-        return logger.critical(
-            "Failed to find anything of that query on {!r}. Try searching on other providers.".format(
-                provider
-            )
-        ) or ({}, None)
+    manager = get_prompt_manager()
 
-    for n, anime in enumerate(expansion, 1):
-        logger.info(
-            "{0:02d}: {1[name]} \x1b[33m{1[anime_url]}\x1b[39m".format(n, anime)
-        )
-
-    if len(expansion) == 1:
-        logger.debug(
-            "Only a single search result found, automatically resorting to it."
-        )
-        return expansion[0], provider
-
-    index = (
-        prompt(
-            "Select by the index (defaults to 1)",
-            default=1,
-            type=int,
-            show_default=False,
-        )
-        - 1
+    return manager(
+        logger,
+        anime_list_genexp,
+        processor=lambda component: (component, provider),
+        component_name="search result",
+        fallback=({}, None),
+        error_message=f"Failed to find anything of that query on {provider!r}. Try searching on other providers.",
+        stdout_processor=lambda component: f"{component[0]['name']} / {component[0]['anime_url']}",
     )
-    if (index + 1) > len(expansion):
-        logger.debug(
-            "Applying modulus to get a valid index from incorrect index: #%02d -> #%02d"
-            % (index + 1, index % len(expansion) + 1)
-        )
-        index %= len(expansion)
-
-    return expansion[index], provider
 
 
 def process_query(
@@ -65,4 +42,4 @@ def process_query(
 
     if not auto:
         return prompt_user(logger, genexp, searcher.provider)
-    return [*genexp][auto_index - 1], searcher.provider
+    return list(genexp)[auto_index - 1], searcher.provider

@@ -85,7 +85,7 @@ def animdl_grab(query, file, auto, index, log_level, **kwargs):
                     json.dump(collected_streams, json_file_writer, indent=4)
             except WindowsError:
                 logger.error(
-                    "Failed to attempt I/O on the file at the moment; the unwritten values will be written in the next I/O."
+                    "Failed to attempt I/O on the file at the moment; the unwritten value(s) will be written in the next I/O."
                 )
         else:
             to_stdout(
