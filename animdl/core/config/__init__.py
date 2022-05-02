@@ -105,7 +105,7 @@ DEFAULT_CONFIG = {
     "fzf": {
         "executable": "fzf",
         "opts": [],
-        "state": True,
+        "state": False,
     },
 }
 
@@ -166,4 +166,4 @@ DISCORD_PRESENCE = CONFIG.get("discord_presence", False)
 FZF = CONFIG.get("fzf", {})
 FZF_EXECUTABLE = FZF.get("executable", "fzf")
 FZF_OPTS = FZF.get("opts", [])
-FZF_STATE = FZF.get("state", True)
+FZF_STATE = FZF.get("state", False)
