@@ -113,7 +113,6 @@ def fzf_prompt(
         ],
         stdin=subprocess.PIPE,
         stdout=subprocess.PIPE,
-        stderr=subprocess.PIPE,
     )
 
     selection, _ = process.communicate(b"\n".join(map(str.encode, stdout_mapout)))
