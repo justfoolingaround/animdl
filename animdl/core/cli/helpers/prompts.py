@@ -1,10 +1,9 @@
-import shutil
 import subprocess
 import sys
 
 from click import prompt
 
-fzf_executable = shutil.which("fzf")
+from ...config import FZF_EXECUTABLE, FZF_OPTS, FZF_STATE
 
 
 def default_prompt(
@@ -101,18 +100,15 @@ def fzf_prompt(
             logger.critical(error_message)
         return fallback
 
+    fzf_args = [
+        FZF_EXECUTABLE,
+        "--header={}".format(
+            f"Select the {component_name} (automatically selects the top {component_name})"
+        ),
+    ] + FZF_OPTS
+
     process = subprocess.Popen(
-        [
-            fzf_executable,
-            "--header={}".format(
-                f"Select the {component_name} (automatically selects the top {component_name})"
-            ),
-            "--reverse",
-            "+s",
-            "--color=fg:#d60a79",
-            "--border=sharp",
-            "--height=50%"
-        ],
+        fzf_args,
         stdin=subprocess.PIPE,
         stdout=subprocess.PIPE,
     )
@@ -130,7 +126,7 @@ def get_prompt_manager(*, fallback=default_prompt):
     if not sys.stdout.isatty():
         return fallback
 
-    if fzf_executable:
+    if FZF_STATE:
         return fzf_prompt
 
     return fallback

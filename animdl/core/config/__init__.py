@@ -102,6 +102,11 @@ DEFAULT_CONFIG = {
         "submerge": True,
     },
     "discord_presence": False,
+    "fzf": {
+        "executable": "fzf",
+        "opts": [],
+        "state": True,
+    },
 }
 
 CONFIG = DEFAULT_CONFIG
@@ -157,3 +162,8 @@ QBITTORENT_ENDPOINT = QBITTORENT_CONFIG.get("endpoint_url")
 QBITTORENT_CREDENTIALS = QBITTORENT_CONFIG.get("credentials", {})
 
 DISCORD_PRESENCE = CONFIG.get("discord_presence", False)
+
+FZF = CONFIG.get("fzf", {})
+FZF_EXECUTABLE = FZF.get("executable", "fzf")
+FZF_OPTS = FZF.get("opts", [])
+FZF_STATE = FZF.get("state", True)
