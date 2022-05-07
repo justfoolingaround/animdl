@@ -111,7 +111,7 @@ The `stream` option is disabled automatically if the project cannot find any of 
 
 These commands are the main set of command in the project. All of them scrape the target site, the only difference is how it is used. 
 
-1. The `stream` option tosses the stream url to a player so that you can seamlessly binge your anime.
+- The `stream` option tosses the stream url to a player so that you can seamlessly binge your anime.
     - Streaming supports Discord Rich Presence with `pypresence`.
 - The `download` option downloads the anime to your local machine.
     - Downloading is done in the directory where you run the project.
@@ -248,7 +248,7 @@ Else, a file with the name `animdl_config.yml` in the working directory will be 
 Futhermore, the configuration files can be globally placed at:
 - Windows:
     - `%USERPROILE%/.animdl/config.yml`
-- Linux:
+- Anything else:
     - `$HOME/.animdl/config.yml`
 
 Only a singular configuration file in the above priority order is used, configurations aren't merged.
