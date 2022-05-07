@@ -246,10 +246,10 @@ You can use the `ANIMDL_CONFIG` environment variable to specify a configuration 
 Else, a file with the name `animdl_config.yml` in the working directory will be used if available.
 
 Futhermore, the configuration files can be globally placed at:
-    - Windows:
-        - `%USERPROILE%/.animdl/config.yml`
-    - Linux:
-        - `$HOME/.animdl/config.yml`
+- Windows:
+    - `%USERPROILE%/.animdl/config.yml`
+- Linux:
+    - `$HOME/.animdl/config.yml`
 
 Only a singular configuration file in the above priority order is used, configurations aren't merged.
 
