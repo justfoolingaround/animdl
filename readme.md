@@ -77,7 +77,7 @@ This project can be installed on to your device via different mechanisms, these 
 
 ## Support
 
-You can contact the developer directly via this [email](mailto:kr.justfoolingaround.com). However, the most recommended way is to head to the discord server.
+You can contact the developer directly via this [email](mailto:kr.justfoolingaround@gmail.com). However, the most recommended way is to head to the discord server.
 
 <p align="center">
 <a href="https://discord.gg/gaX2Snst2j">
@@ -141,7 +141,7 @@ Providers can be specified by using provider prefix, <code>9anime:One Piece</cod
 You can specify direct urls to the provider; the project will automatically detect the provider and continue scraping. This method ignores searching.<sub></p>
 
 
-#### `-r` / `--range` argument
+### `-r` / `--range` argument
 
 This argument is shared by **stream**, **download** and **grab**, it can be used to hand over custom ranges for selecting episodes.
 
