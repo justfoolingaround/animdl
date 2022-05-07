@@ -25,7 +25,7 @@ def get_existent_path(*paths):
 if sys.platform == "win32":
     USERPROFILE_ANIMDL_PATH = os.getenv("userprofile", ".") + "/.animdl/config.yml"
 else:
-    USERPROFILE_ANIMDL_PATH = os.getenv("HOME", ".") + "/animdl/config.yml"
+    USERPROFILE_ANIMDL_PATH = os.getenv("HOME", ".") + "/.config/animdl/config.yml"
 
 CONFIGURATION_FILE_PATH = get_existent_path(
     os.getenv("ANIMDL_CONFIG", "./animdl_config.yml"),
@@ -67,7 +67,7 @@ DEFAULT_CONFIG = {
             "opts": [],
         },
         "iina": {
-            "executable": "iina-cli",
+            "executable": "iina",
             "opts": [],
         },
         "celluloid": {
@@ -81,13 +81,6 @@ DEFAULT_CONFIG = {
         "android": {
             "executable": "am",
             "opts": [],
-        },
-    },
-    "qbittorrent": {
-        "endpoint_url": "http://127.0.0.1:8080",
-        "credentials": {
-            "username": "admin",
-            "password": "youshallnotpass",
         },
     },
     "schedule": {
@@ -155,11 +148,6 @@ FFMPEG_SETTINGS = CONFIG.get("ffmpeg", {})
 FFMPEG_EXECUTABLE = FFMPEG_SETTINGS.get("executable", "ffmpeg")
 FFMPEG_HLS = FFMPEG_SETTINGS.get("hls_download", False)
 FFMPEG_SUBMERGE = FFMPEG_SETTINGS.get("submerge", True)
-
-QBITTORENT_CONFIG = CONFIG.get("qbittorrent", {})
-
-QBITTORENT_ENDPOINT = QBITTORENT_CONFIG.get("endpoint_url")
-QBITTORENT_CREDENTIALS = QBITTORENT_CONFIG.get("credentials", {})
 
 DISCORD_PRESENCE = CONFIG.get("discord_presence", False)
 

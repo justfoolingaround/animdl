@@ -66,6 +66,7 @@ def set_streaming_episode(session, anime_name, episode):
             state=state,
             large_image=image,
             small_image="mascot",
+            large_text="https://github.com/justfoolingaround/animdl",
             start=int(time.time()),
         )
 
