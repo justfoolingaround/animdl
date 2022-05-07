@@ -28,6 +28,9 @@ def further_extraction(session, stream):
         return [stream]
 
     for ext_module, ext in extractors.iter_extractors():
+        if getattr(ext_module.extract, "disabled", False):
+            continue
+
         if ext == extractor:
             try:
                 return functools.reduce(
