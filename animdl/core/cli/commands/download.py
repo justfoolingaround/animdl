@@ -4,7 +4,7 @@ from pathlib import Path
 import click
 
 from ...codebase import providers, sanitize_filename
-from ...config import AUTO_RETRY, QUALITY, QBITTORENT_CONFIG
+from ...config import AUTO_RETRY, QUALITY
 from .. import exit_codes, helpers, http_client
 
 
@@ -150,7 +150,6 @@ def animdl_download(
             idm=idm,
             retry_timeout=AUTO_RETRY,
             log_level=log_level,
-            torrent_info=QBITTORENT_CONFIG,
         )
 
         if not success:

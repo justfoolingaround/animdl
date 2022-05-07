@@ -83,13 +83,6 @@ DEFAULT_CONFIG = {
             "opts": [],
         },
     },
-    "qbittorrent": {
-        "endpoint_url": "http://127.0.0.1:8080",
-        "credentials": {
-            "username": "admin",
-            "password": "youshallnotpass",
-        },
-    },
     "schedule": {
         "site_url": "https://graphql.anilist.co/",
         "date_format": "%b. %d, %A",
@@ -155,11 +148,6 @@ FFMPEG_SETTINGS = CONFIG.get("ffmpeg", {})
 FFMPEG_EXECUTABLE = FFMPEG_SETTINGS.get("executable", "ffmpeg")
 FFMPEG_HLS = FFMPEG_SETTINGS.get("hls_download", False)
 FFMPEG_SUBMERGE = FFMPEG_SETTINGS.get("submerge", True)
-
-QBITTORENT_CONFIG = CONFIG.get("qbittorrent", {})
-
-QBITTORENT_ENDPOINT = QBITTORENT_CONFIG.get("endpoint_url")
-QBITTORENT_CREDENTIALS = QBITTORENT_CONFIG.get("credentials", {})
 
 DISCORD_PRESENCE = CONFIG.get("discord_presence", False)
 
