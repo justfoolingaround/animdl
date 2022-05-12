@@ -210,7 +210,7 @@ If you feel that a particular stream is fast enough for you, `-q [stream_url=r'.
 
 ### Conclusion
 
-This project posses powerful commands and arguments to aid them, there are **many** arguments that aren't specified here but are available in the project. This done because these commands are advanced usage commands which may just cause confusion. Feel free to ask about them.
+This project posses powerful commands and arguments to aid them, there are **many** arguments that aren't specified here but are available in the project. This is done because these commands are advanced usage commands which may just cause confusion. Feel free to ask about them.
 
 ## Providers
 
@@ -323,6 +323,11 @@ This project supports RPC clients, this can be enabled **only** from the configu
 ```
 $ pip install pypresence
 ```
+
+```yml
+discord_presence: true
+```
+
 
 ### fzf set-up
 
