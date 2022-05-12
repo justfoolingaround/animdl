@@ -50,6 +50,7 @@ DEFAULT_CONFIG = {
         "gogoanime": "https://gogoanime.cm/",
         "haho": "https://haho.moe/",
         "hentaistream": "https://hentaistream.moe/",
+        "kamyroll_api": "https://api.kamyroll.tech/",
         "tenshi": "https://tenshi.moe/",
         "nyaasi": "https://nyaa.si/",
         "twist": "https://twist.moe/",
@@ -121,6 +122,7 @@ ANIMIXPLAY = SITE_URLS.get("animixplay")
 ANIMTIME = SITE_URLS.get("animtime")
 CRUNCHYROLL = SITE_URLS.get("crunchyroll")
 KAWAIIFU = SITE_URLS.get("kawaiifu")
+KAMYROLL_API = SITE_URLS.get("kamyroll_api")
 GOGOANIME = SITE_URLS.get("gogoanime")
 NYAASI = SITE_URLS.get("nyaasi")
 TENSHI = SITE_URLS.get("tenshi")

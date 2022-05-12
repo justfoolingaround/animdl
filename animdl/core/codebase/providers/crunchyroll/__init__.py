@@ -11,7 +11,7 @@ from ...helper import construct_site_based_regex
 REGEX = construct_site_based_regex(CRUNCHYROLL, extra_regex=r"/([^?/&]+)")
 
 CONTENT_METADATA = regex.compile(r"vilos\.config\.media = (\{.+\})")
-TITLES_REGEX = regex.compile(r'"mediaTitle":"(.+?)"')
+TITLES_REGEX = regex.compile(r'\{"isAuthenticated":.+?"mediaTitle":"(.+?)".+?\}')
 
 
 def get_subtitle(subtitles, lang="enUS"):
@@ -76,18 +76,6 @@ def fetcher(session, url, check, match):
     episode_urls = sorted(
         group_content(slug, htmlparser.fromstring(session.get(url).text)).items()
     )
-
-    if not episode_urls:
-        us_catalouge_session = (
-            session.get("https://cr-unblocker.us.to/start_session")
-            .json()
-            .get("data", {})
-            .get("session_id")
-        )
-        session.cookies.update({"session_id": us_catalouge_session})
-        episode_urls = sorted(
-            group_content(slug, htmlparser.fromstring(session.get(url).text)).items()
-        )
 
     for episode_number, episode_data in episode_urls:
         if check(episode_number):
