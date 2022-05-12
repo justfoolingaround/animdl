@@ -249,7 +249,7 @@ Futhermore, the configuration files can be globally placed at:
 - Windows:
     - `%USERPROILE%/.animdl/config.yml`
 - Anything else:
-    - `$HOME/.animdl/config.yml`
+    - `$HOME/.config/animdl/config.yml`
 
 Only a singular configuration file in the above priority order is used, configurations aren't merged.
 
