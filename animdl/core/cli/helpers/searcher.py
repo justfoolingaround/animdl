@@ -149,7 +149,7 @@ def search_twist(session, query):
         }
 
 
-def search_crunchyroll(session, query):
+def search_crunchyroll(session, query, *, scheme="http"):
     content = json.loads(
         session.get(
             CRUNCHYROLL + "ajax/?req=RpcApiSearch_GetSearchCandidates"
@@ -160,7 +160,7 @@ def search_crunchyroll(session, query):
         query, content.get("data", []), processor=lambda r: r.get("name")
     ):
         yield {
-            "anime_url": anime.get("link", "").strip("/"),
+            "anime_url": scheme + anime.get("link", "").strip("/")[5:],
             "name": anime.get("name", ""),
         }
 
@@ -217,6 +217,9 @@ link = {
     "animeout": search_animeout,
     "animixplay": search_animixplay,
     "crunchyroll": search_crunchyroll,
+    "kamyroll": lambda *args, **kwargs: search_crunchyroll(
+        *args, **kwargs, scheme="kamyroll"
+    ),
     "kawaiifu": search_kawaiifu,
     "gogoanime": search_gogoanime,
     "haho": search_haho,
