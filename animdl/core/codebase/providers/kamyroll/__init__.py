@@ -29,16 +29,19 @@ def extract_streams(session, medias: "list"):
 
         for stream in streams.get("streams", []):
             if stream["url"] not in streams and not stream["hardsub_locale"]:
-                collected_streams.append(stream["url"])
+                collected_streams.append(
+                    {
+                        "stream_url": stream["url"],
+                        "title": media["title"],
+                        **(
+                            {"subtitle": collected_subtitles}
+                            if collected_subtitles
+                            else {}
+                        ),
+                    }
+                )
 
-    return list(
-        {
-            "stream_url": stream,
-            "title": media["title"],
-            **({"subtitle": collected_subtitles} if collected_subtitles else {}),
-        }
-        for stream in collected_streams
-    )
+    return collected_streams
 
 
 def fetcher(session, url, check, match):
