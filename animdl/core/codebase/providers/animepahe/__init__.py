@@ -13,7 +13,7 @@ API_URL = ANIMEPAHE + "api"
 SITE_URL = ANIMEPAHE
 
 PLAYER_RE = construct_site_based_regex(ANIMEPAHE, extra_regex=r"/play/([^?&/]+)")
-ID_RE = regex.compile(r"/api\?m=release&id=([^&]+)")
+ID_RE = regex.compile(r'let id = "(.+?)"')
 KWIK_RE = regex.compile(r"Plyr\|querySelector\|document\|([^\\']+)")
 
 TITLES_REGEX = regex.compile(r"<h1>(.+?)</h1>")
