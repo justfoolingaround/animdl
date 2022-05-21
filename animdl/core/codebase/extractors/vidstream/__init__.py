@@ -1,5 +1,6 @@
 import regex
 
+from ...providers.nineanime.decipher import cipher_keyed, encrypt
 
 EMBED_URL_REGEX = regex.compile(r"(.+?/)(?:e(?:mbed)?)/([a-zA-Z0-9]+)")
 
@@ -10,7 +11,11 @@ def extract(session, url, **opts):
     host, slug = match.group(1, 2)
 
     vidstream_info = session.get(
-        "{}info/{}".format(host, slug), headers={"referer": url}, params={"d": "kr"}
+        "{}info/{}".format(
+            host,
+            encrypt(cipher_keyed("LCbu3iYC7ln24K7P", encrypt(slug))).replace("/", "_"),
+        ),
+        headers={"referer": url},
     )
 
     if vidstream_info.status_code == 404:
@@ -18,5 +23,5 @@ def extract(session, url, **opts):
 
     return [
         {"stream_url": content.get("file", ""), "headers": {"referer": url}}
-        for content in vidstream_info.json().get("media", {}).get("sources", [])
+        for content in vidstream_info.json()["data"].get("media", {}).get("sources", [])
     ]
