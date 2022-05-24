@@ -3,7 +3,7 @@ from textwrap import wrap
 import base64
 
 NORMAL_TABLE = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/"
-BASE64_TABLE = "0wMrYU+ixjJ4QdzgfN2HlyIVAt3sBOZnCT9Lm7uFDovkb/EaKpRWhqXS5168ePcG"
+BASE64_TABLE = "c/aUAorINHBLxWTy3uRiPt8J+vjsOheFG1E0q2X9CYwDZlnmd4Kb5M6gSVzfk7pQ"
 
 
 def cipher_keyed(key, plaintext):
@@ -33,11 +33,9 @@ def get_salted_code(plaintext):
     )
 
 
-def encrypt(data):
+def encrypt(data, *, table=BASE64_TABLE):
     return "".join(
-        BASE64_TABLE[
-            int(segment.ljust(6, "0"), 2) if len(segment) < 6 else int(segment, 2)
-        ]
+        table[int(segment.ljust(6, "0"), 2) if len(segment) < 6 else int(segment, 2)]
         for segment in wrap(
             "".join(bin(ord(c)).lstrip("0b").rjust(8, "0") for c in data), 6
         )
@@ -52,13 +50,13 @@ def encrypt_url(url):
     return "kr1337" + encrypt(cipher_keyed("kr1337", quote(url)))
 
 
-def decrypt(data):
+def decrypt(data, *, table=BASE64_TABLE):
     return "".join(
         map(
             chr,
             base64.b64decode(
                 (data + "=" * (len(data) % 4))
-                .translate(str.maketrans(BASE64_TABLE, NORMAL_TABLE))
+                .translate(str.maketrans(table, NORMAL_TABLE))
                 .encode()
             ),
         )
