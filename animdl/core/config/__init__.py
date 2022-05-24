@@ -50,7 +50,7 @@ DEFAULT_CONFIG = {
         "gogoanime": "https://gogoanime.cm/",
         "haho": "https://haho.moe/",
         "hentaistream": "https://hentaistream.moe/",
-        "kamyroll_api": "https://api.kamyroll.tech/",
+        "kamyroll_api": "https://api-kamyroll.herokuapp.com/",
         "tenshi": "https://tenshi.moe/",
         "nyaasi": "https://nyaa.si/",
         "twist": "https://twist.moe/",
