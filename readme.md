@@ -247,7 +247,7 @@ Else, a file with the name `animdl_config.yml` in the working directory will be 
 
 Futhermore, the configuration files can be globally placed at:
 - Windows:
-    - `%USERPROILE%/.animdl/config.yml`
+    - `%USERPROFILE%/.animdl/config.yml`
 - Anything else:
     - `$HOME/.config/animdl/config.yml`
 
