@@ -15,6 +15,8 @@ if DISCORD_PRESENCE:
         raise ImportError(
             "Discord RPC was set to be enabled but `pypresence` is not installed, install it with `pip install pypresence`."
         )
+    except RuntimeError:
+        DISCORD_PRESENCE = False
 
 
 def quality_prompt(log_level, logger, stream_list):

@@ -5,7 +5,11 @@ import pypresence
 
 ANIMDL_APPLICATION_ID = 897850955373105222
 
-presence_client = pypresence.Presence(ANIMDL_APPLICATION_ID)
+try:
+    presence_client = pypresence.Presence(ANIMDL_APPLICATION_ID)
+except pypresence.DiscordNotFound:
+    raise RuntimeError("Could not connect to Discord.")
+
 presence_client.connect()
 
 presence_client.update(
