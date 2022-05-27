@@ -4,7 +4,7 @@ from ...providers.nineanime.decipher import cipher_keyed, encrypt
 
 EMBED_URL_REGEX = regex.compile(r"(.+?/)(?:e(?:mbed)?)/([a-zA-Z0-9]+)")
 
-BASE64_TABLE = "0wMrYU+ixjJ4QdzgfN2HlyIVAt3sBOZnCT9Lm7uFDovkb/EaKpRWhqXS5168ePcG"
+BASE64_TABLE = "51wJ0FDq/UVCefLopEcmK3ni4WIQztMjZdSYOsbHr9R2h7PvxBGAuglaN8+kXT6y"
 
 
 def extract(session, url, **opts):
