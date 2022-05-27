@@ -1,33 +1,9 @@
-import sys
-import threading
+import json
 import time
 
-import httpx
 import regex
 
-
-class DeathThread(threading.Thread):
-
-    kill_state = threading.Event()
-
-    def run(self):
-        sys.settrace(self.global_trace)
-        return super().run()
-
-    def global_trace(self, stack_frame, reason, *args, **kwargs):
-        if reason == "call":
-            return self.local_trace
-
-    def local_trace(self, stack_frame, reason, *args, **kwargs):
-        if self.kill_state.is_set() and reason == "line":
-            raise SystemExit()
-        return self.local_trace
-
-    def kill(self):
-        return self.kill_state.set()
-
-
-SID_REGEX = regex.compile(r'"sid":"(.+?)"')
+recv_data_regex = regex.compile(r"(\d+)(.+)")
 
 POLLING_PARAMETERS = {
     "EIO": "4",
@@ -35,43 +11,89 @@ POLLING_PARAMETERS = {
 }
 
 
-def ws_stimulation(session, *, url="https://ws1.rapid-cloud.ru/socket.io/"):
-    def poll(params={}, data=None):
+def parse_response(response_text):
+    match = recv_data_regex.search(response_text)
+
+    if match:
+        return int(match.group(1)), json.loads(match.group(2))
+
+    return None, response_text
+
+
+def ws_stimulation(
+    session,
+    *,
+    url="https://ws1.rapid-cloud.ru/socket.io/",
+    close_event,
+    sid_holder,
+    parent_thread,
+):
+    def ws_poll(params={}, data=None):
         soft = POLLING_PARAMETERS.copy()
         soft.update(params)
 
         if data is None:
-            return session.get(url, params=soft)
+            response = session.get(url, params=soft)
         else:
-            return session.post(url, params=soft, data=data)
+            response = session.post(url, params=soft, data=data)
 
-    def get_sid(text: str) -> str:
-        return SID_REGEX.search(text).group(1)
+        return parse_response(response.text)
 
-    polling_sid = get_sid(poll().text)
+    _, response = ws_poll()
 
-    assert poll({"sid": polling_sid}, data="40").text == "ok"
+    ping_interval = response.get("pingInterval", 25000) // 1000
+    polling_sid = response.get("sid")
 
-    setattr(ws_stimulation, "session_sid", get_sid(poll({"sid": polling_sid}).text))
+    _, client_check = ws_poll(
+        {
+            "sid": polling_sid,
+        },
+        data="40",
+    )
 
-    while 1:
-        poll({"sid": polling_sid}).text == "2"
-        poll({"sid": polling_sid}, data="3").text == "ok"
+    if client_check != "ok":
+        raise RuntimeError(
+            f"Websocket server has returned a faulty value: {client_check!r}"
+        )
+
+    _, response = ws_poll(
+        {
+            "sid": polling_sid,
+        }
+    )
+
+    user_sid = response.get("sid")
+
+    sid_holder.update(sid=user_sid)
+
+    while not active_sleep(
+        ping_interval, lambda: not (close_event.is_set() or parent_thread.is_alive())
+    ):
+
+        _, data = ws_poll({"sid": polling_sid})
+
+        if data != "2":
+            raise RuntimeError(
+                f"Websocket server has returned a faulty value: {data!r}"
+            )
+
+        _, data = ws_poll({"sid": polling_sid}, data="3")
+
+        if data != "ok":
+            raise RuntimeError(
+                f"Websocket server has returned a faulty value: {data!r}"
+            )
 
 
-ws_stimulation.session_sid = None
+def active_sleep(interval, predicate, *, delay=0.1):
 
-ws_thread = DeathThread(target=ws_stimulation, args=(httpx.Client(timeout=60.0),))
-ws_thread.start()
+    time_now = time.time()
 
+    while (time.time() - time_now) < interval:
 
-def thread_watcher():
+        if predicate():
+            return False
 
-    main_thead = threading.main_thread()
+        time.sleep(delay)
 
-    while main_thead.is_alive():
-        time.sleep(0.1)
-    ws_thread.kill()
-
-
-threading.Thread(target=thread_watcher).start()
+    return True
