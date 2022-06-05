@@ -28,7 +28,7 @@ setup(
         "click==8.0.4",
         "comtypes==1.1.11",
         "cssselect==1.1.0",
-        "httpx==0.22.0",
+        "httpx==0.23.0",
         "lxml==4.8.0",
         "tqdm==4.62.3",
         "pycryptodomex==3.14.1",
