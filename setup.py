@@ -24,4 +24,5 @@ setup(
         [console_scripts]
         animdl=animdl.__main__:__animdl_cli__
     """,
+    include_package_data=True,
 )
