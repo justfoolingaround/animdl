@@ -104,6 +104,6 @@ def fetcher(session, url, check, match):
         .text
     )
 
-    for value in range(data.get("eptotal")):
+    for value in range(int(data.get("eptotal"))):
         if check(value + 1):
             yield partial(get_stream_url, session, data[str(value)]), value + 1
