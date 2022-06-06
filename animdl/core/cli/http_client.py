@@ -8,15 +8,10 @@ try:
 except ImportError:
     from exit_codes import INTERNET_ISSUE
 
-headers = httpx.Headers(
-    {
-        b"Accept": b"*/*",
-        b"Accept-Encoding": b"gzip, deflate",
-        b"Connection": b"keep-alive",
-        b"Referer": "https://google.com/",
-        b"User-Agent": b"animdl/1.4.20",
-    }
-)
+headers = {
+    "Referer": "https://www.google.com/",
+    "User-Agent": "animdl/1.5.84"
+}
 
 
 class AnimeHttpClient(httpx.Client):
