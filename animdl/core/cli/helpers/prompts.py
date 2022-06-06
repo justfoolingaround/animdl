@@ -71,6 +71,9 @@ def fzf_prompt(
     else:
         components = list(processor(component) for component in components)
 
+    if len(components) == 1:
+        return components[0]
+
     stdout_mapout = {}
 
     for component_output, component in zip(
