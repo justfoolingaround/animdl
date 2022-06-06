@@ -3,6 +3,7 @@ import logging
 
 import click
 
+from ...codebase.providers import get_provider
 from ...config import DEFAULT_PROVIDER
 from ..helpers import bannerify
 from ..helpers.searcher import link
@@ -36,7 +37,21 @@ from ..http_client import client
 @bannerify
 def animdl_search(query, json, provider, **kwargs):
     logger = logging.getLogger("searcher")
-    genexp = link.get(provider)(client, query)
+
+    match, module, _ = get_provider(query, raise_on_failure=False)
+
+    if module is not None:
+        genexp = (
+            {
+                "name": (
+                    module.metadata_fetcher(client, query, match)["titles"] or [None]
+                )[0]
+                or "",
+                "anime_url": query,
+            },
+        )
+    else:
+        genexp = link.get(provider)(client, query)
 
     for count, search_data in enumerate(genexp, 1):
         if json:
