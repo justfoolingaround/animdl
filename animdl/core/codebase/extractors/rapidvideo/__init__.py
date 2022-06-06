@@ -9,7 +9,6 @@ CONTENT_ID_REGEX = regex.compile(r"embed-6/([^?#&/.]+)")
 
 
 parent_thread = threading.current_thread()
-ws_lock = threading.Lock()
 
 sid_holder = {
     "sid": None,
