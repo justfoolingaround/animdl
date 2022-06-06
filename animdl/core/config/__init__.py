@@ -101,6 +101,7 @@ DEFAULT_CONFIG = {
         "opts": [],
         "state": False,
     },
+    "download_directory": ".",
 }
 
 CONFIG = DEFAULT_CONFIG
@@ -157,3 +158,5 @@ FZF = CONFIG.get("fzf", {})
 FZF_EXECUTABLE = FZF.get("executable", "fzf")
 FZF_OPTS = FZF.get("opts", [])
 FZF_STATE = FZF.get("state", False)
+
+DOWNLOAD_DIRECTORY = CONFIG.get("download_directory", ".")

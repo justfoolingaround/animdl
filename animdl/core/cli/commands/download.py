@@ -4,7 +4,7 @@ from pathlib import Path
 import click
 
 from ...codebase import providers, sanitize_filename
-from ...config import AUTO_RETRY, QUALITY
+from ...config import AUTO_RETRY, QUALITY, DOWNLOAD_DIRECTORY
 from .. import exit_codes, helpers, http_client
 
 
@@ -35,11 +35,12 @@ from .. import exit_codes, helpers, http_client
 )
 @click.option(
     "-d",
-    "--download-folder",
-    help="Download folder name for the anime.",
+    "--download-dir",
+    help="Download directory for downloads.",
     required=False,
-    default="",
+    default=DOWNLOAD_DIRECTORY,
     show_default=False,
+    type=click.Path(exists=True, file_okay=False, dir_okay=True),
 )
 @click.option(
     "--idm",
@@ -68,9 +69,8 @@ from .. import exit_codes, helpers, http_client
 )
 @helpers.bannerify
 def animdl_download(
-    query, special, quality, download_folder, idm, auto, index, log_level, **kwargs
+    query, special, quality, download_dir, idm, auto, index, log_level, **kwargs
 ):
-
     r = kwargs.get("range")
 
     session = http_client.client
@@ -109,18 +109,17 @@ def animdl_download(
 
     content_title = anime["name"]
 
-    content_name = (
-        download_folder
-        or anime["name"]
-        or helpers.choice(helpers.create_random_titles())
+    download_directory = Path(download_dir).resolve(strict=True)
+
+    content_name = sanitize_filename(
+        (anime["name"] or helpers.choice(helpers.create_random_titles())).strip()
     )
 
-    content_dir = Path("./{}/".format(sanitize_filename(content_name.strip())))
+    content_dir = download_directory / content_name
     content_dir.mkdir(exist_ok=True)
 
+    logger.debug(f"Download directory: {content_dir.as_posix()!r}")
     total = len(streams)
-
-    logger.debug("Downloading to {!r}.".format(content_dir.as_posix()))
 
     for count, (stream_urls_caller, episode_number) in enumerate(streams, 1):
 
