@@ -1,5 +1,6 @@
 import logging
 import sys
+from urllib.parse import urlencode, quote_plus
 
 import httpx
 
@@ -8,15 +9,22 @@ try:
 except ImportError:
     from exit_codes import INTERNET_ISSUE
 
-headers = {
-    "Referer": "https://www.google.com/",
-    "User-Agent": "animdl/1.5.84"
-}
+headers = {"Referer": "https://www.google.com/", "User-Agent": "animdl/1.5.84"}
+
+CORS_PROXY = "https://corsproxy.io/"
 
 
 class AnimeHttpClient(httpx.Client):
 
     http_logger = logging.getLogger("animdl-http")
+
+    def cf_request(self, method, url, *args, params=None, **kwargs):
+        url = CORS_PROXY + "?" + quote_plus(url + "?" + urlencode(params or {}))
+
+        headers = kwargs.pop("headers", {})
+        headers.update(referer=url)
+
+        return super().request(method, url, headers=headers, *args, **kwargs)
 
 
 def httpx_exception():
