@@ -152,7 +152,10 @@ def search_twist(session, query):
 def search_crunchyroll(session, query, *, scheme="http"):
     content = json.loads(
         session.get(
-            CRUNCHYROLL + "ajax/?req=RpcApiSearch_GetSearchCandidates"
+            CRUNCHYROLL + "ajax/?req=RpcApiSearch_GetSearchCandidates",
+            headers={
+                "Referer": "https://www.google.com/",
+            },
         ).text.strip("*/\n -secur")
     )
 

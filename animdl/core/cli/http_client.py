@@ -9,7 +9,7 @@ try:
 except ImportError:
     from exit_codes import INTERNET_ISSUE
 
-headers = {"Referer": "https://www.google.com/", "User-Agent": "animdl/1.5.84"}
+headers = {"User-Agent": "animdl/1.5.84"}
 
 CORS_PROXY = "https://corsproxy.io/"
 

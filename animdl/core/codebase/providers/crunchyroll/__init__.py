@@ -74,7 +74,12 @@ def fetcher(session, url, check, match):
     url = CRUNCHYROLL + slug
 
     episode_urls = sorted(
-        group_content(slug, htmlparser.fromstring(session.get(url).text)).items()
+        group_content(
+            slug,
+            htmlparser.fromstring(
+                session.get(url, headers={"Referer": "https://www.google.com/"}).text
+            ),
+        ).items()
     )
 
     for episode_number, episode_data in episode_urls:
@@ -86,5 +91,10 @@ def fetcher(session, url, check, match):
 
 def metadata_fetcher(session, url, match):
     return {
-        "titles": TITLES_REGEX.findall(session.get(CRUNCHYROLL + match.group(1)).text)
+        "titles": TITLES_REGEX.findall(
+            session.get(
+                CRUNCHYROLL + match.group(1),
+                headers={"Referer": "https://www.google.com/"},
+            ).text
+        )
     }
