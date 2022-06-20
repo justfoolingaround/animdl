@@ -76,7 +76,7 @@ def set_streaming_episode(session, anime_name, episode):
 
     around = episode - (episode % 10)
 
-    current = get_episodes(session, anime["id"], around)[episode % 11 - 1]
+    current = get_episodes(session, anime["id"], around)[episode % 10 - 1]
 
     episode_thumbnail = (current.get("attributes", {}).get("thumbnail", {}) or {}).get(
         "original", "mascot"
