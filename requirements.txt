@@ -1,3 +1,4 @@
+anchor @ https://github.com/justfoolingaround/anchor/archive/9274ec0e427d8093c9d3cd40d05c67afef89466b.zip
 anitopy==2.1.0
 click==8.0.4
 comtypes==1.1.11
@@ -9,4 +10,3 @@ pycryptodomex==3.14.1
 regex==2022.3.15
 yarl==1.7.2
 pyyaml==6.0
-git+https://github.com/justfoolingaround/anchor@9274ec0
