@@ -1,4 +1,4 @@
-anchor @ https://github.com/justfoolingaround/anchor/archive/9274ec0e427d8093c9d3cd40d05c67afef89466b.zip
+anchor-kr==0.1.1
 anitopy==2.1.0
 click==8.0.4
 comtypes==1.1.11
