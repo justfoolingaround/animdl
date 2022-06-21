@@ -9,3 +9,4 @@ pycryptodomex==3.14.1
 regex==2022.3.15
 yarl==1.7.2
 pyyaml==6.0
+git+https://github.com/justfoolingaround/anchor@9274ec0
