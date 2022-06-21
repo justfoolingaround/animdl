@@ -3,10 +3,10 @@ import logging
 
 import click
 
+from ...__version__ import __core__
 from ...codebase.providers import get_provider
-from ...config import DEFAULT_PROVIDER
-from ..helpers import bannerify
-from ..helpers.searcher import link
+from ...config import DEFAULT_PROVIDER, CHECK_FOR_UPDATES
+from .. import helpers
 from ..http_client import client
 
 
@@ -17,16 +17,9 @@ from ..http_client import client
     "--provider",
     help="Provider to search in.",
     default=DEFAULT_PROVIDER,
-    type=click.Choice(link.keys(), case_sensitive=False),
+    type=click.Choice(helpers.provider_searcher_mapping.keys(), case_sensitive=False),
 )
-@click.option(
-    "-ll", "--log-level", help="Set the integer log level.", type=int, default=20
-)
-@click.option(
-    "--log-file",
-    help="Set a log file to log everything to.",
-    required=False,
-)
+@helpers.decorators.logging_options()
 @click.option(
     "-j",
     "--json",
@@ -34,7 +27,10 @@ from ..http_client import client
     is_flag=True,
     flag_value=True,
 )
-@bannerify
+@helpers.decorators.setup_loggers()
+@helpers.decorators.banner_gift_wrapper(
+    client, __core__, check_for_updates=CHECK_FOR_UPDATES
+)
 def animdl_search(query, json, provider, **kwargs):
     logger = logging.getLogger("searcher")
 
@@ -51,7 +47,7 @@ def animdl_search(query, json, provider, **kwargs):
             },
         )
     else:
-        genexp = link.get(provider)(client, query)
+        genexp = helpers.provider_searcher_mapping.get(provider)(client, query)
 
     for count, search_data in enumerate(genexp, 1):
         if json:

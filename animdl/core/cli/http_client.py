@@ -1,6 +1,6 @@
 import logging
 import sys
-from urllib.parse import urlencode, quote_plus
+from urllib.parse import quote_plus, urlencode
 
 import httpx
 

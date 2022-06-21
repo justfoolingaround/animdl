@@ -1,6 +1,6 @@
-from urllib.parse import unquote, quote
-from textwrap import wrap
 import base64
+from textwrap import wrap
+from urllib.parse import quote, unquote
 
 NORMAL_TABLE = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/"
 BASE64_TABLE = "c/aUAorINHBLxWTy3uRiPt8J+vjsOheFG1E0q2X9CYwDZlnmd4Kb5M6gSVzfk7pQ"

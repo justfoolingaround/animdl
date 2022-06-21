@@ -102,6 +102,8 @@ DEFAULT_CONFIG = {
         "state": False,
     },
     "download_directory": ".",
+    "check_for_updates": True,
+    "force_streaming_quality_selection": True,
 }
 
 CONFIG = DEFAULT_CONFIG
@@ -160,3 +162,7 @@ FZF_OPTS = FZF.get("opts", [])
 FZF_STATE = FZF.get("state", False)
 
 DOWNLOAD_DIRECTORY = CONFIG.get("download_directory", ".")
+CHECK_FOR_UPDATES = CONFIG.get("check_for_updates", True)
+FORCE_STREAMING_QUALITY_SELECTION = CONFIG.get(
+    "force_streaming_quality_selection", True
+)

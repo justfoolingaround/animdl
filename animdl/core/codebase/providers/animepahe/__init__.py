@@ -1,9 +1,9 @@
+from functools import lru_cache, partial
+
 import regex
 
 from ....config import ANIMEPAHE
 from ...helper import construct_site_based_regex
-
-from functools import partial, lru_cache
 
 REGEX = construct_site_based_regex(ANIMEPAHE, extra_regex=r"/(?:anime|play)/([^?&/]+)")
 

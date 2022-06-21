@@ -4,8 +4,9 @@ from datetime import datetime
 
 import click
 
+from ...__version__ import __core__
 from ...config import ANICHART, DATE_FORMAT, TIME_FORMAT
-from ..helpers import bannerify
+from .. import helpers
 from ..http_client import client
 
 gql = """query (
@@ -13,96 +14,88 @@ gql = """query (
         $weekEnd: Int,
         $page: Int,
 ){
-        Page(page: $page) {
-                pageInfo {
-                        hasNextPage
-                        total
-                }
-                airingSchedules(
-                        airingAt_greater: $weekStart
-                        airingAt_lesser: $weekEnd
-                ) {
-                        id
-                        episode
-                        airingAt
-                        media {
-title {
-        romaji
-        native
-        english
-}
-                   }
-                }
+    Page(page: $page) {
+        pageInfo {
+                hasNextPage
+                total
         }
+        airingSchedules(
+                airingAt_greater: $weekStart
+                airingAt_lesser: $weekEnd
+        ) {
+            id
+            episode
+            airingAt
+            media {
+                title {
+                    userPreferred
+                }
+            }
+        }
+    }
 }"""
 
 
 def arrange_template(data):
-    content = defaultdict(lambda: defaultdict(list))
+    template = defaultdict(lambda: defaultdict(list))
 
     for airing in data[::-1]:
-        dtobj = datetime.fromtimestamp(airing.get("airingAt", 0))
-        d, t = dtobj.strftime(DATE_FORMAT), dtobj.strftime(TIME_FORMAT)
-        titles = airing.get("media", {}).get("title", {})
-        content[d][t].append(
+        datetime_object = datetime.fromtimestamp(airing.get("airingAt", 0))
+        template[format(datetime_object, DATE_FORMAT)][
+            (format(datetime_object, TIME_FORMAT), datetime_object)
+        ].append(
             {
-                "anime": titles.get("english")
-                or titles.get("romaji")
-                or titles.get("native"),
+                "name": airing.get("media", {}).get("title", {}).get("userPreferred"),
                 "episode": airing.get("episode", 0),
-                "datetime_object": dtobj,
             }
         )
+    return template
 
-    return content
 
-
-@click.command(name="schedule", help="Know which animes are going over the air when.")
-@click.option(
-    "--log-file",
-    help="Set a log file to log everything to.",
-    required=False,
-)
-@click.option(
-    "-ll", "--log-level", help="Set the integer log level.", type=int, default=20
-)
-@bannerify
-def animdl_schedule(**kwargs):
-
+def iter_schedules(session, unix_time):
     page = 1
-    schedules = []
-
-    unix_time = int(time.time())
 
     data = {}
 
+    week_end = unix_time + 24 * 7 * 60 * 60
+
     while data.get("pageInfo", {}).get("hasNextPage", True):
-        schedule_data = client.post(
+        schedule_data = session.post(
             ANICHART,
             json={
                 "query": gql,
                 "variables": {
                     "weekStart": unix_time,
-                    "weekEnd": unix_time + 24 * 7 * 60 * 60,
+                    "weekEnd": week_end,
                     "page": page,
                 },
             },
         )
+
         data = schedule_data.json().get("data", {}).get("Page", {})
-        schedules.extend(data.get("airingSchedules", []))
         page += 1
 
-    for date, _content in arrange_template(schedules).items():
-        print("On \x1b[33m{}\x1b[39m,".format(date))
-        for time_, __content in sorted(
-            _content.items(), key=lambda d: d[1][0].get("datetime_object"), reverse=True
+        yield from data.get("airingSchedules", [])
+
+
+@click.command(name="schedule", help="Know which animes are going over the air when.")
+@helpers.decorators.logging_options()
+@helpers.decorators.setup_loggers()
+@helpers.decorators.banner_gift_wrapper(client, __core__)
+def animdl_schedule(**kwargs):
+
+    for date_format, child_component in arrange_template(
+        list(iter_schedules(client, int(time.time())))
+    ).items():
+        click.secho(f"On {date_format}", fg="cyan")
+        for (time_format, _), anime_components in sorted(
+            child_component.items(), key=lambda component: component[0][1], reverse=True
         ):
-            print(
-                "\t\x1b[95m{}\x1b[39m - {}".format(
-                    time_,
+            click.echo(
+                f"\t{click.style(time_format, fg='magenta')} - {{}}".format(
                     ", ".join(
-                        "{anime} [\x1b[94mE{episode}\x1b[39m]".format_map(___content)
-                        for ___content in __content
+                        f"{anime['name']} [{click.style(anime['episode'], fg='blue')}]"
+                        for anime in anime_components
                     ),
                 )
             )

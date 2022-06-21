@@ -1,5 +1,6 @@
-import regex
 import time
+
+import regex
 
 DOODSTREAM = "https://dood.la/"
 

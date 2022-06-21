@@ -1,10 +1,6 @@
-from click import prompt
-
 from ...codebase.providers import get_provider
-from ...config import DEFAULT_PROVIDER
-from .searcher import get_searcher
-
 from .prompts import get_prompt_manager
+from .searcher import provider_searcher_mapping
 
 
 def prompt_user(logger, anime_list_genexp, provider):
@@ -22,24 +18,27 @@ def prompt_user(logger, anime_list_genexp, provider):
     )
 
 
-def process_query(
-    session, query: str, logger, *, provider=DEFAULT_PROVIDER, auto=False, auto_index=1
-):
+def process_query(session, query: str, logger, provider: str, *, auto_index=1):
 
-    _, module, provider_name = get_provider(query, raise_on_failure=False)
+    match, module, provider_name = get_provider(query, raise_on_failure=False)
 
     if module:
-        return {"anime_url": query}, provider_name
+        return {
+            "anime_url": query,
+            "name": module.metadata_fetcher(session, query, match).get(
+                "titles", [None]
+            )[0],
+        }, provider_name
 
-    *provider_name, custom_query = query.split(":", 1)
+    provider_name, *custom_query = query.split(":", 1)
 
-    searcher = get_searcher(":".join(provider_name))
+    if provider_name in provider_searcher_mapping:
+        provider, query = provider_name, ":".join(custom_query)
 
-    if not searcher:
-        searcher, custom_query = get_searcher(provider), query
+    genexp = provider_searcher_mapping[provider](session, query)
 
-    genexp = searcher(session, custom_query)
+    if auto_index is None:
+        return prompt_user(logger, genexp, provider)
 
-    if not auto:
-        return prompt_user(logger, genexp, searcher.provider)
-    return list(genexp)[auto_index - 1], searcher.provider
+    expanded = list(genexp)
+    return expanded[(auto_index - 1) % len(expanded)], provider

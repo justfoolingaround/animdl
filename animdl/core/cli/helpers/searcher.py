@@ -212,7 +212,7 @@ def search_haho(session, query):
     yield from search_tenshi(session, query, domain=HAHO)
 
 
-link = {
+provider_searcher_mapping = {
     "9anime": search_9anime,
     "animekaizoku": search_animekaizoku,
     "allanime": search_allanime,
@@ -232,10 +232,3 @@ link = {
     "twist": search_twist,
     "zoro": search_zoro,
 }
-
-
-def get_searcher(provider):
-    searcher = link.get(provider)
-    if searcher:
-        searcher.provider = provider
-        return searcher

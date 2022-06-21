@@ -1,12 +1,18 @@
 import logging
-from collections import defaultdict
 
 import click
 
+from ...__version__ import __core__
 from ...codebase import providers
-from ...config import DEFAULT_PLAYER, QUALITY, DISCORD_PRESENCE
+from ...config import (
+    CHECK_FOR_UPDATES,
+    DEFAULT_PLAYER,
+    DEFAULT_PROVIDER,
+    DISCORD_PRESENCE,
+    QUALITY,
+    FORCE_STREAMING_QUALITY_SELECTION,
+)
 from .. import exit_codes, helpers, http_client
-from ..helpers.intelliq import filter_quality
 
 if DISCORD_PRESENCE:
     try:
@@ -19,119 +25,25 @@ if DISCORD_PRESENCE:
         DISCORD_PRESENCE = False
 
 
-def quality_prompt(log_level, logger, stream_list):
-    title_dict = defaultdict(lambda: defaultdict(lambda: defaultdict(list)))
-
-    for n, anime in enumerate(stream_list, 1):
-        title_dict[anime.get("title") or "Uncategorized"][
-            anime.get("quality") or "No specific quality mentioned"
-        ][
-            "Soft subtitles (Subtitles are not forced.)"
-            if anime.get("subtitle")
-            else "Hard subtitles (Subtitles are forced.)"
-        ].append(
-            "{:02d}: {}".format(n, helpers.stream_judiciary(anime.get("stream_url")))
-        )
-
-    for category, qualities in title_dict.items():
-        logger.info("\x1b[91m▽ {}\x1b[39m".format(category))
-        for quality, subtitles in qualities.items():
-            logger.info("\x1b[96m▽▽ {}\x1b[39m".format(quality))
-            for subtitle, animes in subtitles.items():
-                logger.info("\x1b[95m▽▽▽ {}\x1b[39m".format(subtitle))
-                for anime in animes:
-                    logger.info(anime)
-
-    return stream_list[
-        (
-            helpers.ask(
-                log_level,
-                text="Select above, using the stream index",
-                show_default=True,
-                default=1,
-                type=int,
-            )
-            - 1
-        )
-        % len(stream_list)
-    ]
-
-
 @click.command(name="stream", help="Stream your favorite anime by query.")
-@click.argument("query", required=True)
-@click.option(
-    "-r",
-    "--range",
-    help="Select ranges of anime.",
-    required=False,
-    default=":",
-    type=str,
+@helpers.decorators.content_fetch_options(
+    default_quality_string=QUALITY,
 )
-@click.option(
-    "-s",
-    "--special",
-    help="Special range selection.",
-    required=False,
-    default="",
-    type=str,
+@helpers.decorators.player_options(default_player=DEFAULT_PLAYER)
+@helpers.decorators.automatic_selection_options()
+@helpers.decorators.logging_options()
+@helpers.decorators.setup_loggers()
+@helpers.decorators.banner_gift_wrapper(
+    http_client.client, __core__, check_for_updates=CHECK_FOR_UPDATES
 )
-@click.option(
-    "--player-opts",
-    help="Arguments that are to be passed to the player call.",
-    required=False,
-)
-@click.option(
-    "-q",
-    "--quality",
-    help="Use quality strings.",
-    required=False,
-    default=QUALITY,
-)
-@click.option(
-    "-p",
-    "--player",
-    help="Select which player to play from.",
-    required=False,
-    default=DEFAULT_PLAYER,
-    show_default=True,
-    show_choices=True,
-    type=click.Choice(
-        ("mpv", "vlc", "iina", "celluloid", "ffplay", "android"), case_sensitive=False
-    ),
-)
-@click.option(
-    "--auto",
-    is_flag=True,
-    default=False,
-    help="Select the first given index without asking for prompts.",
-)
-@click.option(
-    "-i",
-    "--index",
-    required=False,
-    default=0,
-    show_default=False,
-    type=int,
-    help="Index for the auto flag.",
-)
-@click.option(
-    "--log-file",
-    help="Set a log file to log everything to.",
-    required=False,
-)
-@click.option(
-    "-ll", "--log-level", help="Set the integer log level.", type=int, default=20
-)
-@helpers.bannerify
 def animdl_stream(
-    query, special, player_opts, quality, player, auto, index, log_level, **kwargs
+    query, special, quality, player_opts, player, index, log_level, **kwargs
 ):
     """
     Streamer call for animdl streaming session.
     """
     r = kwargs.get("range")
 
-    session = http_client.client
     logger = logging.getLogger("streamer")
     streamer = helpers.handle_streamer(
         click.parser.split_arg_string(player_opts or "") or [], **{player: True}
@@ -144,7 +56,7 @@ def animdl_stream(
         raise SystemExit(exit_codes.STREAMER_CONFIGURATION_REQUIRED)
 
     anime, provider = helpers.process_query(
-        session, query, logger, auto=auto, auto_index=index
+        http_client.client, query, logger, auto_index=index, provider=DEFAULT_PROVIDER
     )
 
     if not anime:
@@ -160,21 +72,11 @@ def animdl_stream(
     )
 
     streams = list(
-        provider_module.fetcher(
-            session, anime.get("anime_url"), helpers.get_check(r), match
-        )
+        provider_module.fetcher(http_client.client, anime.get("anime_url"), r, match)
     )
 
     if special:
         streams = list(helpers.special_parser(streams, special))
-
-    if "name" not in anime:
-        anime["name"] = (
-            provider_module.metadata_fetcher(session, anime.get("anime_url"), match)[
-                "titles"
-            ]
-            or [None]
-        )[0] or ""
 
     content_title = anime["name"]
 
@@ -186,8 +88,8 @@ def animdl_stream(
 
             window_title = content_title + ": Episode {}".format(episode_number)
 
-            stream_urls = filter_quality(
-                list(helpers.ensure_extraction(session, stream_urls_caller)), quality
+            stream_urls = list(
+                helpers.ensure_extraction(http_client.client, stream_urls_caller)
             )
 
             if not stream_urls:
@@ -199,10 +101,13 @@ def animdl_stream(
                 playing = False
                 continue
 
-            selection = (
-                quality_prompt(log_level, logger, stream_urls)
-                if len(stream_urls) > 1
-                else stream_urls[0]
+            selection = helpers.prompts.quality_prompt(
+                logger,
+                log_level,
+                stream_urls,
+                force_selection_string=quality
+                if FORCE_STREAMING_QUALITY_SELECTION
+                else None,
             )
 
             logger.debug("Calling streamer for {!r}".format(stream_urls))
@@ -226,7 +131,7 @@ def animdl_stream(
                 subtitles=selection.get("subtitle", []),
             )
             if DISCORD_PRESENCE:
-                set_streaming_episode(session, content_title, episode_number)
+                set_streaming_episode(http_client.client, content_title, episode_number)
 
             player_process.wait()
 

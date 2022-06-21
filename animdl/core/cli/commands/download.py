@@ -3,81 +3,40 @@ from pathlib import Path
 
 import click
 
+from ...__version__ import __core__
 from ...codebase import providers, sanitize_filename
-from ...config import AUTO_RETRY, QUALITY, DOWNLOAD_DIRECTORY
+from ...config import (
+    AUTO_RETRY,
+    DEFAULT_PROVIDER,
+    DOWNLOAD_DIRECTORY,
+    QUALITY,
+    CHECK_FOR_UPDATES,
+)
 from .. import exit_codes, helpers, http_client
 
 
 @click.command(name="download", help="Download your favorite anime by query.")
-@click.argument("query", required=True)
-@click.option(
-    "-r",
-    "--range",
-    help="Select ranges of anime.",
-    required=False,
-    default=":",
-    type=str,
+@helpers.decorators.content_fetch_options(
+    default_quality_string=QUALITY,
 )
-@click.option(
-    "-s",
-    "--special",
-    help="Special range selection.",
-    required=False,
-    default="",
-    type=str,
+@helpers.decorators.download_options(
+    default_download_dir=DOWNLOAD_DIRECTORY,
 )
-@click.option(
-    "-q",
-    "--quality",
-    help="Use quality strings.",
-    required=False,
-    default=QUALITY,
+@helpers.decorators.automatic_selection_options()
+@helpers.decorators.logging_options()
+@helpers.decorators.setup_loggers()
+@helpers.decorators.banner_gift_wrapper(
+    http_client.client, __core__, check_for_updates=CHECK_FOR_UPDATES
 )
-@click.option(
-    "-d",
-    "--download-dir",
-    help="Download directory for downloads.",
-    required=False,
-    default=DOWNLOAD_DIRECTORY,
-    show_default=False,
-    type=click.Path(exists=True, file_okay=False, dir_okay=True),
-)
-@click.option(
-    "--idm",
-    is_flag=True,
-    default=False,
-    help="Download anime using Internet Download Manager",
-)
-@click.option(
-    "--auto",
-    is_flag=True,
-    default=False,
-    help="Select the first given index without asking for prompts.",
-)
-@click.option(
-    "-i",
-    "--index",
-    required=False,
-    default=1,
-    show_default=False,
-    type=int,
-    help="Index for the auto flag.",
-)
-@click.option("--log-file", help="Set a log file to log everything to.", required=False)
-@click.option(
-    "-ll", "--log-level", help="Set the integer log level.", type=int, default=20
-)
-@helpers.bannerify
 def animdl_download(
-    query, special, quality, download_dir, idm, auto, index, log_level, **kwargs
+    query, special, quality, download_dir, idm, index, log_level, **kwargs
 ):
     r = kwargs.get("range")
 
-    session = http_client.client
     logger = logging.getLogger("downloader")
 
     anime, provider = helpers.process_query(
-        session, query, logger, auto=auto, auto_index=index
+        http_client.client, query, logger, auto_index=index, provider=DEFAULT_PROVIDER
     )
 
     if not anime:
@@ -91,29 +50,14 @@ def animdl_download(
     )
 
     streams = list(
-        provider_module.fetcher(
-            session, anime.get("anime_url"), helpers.get_check(r), match
-        )
+        provider_module.fetcher(http_client.client, anime.get("anime_url"), r, match)
     )
 
     if special:
         streams = list(helpers.special_parser(streams, special))
 
-    if "name" not in anime:
-        anime["name"] = (
-            provider_module.metadata_fetcher(session, anime.get("anime_url"), match)[
-                "titles"
-            ]
-            or [None]
-        )[0] or ""
-
-    content_title = anime["name"]
-
     download_directory = Path(download_dir).resolve(strict=True)
-
-    content_name = sanitize_filename(
-        (anime["name"] or helpers.choice(helpers.create_random_titles())).strip()
-    )
+    content_name = sanitize_filename(anime["name"])
 
     content_dir = download_directory / content_name
     content_dir.mkdir(exist_ok=True)
@@ -124,7 +68,7 @@ def animdl_download(
     for count, (stream_urls_caller, episode_number) in enumerate(streams, 1):
 
         content_title = "E{:02d}".format(int(episode_number))
-        stream_urls = helpers.ensure_extraction(session, stream_urls_caller)
+        stream_urls = helpers.ensure_extraction(http_client.client, stream_urls_caller)
 
         if not stream_urls:
             logger.warning(
@@ -140,7 +84,7 @@ def animdl_download(
             )
         )
         success, reason = helpers.download(
-            session,
+            http_client.client,
             logger,
             content_dir,
             content_title,

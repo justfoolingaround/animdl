@@ -4,17 +4,14 @@ A one cli for all the anime.
 
 import click
 
-from .core import logger, __version__
-from .core.cli.commands import download, stream, grab, schedule, test, search
+from .core import __version__
+from .core.cli.commands import download, grab, schedule, search, stream
 from .core.cli.helpers.player import supported_streamers
-
-logger.configure_logger()
 
 commands = {
     "download": download.animdl_download,
     "grab": grab.animdl_grab,
     "schedule": schedule.animdl_schedule,
-    "test": test.animdl_test,
     "search": search.animdl_search,
 }
 

@@ -5,7 +5,6 @@ import regex
 import yarl
 from Cryptodome.Cipher import AES
 
-
 KEYS_REGEX = regex.compile(rb"(?:container|videocontent)-(\d+)")
 ENCRYPTED_DATA_REGEX = regex.compile(rb'data-value="(.+?)"')
 

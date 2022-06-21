@@ -1,7 +1,6 @@
 import importlib
 import pathlib
 
-
 from ..helper import append_protocol
 
 EXEMPT = ["__init__.py", "__pycache__"]
@@ -23,7 +22,7 @@ def iter_providers(*, exempt=EXEMPT):
 def get_provider(url, *, raise_on_failure=True):
     for provider_module, name in iter_providers():
         match = provider_module.REGEX.match(url)
-        if match:
+        if match is not None:
             return match, provider_module, name
 
     if raise_on_failure:

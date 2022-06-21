@@ -1,4 +1,5 @@
-from setuptools import setup, find_packages
+from setuptools import find_packages, setup
+
 from animdl.core.__version__ import __core__
 
 with open("requirements.txt") as requirements_txt:

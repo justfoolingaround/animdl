@@ -1,7 +1,7 @@
-from Cryptodome.Cipher import AES
+from base64 import b64decode
 from hashlib import md5
 
-from base64 import b64decode
+from Cryptodome.Cipher import AES
 
 TWISTMOE_SECRET = b"267041df55ca2b36f2e322d05ee2c9cf"
 

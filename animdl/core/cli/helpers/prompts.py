@@ -1,9 +1,12 @@
 import subprocess
 import sys
+from collections import defaultdict
 
-from click import prompt
+import click
+import yarl
 
 from ...config import FZF_EXECUTABLE, FZF_OPTS, FZF_STATE
+from .intelliq import filter_quality
 
 
 def default_prompt(
@@ -43,7 +46,7 @@ def default_prompt(
         return components[0]
 
     user_selection = (
-        prompt(
+        click.prompt(
             "Select the {} using index".format(component_name),
             default=1,
             type=int,
@@ -133,3 +136,69 @@ def get_prompt_manager(*, fallback=default_prompt):
         return fzf_prompt
 
     return fallback
+
+
+def quality_prompt(logger, log_level, streams, *, force_selection_string=None):
+
+    if len(streams) == 1:
+        return streams[0]
+
+    if force_selection_string is not None:
+        return quality_prompt(
+            logger, log_level, filter_quality(streams, force_selection_string)
+        )
+
+    component_dictionary = defaultdict(lambda: defaultdict(lambda: defaultdict(list)))
+
+    for count, anime in enumerate(streams, 1):
+        stream_title = click.style(anime.get("title", "Uncategorised"), fg="cyan")
+        stream_quality = click.style(
+            anime.get("quality", "Anonymous quality"), fg="magenta"
+        )
+
+        substate = click.style(
+            (
+                "Hard Subtitles",
+                "Soft Subtitles",
+            )[bool(anime.get("subtitle", []))],
+            fg="yellow",
+        )
+
+        parsed_stream_url = "{0.name} / {0.host}".format(
+            yarl.URL(anime.get("stream_url"))
+        )
+
+        component_dictionary[stream_title][stream_quality][substate].append(
+            f"{count:02d} / {parsed_stream_url}"
+        )
+
+    for category, qualities in component_dictionary.items():
+        logger.info(category)
+        for quality, subtitles in qualities.items():
+            logger.info(quality)
+            for subtitle, animes in subtitles.items():
+                logger.info(subtitle)
+                for anime in animes:
+                    logger.info(anime)
+
+    return streams[
+        (
+            ask(
+                log_level,
+                text="Select above, using the stream index",
+                show_default=True,
+                default=1,
+                type=int,
+            )
+            - 1
+        )
+        % len(streams)
+    ]
+
+
+def ask(log_level, **prompt_kwargs):
+
+    if log_level > 20:
+        return prompt_kwargs.get("default")
+
+    return click.prompt(**prompt_kwargs)

@@ -1,5 +1,6 @@
-import regex
 import json
+
+import regex
 
 SOURCES_REGEX = regex.compile(r"sources: (\[.+?\])")
 

@@ -1,8 +1,7 @@
-import regex
-
 from functools import partial
 
 import lxml.html as htmlparser
+import regex
 
 from ....config import TENSHI
 from ...helper import construct_site_based_regex, uwu

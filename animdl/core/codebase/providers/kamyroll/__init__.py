@@ -1,8 +1,7 @@
+from collections import defaultdict
 from functools import partial
 
 import regex
-
-from collections import defaultdict
 
 from ....config import CRUNCHYROLL, KAMYROLL_API
 from ..crunchyroll import metadata_fetcher
