@@ -134,7 +134,7 @@ def start_streaming_android(executable, stream_url, opts, *, headers=None, **kwa
 
 PLAYER_MAPPING = {
     "mpv": start_streaming_mpv,
-    "iina": start_streaming_mpv,
+    "iina": start_streaming_celluloid,
     "vlc": start_streaming_vlc,
     "celluloid": start_streaming_celluloid,
     "ffplay": start_streaming_ffplay,
