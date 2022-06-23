@@ -1,6 +1,6 @@
 import logging
 import sys
-from urllib.parse import quote_plus, urlencode
+from urllib.parse import quote, urlencode
 
 import httpx
 
@@ -18,13 +18,16 @@ class AnimeHttpClient(httpx.Client):
 
     http_logger = logging.getLogger("animdl-http")
 
-    def cf_request(self, method, url, *args, params=None, **kwargs):
-        url = CORS_PROXY + "?" + quote_plus(url + "?" + urlencode(params or {}))
+    @staticmethod
+    def get_cf_proxy(url, params=None):
+        return CORS_PROXY + "?" + quote(url + "?" + urlencode(params or {}))
 
+    def cf_request(self, method, url, *args, params=None, **kwargs):
         headers = kwargs.pop("headers", {})
         headers.update(referer=url)
-
-        return super().request(method, url, headers=headers, *args, **kwargs)
+        return super().request(
+            method, self.get_cf_proxy(url, params), headers=headers, *args, **kwargs
+        )
 
 
 def httpx_exception():

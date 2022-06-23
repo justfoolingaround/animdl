@@ -42,7 +42,13 @@ def parse_from_content(
     video_res = anitopy_result.get("video_resolution") or ""
 
     if not episode_parsed:
-        returnee.update({"episode": int(anitopy_result.get("episode_number", 0) or 0)})
+
+        episode_number = anitopy_result.get("episode_number", 0)
+
+        if isinstance(episode_number, list):
+            episode_number = episode_number[0]
+
+        returnee.update({"episode": int(episode_number or 0)})
 
     if isinstance(video_res, str):
         stripped = video_res.strip("p")

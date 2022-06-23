@@ -11,9 +11,28 @@ REGEX = construct_site_based_regex(ANIMEOUT, extra_regex=r"/([^?&/]+)")
 
 TITLES_REGEX = regex.compile(r'<h1 class="page-title">(.+?)</h1>')
 
+public_domains = {
+    "nimbus": "pub9",
+    "chomusuke": "pub8",
+    "chunchunmaru": "pub7",
+    "ains": "pub6",
+    "yotsuba": "pub5",
+    "slaine": "pub4",
+    "jibril": "pub3",
+    "sv1": "pub2",
+    "sv4": "pub2",
+    "download": "pub1",
+}
+
 
 def animeout_stream_url(url: "yarl.URL") -> str:
-    return "https://public.animeout.xyz/" + url.with_scheme("").human_repr().lstrip("/")
+
+    host_prefix, _ = url.host.split(".", 1)
+
+    if host_prefix in public_domains:
+        url = url.with_host(f"{public_domains[host_prefix]}.{_}")
+
+    return url.human_repr()
 
 
 def fetcher(session, url, check, match):
@@ -44,4 +63,4 @@ def fetcher(session, url, check, match):
 
 
 def metadata_fetcher(session, url, match):
-    return {"titles": TITLES_REGEX.findall(session.get(url).text)}
+    return {"titles": TITLES_REGEX.findall(session.cf_request("GET", url).text)}
