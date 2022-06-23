@@ -54,7 +54,7 @@ def animdl_download(
     )
 
     if special:
-        streams = list(helpers.special_parser(streams, special))
+        streams = list(helpers.special.special_parser(streams, special))
 
     download_directory = Path(download_dir).resolve(strict=True)
     content_name = sanitize_filename(anime["name"])

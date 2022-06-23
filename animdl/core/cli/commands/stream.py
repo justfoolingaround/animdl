@@ -76,7 +76,7 @@ def animdl_stream(
     )
 
     if special:
-        streams = list(helpers.special_parser(streams, special))
+        streams = list(helpers.special.special_parser(streams, special))
 
     content_title = anime["name"]
 
