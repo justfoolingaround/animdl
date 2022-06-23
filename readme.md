@@ -1,8 +1,9 @@
-<p align="center"><img src="https://capsule-render.vercel.app/api?type=soft&fontColor=703ee5&text=justfoolingaround/animdl&height=150&fontSize=60&desc=Ridiculously efficient, fast and light-weight.&descAlignY=75&descAlign=60&color=00000000&animation=twinkling"></p>
-<p align="center"><sup>A highly efficient, powerful and fast anime scraper.</sup></p><hr>
+<h1 align="center"><img src="https://capsule-render.vercel.app/api?type=soft&fontColor=703ee5&text=justfoolingaround/animdl&height=150&fontSize=60&desc=Ridiculously efficient, fast and light-weight.&descAlignY=75&descAlign=60&color=00000000&animation=twinkling"></h1>
+<p align="center"><sup>A highly efficient, powerful and fast anime scraper.</sup></p>
+
+-------
 
 https://user-images.githubusercontent.com/44473782/160827857-cc51d72c-a6e9-4d25-a9f2-e2badda0133c.mp4
-
 
 ## Overview
 
@@ -11,47 +12,45 @@ https://user-images.githubusercontent.com/44473782/160827857-cc51d72c-a6e9-4d25-
     2. [Source Code Download](#installation)
 - [Support](#support)
 - [Usage](#usage)
-    - [`stream` / `download` / `grab`](#stream--download--grab)
-    - [`-r` / `--range`](#r----range-argument)
-    - [`--auto` **and** `--index`](#auto-flag-and---index-argument)
-    - [`-s` / `--special`](#s----special-argument)
-    - [`-q` / `--quality`](#q----quality-argument)
-    - [**More** usage](#conclusion)
+  - [`stream` / `download` / `grab`](#stream--download--grab)
+  - [`-r` / `--range`](#r----range-argument)
+  - [`--index`](#--index-argument)
+  - [`-s` / `--special`](#s----special-argument)
+  - [`-q` / `--quality`](#q----quality-argument)
+  - [**More** usage](#conclusion)
 - [Providers](#providers)
 - [Configurations](#configurations)
-    - [Setting up providers](#setting-up-providers)
-    - [Quality selection](#quality-selection)
-    - [Player selection](#player-selection)
-    - [`ffmpeg` set-up](#ffmpeg-set-up)
-    - [Discord Rich Presence set-up](#discord-rich-presence-set-up)
-    - [`fzf` set-up](#fzf-set-up)
-    - [Schedule set-up](#schedule-set-up)
+  - [Setting up providers](#setting-up-providers)
+  - [Quality selection](#quality-selection)
+  - [Player selection](#player-selection)
+  - [`ffmpeg` set-up](#ffmpeg-set-up)
+  - [Discord Rich Presence set-up](#discord-rich-presence-set-up)
+  - [`fzf` set-up](#fzf-set-up)
+  - [Schedule set-up](#schedule-set-up)
 - [Contributing to the project](#contributing-to-the-project)
 - [Project Disclaimer](#project-disclaimer)
 - [In a nutshell](#in-a-nutshell)
 - [Code redistribution](#code-redistribution)
 - [From the author](#from-the-author)
 - [Honourable mentions](#honourable-mentions)
-    - [Similar Projects](#similar-projects)
-    - [Internal Dependencies](#internal-dependencies)
+  - [Similar Projects](#similar-projects)
+  - [Internal Dependencies](#internal-dependencies)
 - [Sponsoring the project](#sponsoring-the-project)
-
-
 
 ## Installation
 
 This project can be installed on to your device via different mechanisms, these mechanisms are listed below in the order of ease.
 
-1. PIP Installs Packages **aka** PIP Installation 
+1. PIP Installs Packages **aka** PIP Installation
 
-    ```
-    $ pip install animdl
+    ```sh
+    pip install animdl
     ```
 
 2. Source Code Download
 
-    ```
-    $ git clone https://www.github.com/justfoolingaround/animdl
+    ```sh
+    git clone https://www.github.com/justfoolingaround/animdl
     ```
 
     Given that you have [`git`](https://git-scm.com/) installed, you can clone the repository from GitHub. If you do not have or want to deal with installation of [`git`](https://git-scm.com/), you can simply download the repository using [this link.](https://github.com/justfoolingaround/animdl/archive/refs/heads/master.zip)
@@ -61,19 +60,18 @@ This project can be installed on to your device via different mechanisms, these 
     The former can be done via:
 
     ```py
-    $ python runner.py
+    python runner.py
     ```
 
     The latter can be done via:
 
     ```py
-    $ pip install .
+    pip install .
     ```
 
     Both commands are to be executed from the directory where the repository is located.
 
 **Additional information:** You **must** have Python installed **and** in PATH to use this project properly. Your Python executable may be `py` **or** `python` **or** `python3`. **Only Python 3.6 and higher versions are supported by the project.**
-
 
 ## Support
 
@@ -89,7 +87,7 @@ If you run into issues or want to request a new feature, you are encouraged to m
 
 ## Usage
 
-```
+```txt
 Usage: animdl [OPTIONS] COMMAND [ARGS]...
 
 Options:
@@ -101,34 +99,31 @@ Commands:
   schedule  Know which animes are going over the air when.
   search    Search for an anime in the provider.
   stream    Stream your favorite anime by query.
-  test      Test the scrapability power.
 ```
 
 The `stream` option is disabled automatically if the project cannot find any of the supported streamers.
 
-
 ### `stream` / `download` / `grab`
 
-These commands are the main set of command in the project. All of them scrape the target site, the only difference is how it is used. 
+These commands are the main set of command in the project. All of them scrape the target site, the only difference is how it is used.
 
 - The `stream` option tosses the stream url to a player so that you can seamlessly binge your anime.
-    - Streaming supports Discord Rich Presence with `pypresence`.
+  - Streaming supports Discord Rich Presence with `pypresence`.
 - The `download` option downloads the anime to your local machine.
-    - Downloading is done in the directory where you run the project.
-    - `-d` flag can be used to specify a download folder as well.
-    - [Internet Download Manager](https://internetdownloadmanager.com/) is supported and can be used via `--idm` flag. This downloader cannot download HLS streams.
-    - The project cannot modify the content type. That means, videos in the `ts` format need to be converted to other formats externally post download. 
-    - The downloading process cannot be controlled.
-        - If download speed fluctuates, it is a server-side problem. The project cannot "fix" it.
-        - If the download is slow, it is based on the server's upload speed. The project cannot "fix" it. **Speedtests are not reliable and their results will not correspond to the download speeds obtained through the project.**
-    - The project utilises the fastest and the most straight-forward way to download, there is no further optimisation, period.
-
+  - Downloading is done in the directory where you run the project.
+  - `-d` flag can be used to specify a download folder as well.
+  - [Internet Download Manager](https://internetdownloadmanager.com/) is supported and can be used via `--idm` flag. This downloader cannot download HLS streams.
+  - The project cannot modify the content type. That means, videos in the `ts` format need to be converted to other formats externally post download.
+  - The downloading process cannot be controlled.
+    - If download speed fluctuates, it is a server-side problem. The project cannot "fix" it.
+    - If the download is slow, it is based on the server's upload speed. The project cannot "fix" it. **Speedtests are not reliable and their results will not correspond to the download speeds obtained through the project.**
+  - The project utilises the fastest and the most straight-forward way to download, there is no further optimisation, period.
 
 - The `grab` option simply streams the stream url to the stdout stream.
-    - This is useful for external usage and testing.
+  - This is useful for external usage and testing.
 
-```
-$ animdl stream "One Piece" 
+```sh
+animdl stream "One Piece" 
 ```
 
 <p align="center">
@@ -139,7 +134,6 @@ Providers can be specified by using provider prefix, <code>9anime:One Piece</cod
 <p align="center">
 <sub>
 You can specify direct urls to the provider; the project will automatically detect the provider and continue scraping. This method ignores searching.<sub></p>
-
 
 ### `-r` / `--range` argument
 
@@ -153,16 +147,15 @@ This argument is shared by **stream**, **download** and **grab**, it can be used
 - `1-2,230-340` will be treated as two different checks. The first check will be from `1` to `2`, the second from `230` to `340`.
 - You can use any separators, the project will automatically parse your range string.
 
-
-### `--auto` flag **and** `--index` argument
+### `--index` argument
 
 This argument is shared by **stream**, **download** and **grab**, it can be used to automatically select the search result. The default argument for index is `1`, that is, the first stream.
 
-`--auto --index 2` will automatically select the second search result without prompt.
+`--index 2` will automatically select the second search result without prompt.
 
 ### `-s` / `--special` argument
 
-This argument is shared by **stream** and **download**, it can be used to hand over the latest episode of the anime by using `-s latest`. Similarly, the latest 2 episodes can be selected via `latest-2`. 
+This argument is shared by **stream** and **download**, it can be used to hand over the latest episode of the anime by using `-s latest`. Similarly, the latest 2 episodes can be selected via `latest-2`.
 
 This argument changes the **flow** of episodes. This means, this will not isolate the other streams but just bring forward the required episodes. If an anime has 10 episodes, the flow will be changed to `10, 1, 2, 3, 4, 5, 6, 7, 8, 9` if `latest` is in used.
 
@@ -214,7 +207,6 @@ This project posses powerful commands and arguments to aid them, there are **man
 
 ## Providers
 
-
 | Website                                      | Searcher Prefix      | Available Qualities | Status / Elapsed Time | Content Extension |
 | :------------------------------------------: | :-----------------: | :-----------------:  | :----: | :-----------------: |
 | [9Anime](https://9anime.to/)                 | `9anime`             | 720p, 1080p | <img height="25" src="https://github.com/justfoolingaround/animdl-provider-benchmarks/raw/master/api/providers/nineanime.png">  | MP4 / TS  |
@@ -246,10 +238,11 @@ You can use the `ANIMDL_CONFIG` environment variable to specify a configuration 
 Else, a file with the name `animdl_config.yml` in the working directory will be used if available.
 
 Futhermore, the configuration files can be globally placed at:
+
 - Windows:
-    - `%USERPROFILE%/.animdl/config.yml`
+  - `%USERPROFILE%/.animdl/config.yml`
 - Anything else:
-    - `$HOME/.config/animdl/config.yml`
+  - `$HOME/.config/animdl/config.yml`
 
 Only a singular configuration file in the above priority order is used, configurations aren't merged.
 
@@ -298,6 +291,7 @@ players:
 If the executable is found, the player will be eligible for use.
 
 Currently supported players are:
+
 - [`mpv`](https://mpv.io/)
 - [`vlc`](https://www.videolan.org/vlc/)
 - [`iina`](https://iina.io/)
@@ -320,14 +314,13 @@ ffmpeg:
 
 This project supports RPC clients, this can be enabled **only** from the configuration. To use this, you must have `pypresence` installed via:
 
-```
-$ pip install pypresence
+```sh
+pip install pypresence
 ```
 
 ```yml
 discord_presence: true
 ```
-
 
 ### fzf set-up
 
@@ -374,7 +367,7 @@ The best way to contribute would be to suggest the developer a provider or a fea
 
 The disclaimer of the project can be found [here](./disclaimer.md).
 
-## In a nutshell,
+## In a nutshell
 
 - Abuses the developer's braincells in scraping to give about the fastest and most efficient toolset.
 - Brings about a highly powerful codebase which is just about appropriate for scraping.
@@ -398,24 +391,24 @@ I'm glad you're here!
 ### Similar Projects
 
 - Shell
-    - [ani-cli](https://github.com/pystardust/ani-cli)
+  - [ani-cli](https://github.com/pystardust/ani-cli)
 - Kotlin
-    - [Cloudstream-3](https://github.com/Lagradost/cloudstream-3)
-    - [Saikou](https://github.com/saikou-app/saikou)
+  - [Cloudstream-3](https://github.com/Lagradost/cloudstream-3)
+  - [Saikou](https://github.com/saikou-app/saikou)
 
 These are actively maintained projects, each of which has its own unique features and functionality.
 
 ### Internal Dependencies
 
 - Core
-    - [encode/httpx](https://github.com/encode/httpx)
-    - [Legrandin/pycryptodome](https://github.com/Legrandin/pycryptodome)
-    - [pallets/click](https://github.com/pallets/click)
-    - [tqdm/tqdm](https://github.com/tqdm/tqdm)
-    - [lxml/lxml](https://github.com/lxml/lxml)
+  - [encode/httpx](https://github.com/encode/httpx)
+  - [Legrandin/pycryptodome](https://github.com/Legrandin/pycryptodome)
+  - [pallets/click](https://github.com/pallets/click)
+  - [tqdm/tqdm](https://github.com/tqdm/tqdm)
+  - [lxml/lxml](https://github.com/lxml/lxml)
 - Optional
-    - [junegunn/fzf](https://github.com/junegunn/fzf)
-    - [qwertyquerty/pypresence](https://github.com/qwertyquerty/pypresence)
+  - [junegunn/fzf](https://github.com/junegunn/fzf)
+  - [qwertyquerty/pypresence](https://github.com/qwertyquerty/pypresence)
 
 The project would definitely not be complete or even in a working state if it weren't for these dependencies.
 
