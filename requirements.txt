@@ -1,4 +1,4 @@
-anchor-kr==0.1.1
+anchor-kr
 anitopy==2.1.0
 click==8.0.4
 comtypes==1.1.11
