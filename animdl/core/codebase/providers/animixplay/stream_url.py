@@ -12,7 +12,7 @@ animixplay_logger = logging.getLogger("provider:animixplay")
 
 ID_MATCHER = regex.compile(r"\?id=([^&]+)")
 EMBED_URL_BASE = "https://animixplay.to/api/live"
-EMBED_M3U8_MATCHER = regex.compile(r"player\.html[?#](.+?)#")
+EMBED_M3U8_MATCHER = regex.compile(r"player\.html?[^#]*#([^#]+)")
 EMBED_B64_MATCHER = regex.compile(r"#(aHR0[^#]+)")
 EMBED_VIDEO_MATCHER = regex.compile(r'iframesrc="(.+?)"')
 
@@ -34,6 +34,7 @@ def url_update(url):
 
 
 def extract_from_url(embed_url):
+    
     on_url = EMBED_M3U8_MATCHER.search(embed_url) or EMBED_B64_MATCHER.search(embed_url)
 
     if not on_url:
