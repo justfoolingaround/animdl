@@ -8,6 +8,8 @@ import lxml.html as htmlparser
 import regex
 import yarl
 
+from .hardstream import get_hardstream_generator, hard_urls
+
 animixplay_logger = logging.getLogger("provider:animixplay")
 
 ID_MATCHER = regex.compile(r"\?id=([^&]+)")
@@ -99,6 +101,15 @@ def get_stream_url(session, data_url):
 
 
 def fetcher(session, url, check, match):
+
+    slug = match.group(1)
+
+    if slug in hard_urls:
+        generator = get_hardstream_generator(session, slug)
+        if generator is not None:
+            yield from generator
+            return
+
     data = json.loads(
         htmlparser.fromstring(session.get(url).content)
         .cssselect("#epslistplace")[0]
