@@ -5,7 +5,7 @@ import click
 
 from ...__version__ import __core__
 from ...codebase.providers import get_provider
-from ...config import DEFAULT_PROVIDER, CHECK_FOR_UPDATES
+from ...config import CHECK_FOR_UPDATES, DEFAULT_PROVIDER
 from .. import helpers
 from ..http_client import client
 

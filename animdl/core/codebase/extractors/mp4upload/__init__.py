@@ -1,5 +1,6 @@
-import regex
 import logging
+
+import regex
 
 MP4UPLOAD_REGEX = regex.compile(r"player\|(.*)\|videojs")
 
@@ -38,3 +39,6 @@ def extract(session, url, **opts):
         ]
     except Exception as e:
         return logger.error("'%s' occurred when extracting from '%s'." % (e, url)) or []
+
+
+extract.disabled = True

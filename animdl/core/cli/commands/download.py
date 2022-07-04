@@ -7,10 +7,10 @@ from ...__version__ import __core__
 from ...codebase import providers, sanitize_filename
 from ...config import (
     AUTO_RETRY,
+    CHECK_FOR_UPDATES,
     DEFAULT_PROVIDER,
     DOWNLOAD_DIRECTORY,
     QUALITY,
-    CHECK_FOR_UPDATES,
 )
 from .. import exit_codes, helpers, http_client
 

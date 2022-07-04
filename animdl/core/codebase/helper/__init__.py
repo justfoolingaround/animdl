@@ -22,6 +22,7 @@ def construct_site_based_regex(
 
 
 def append_protocol(uri: "str", *, protocol: "str" = "https"):
+
     if regex.search(r"^.+?://", uri):
         return uri
     return "{}://{}".format(protocol.rstrip(":/"), uri.lstrip("/"))

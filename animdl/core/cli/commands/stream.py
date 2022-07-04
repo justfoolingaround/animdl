@@ -9,8 +9,8 @@ from ...config import (
     DEFAULT_PLAYER,
     DEFAULT_PROVIDER,
     DISCORD_PRESENCE,
-    QUALITY,
     FORCE_STREAMING_QUALITY_SELECTION,
+    QUALITY,
 )
 from .. import exit_codes, helpers, http_client
 

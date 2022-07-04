@@ -6,7 +6,7 @@ import traceback
 import click
 
 from ...codebase import downloader, extractors
-from . import decorators, intelliq, special, prompts
+from . import decorators, intelliq, prompts, special
 from .player import handle_streamer
 from .processors import process_query, provider_searcher_mapping
 

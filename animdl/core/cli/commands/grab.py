@@ -5,7 +5,7 @@ import click
 
 from ...__version__ import __core__
 from ...codebase import providers
-from ...config import DEFAULT_PROVIDER, CHECK_FOR_UPDATES
+from ...config import CHECK_FOR_UPDATES, DEFAULT_PROVIDER
 from .. import helpers
 from ..http_client import client
 
@@ -32,7 +32,7 @@ def animdl_grab(query, index, log_level, **kwargs):
         client, query, logger, auto_index=index, provider=DEFAULT_PROVIDER
     )
 
-    if anime is None:
+    if not anime:
         return
 
     logger.name = "{}/{}".format(provider, logger.name)

@@ -19,9 +19,7 @@ def supported():
 try:
     import comtypes.client as cc
 
-    cc.GetModule(IDM_MID)
-
-    import comtypes.gen.IDManLib as idmlib
+    idmlib = cc.GetModule(IDM_MID)
 
     client = cc.CreateObject(
         idmlib.CIDMLinkTransmitter, None, None, idmlib.ICIDMLinkTransmitter2

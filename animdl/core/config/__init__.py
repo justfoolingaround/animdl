@@ -69,9 +69,7 @@ DEFAULT_CONFIG = {
         },
         "iina": {
             "executable": "iina",
-            "opts": [
-                "--keep-running"
-            ],
+            "opts": ["--keep-running"],
         },
         "celluloid": {
             "executable": "celluloid",
