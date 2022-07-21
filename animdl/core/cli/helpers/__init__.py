@@ -3,10 +3,8 @@ import json
 import logging
 import traceback
 
-import click
-
 from ...codebase import downloader, extractors
-from . import decorators, intelliq, prompts, special
+from . import banner, constants, decorators, intelliq, prompts, special
 from .player import handle_streamer
 from .processors import process_query, provider_searcher_mapping
 

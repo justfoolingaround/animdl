@@ -101,11 +101,12 @@ def search_animeout(session, query):
 
 def search_animixplay(session, query):
     parsed = htmlparser.fromstring(
-        session.post("https://cachecow.eu/api/search", data={"qfast": query})
-        .json()["result"]
+        session.post("https://cachecow.eu/api/search", data={"qfast": query}).json()[
+            "result"
+        ]
         or "<div></div>"
     )
-    
+
     for results in parsed.cssselect("a[title]"):
         yield {
             "anime_url": ANIMIXPLAY[:-1] + results.get("href"),

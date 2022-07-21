@@ -47,13 +47,14 @@ def fetcher(session, url, check, match):
     ):
         if check(episode):
             yield partial(
-                lambda s, x: [*extract_stream_urls(s, x)], session, episode_urls
+                lambda episode_urls: list(extract_stream_urls(session, episode_urls)),
+                episode_urls,
             ), episode
 
 
 def metadata_fetcher(session, url, match):
     return {
-        "titles": TITLES_REGEX.finditer(
+        "titles": TITLES_REGEX.findall(
             session.get(yarl.URL(url).with_host("bestanime3.xyz").human_repr()).text
         )
     }

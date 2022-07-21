@@ -5,7 +5,7 @@ A one cli for all the anime.
 import click
 
 from .core import __version__
-from .core.cli.commands import download, grab, schedule, search, stream
+from .core.cli.commands import download, grab, schedule, search, stream, update
 from .core.cli.helpers.player import supported_streamers
 
 commands = {
@@ -13,6 +13,7 @@ commands = {
     "grab": grab.animdl_grab,
     "schedule": schedule.animdl_schedule,
     "search": search.animdl_search,
+    "update": update.animdl_update,
 }
 
 executable = list(supported_streamers())
