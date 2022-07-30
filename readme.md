@@ -332,7 +332,7 @@ This is an incredibly powerful tool and can enchance the user experience by a lo
 fzf:
     executable: fzf
     opts: []
-    state: false
+    state: true
 ```
 
 Users can benefit by using `fzf` and `animdl stream twist:` as this allows them to browse the **entire** Twist library with a heavenly interface.
