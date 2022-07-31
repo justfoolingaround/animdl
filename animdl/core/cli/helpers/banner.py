@@ -77,18 +77,14 @@ def iter_banner(
                     f"Update ↑ {upstream_version} ↓ {current_version}", fg="yellow"
                 )
             )
-            yield from processor(
-                click.style(
-                    f"To update, `animdl update`."
-                )
-            )
+            yield from processor(click.style(f"To update, `animdl update`."))
 
 
 def banner_gift_wrapper(session, current_version, *, check_for_updates=False):
     def wrapper(f):
         def __inner__(*args, log_level, log_file, **kwargs):
 
-            if log_level < 20:
+            if log_level > 20:
                 return f(*args, log_level=log_level, log_file=log_file, **kwargs)
 
             for _ in iter_banner(
