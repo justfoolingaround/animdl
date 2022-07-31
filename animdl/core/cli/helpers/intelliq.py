@@ -245,10 +245,10 @@ def filter_quality(
         filtered = check(streams)
 
         if filtered:
-            logger.info("{} streams fulfill {!r}.".format(len(filtered), segment))
+            logger.debug("{} streams fulfill {!r}.".format(len(filtered), segment))
             return filtered
 
-        logger.warning("No streams fulfill {!r}.".format(segment))
+        logger.debug("No streams fulfill {!r}.".format(segment))
 
-    logger.warning("Quality checks have failed miserably. Returning everything back.")
+    logger.debug("Quality checks have failed miserably. Returning everything back.")
     return streams
