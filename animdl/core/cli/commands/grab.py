@@ -42,6 +42,10 @@ def animdl_grab(query, index, log_level, **kwargs):
         client, anime.get("anime_url"), check=r
     ):
         stream_url = list(helpers.ensure_extraction(client, stream_url_caller))
-        click.echo(json.dumps({"episode": episode, "streams": stream_url}))
+        try:
+            title = anime.get("name") + ": Episode {}".format(episode)
+        except:
+            title = episode
+        click.echo(json.dumps({"title": title, "episode": episode, "streams": stream_url}))
 
     logger.info("Grabbing session complete.")
