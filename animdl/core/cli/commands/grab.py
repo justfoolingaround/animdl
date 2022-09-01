@@ -44,7 +44,7 @@ def animdl_grab(query, index, log_level, **kwargs):
         stream_url = list(helpers.ensure_extraction(client, stream_url_caller))
         try:
             title = anime.get("name") + ": Episode {}".format(episode)
-        except Exception as ex:
+        except Exception as e:
             title = episode
         click.echo(json.dumps({"title": title, "episode": episode, "streams": stream_url}))
 
