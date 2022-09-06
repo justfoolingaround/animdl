@@ -46,7 +46,7 @@ def animdl_grab(query, index, log_level, **kwargs):
             title = anime.get("name") + ": Episode {}".format(episode)
         except Exception as e:
             title = episode
-            logger.error("Anime has no title")
+            logger.error("Anime has no title - Error: '%s'." % (e))
         click.echo(json.dumps({"title": title, "episode": episode, "streams": stream_url}))
 
     logger.info("Grabbing session complete.")
