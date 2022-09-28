@@ -23,7 +23,7 @@ def post_processor(session, stream_page):
             "headers": {"cookie": cookies},
         }
         for _ in regex.finditer(
-            r"src: '(.+?)'.+?size: (\d+)", stream_page, flags=regex.S
+            r'<source src="(.+?)" .+? size="([0-9]+)">', stream_page, flags=regex.S
         )
     )
 
