@@ -1,73 +1,53 @@
-import threading
+import json
+from functools import lru_cache
 
 import regex
 import yarl
 
-from ...helper import uwu
+from .utils import decipher_salted_aes
 
 CONTENT_ID_REGEX = regex.compile(r"embed-6/([^?#&/.]+)")
 
+SID_ENDPOINT = "https://api.enime.moe/tool/rapid-cloud/server-id"
+SALT_SECRET_ENDPOINT = (
+    "https://raw.githubusercontent.com/consumet/rapidclown/main/key.txt"
+)
 
-parent_thread = threading.current_thread()
 
-sid_holder = {
-    "sid": None,
-}
-
-active_event = threading.Event()
+@lru_cache()
+def get_associative_key(session, endpoint):
+    return session.get(endpoint).text
 
 
 def extract(session, url, **opts):
 
-    from .polling import ws_stimulation
+    sid = get_associative_key(session, SID_ENDPOINT)
 
-    if sid_holder["sid"] is None and not active_event.is_set():
-        active_event.set()
-
-        threading.Thread(
-            target=ws_stimulation,
-            kwargs={
-                "session": session,
-                "close_event": active_event,
-                "sid_holder": sid_holder,
-                "parent_thread": parent_thread,
-            },
-        ).start()
-
-    while sid_holder["sid"] is None:
-        pass
-
-    sid = sid_holder["sid"]
-
-    content_id = CONTENT_ID_REGEX.search(url).group(1)
-    recaptcha_response = uwu.bypass_recaptcha(session, url, opts["headers"])
+    url = yarl.URL(url)
 
     ajax_response = session.get(
-        "https://{}/ajax/embed-6/getSources".format(yarl.URL(url).host),
-        params={
-            "id": content_id,
-            "_token": recaptcha_response.get("token", ""),
-            "_number": recaptcha_response.get("number", ""),
-        },
+        f"https://{url.host}/ajax/embed-6/getSources",
+        params={"id": url.name, "sId": sid},
     )
 
     sources = ajax_response.json()
+    salt_secret = get_associative_key(session, SALT_SECRET_ENDPOINT).encode("utf-8")
 
     subtitles = [
         _.get("file") for _ in sources.get("tracks") if _.get("kind") == "captions"
     ]
 
     def yielder():
-        for _ in sources.get("sources"):
+        for _ in json.loads(decipher_salted_aes(sources["sources"], salt_secret)):
             yield {
-                "stream_url": _.get("file"),
+                "stream_url": _["file"],
                 "subtitle": subtitles,
                 "headers": {"SID": sid},
             }
 
-        for _ in sources.get("sourcesBackup"):
+        for _ in json.loads(decipher_salted_aes(sources["sourcesBackup"], salt_secret)):
             yield {
-                "stream_url": _.get("file"),
+                "stream_url": _["file"],
                 "subtitle": subtitles,
                 "headers": {"SID": sid},
             }

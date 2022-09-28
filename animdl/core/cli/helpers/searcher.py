@@ -36,11 +36,10 @@ def placeholder(session, query):
 
 
 def search_9anime(session, query):
-    nineanime_results = session.get(
-        NINEANIME_URL_SEARCH, params={"keyword": query, "sort": "views:desc"}
-    )
+    nineanime_results = session.get(NINEANIME_URL_SEARCH, params={"keyword": query})
+
     parsed = htmlparser.fromstring(nineanime_results.text)
-    for results in parsed.cssselect(".anime-list .name"):
+    for results in parsed.cssselect("a.name"):
         yield {
             "anime_url": NINEANIME.rstrip("/") + results.get("href"),
             "name": results.text_content(),

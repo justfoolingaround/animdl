@@ -1,7 +1,3 @@
-"""
-THANKS FOR ADDING STREAMSB AND STREAMTAPE DUMMIES
-"""
-
 from functools import partial
 
 import lxml.html as htmlparser
@@ -46,7 +42,7 @@ def extract_episode(session, data_id, title):
         if source_data.get("type") != "iframe":
             yield {
                 "stream_url": source_data.get("link"),
-                "title": "{} - {}".format(server.get("data-type"), title),
+                "title": f"{server.get('data-type')} - {title}",
             }
             continue
 
@@ -69,7 +65,7 @@ def fetcher(session, url, check, match):
     slug = match.group(2)
 
     for episode in htmlparser.fromstring(
-        session.get(ZORO + "ajax/v2/episode/list/{}".format(slug), headers=XHR_HEADERS)
+        session.get(ZORO + f"ajax/v2/episode/list/{slug}", headers=XHR_HEADERS)
         .json()
         .get("html")
     ).cssselect("a[title][data-number][data-id]"):

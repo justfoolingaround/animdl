@@ -3,7 +3,6 @@ from textwrap import wrap
 from urllib.parse import quote, unquote
 
 NORMAL_TABLE = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/"
-BASE64_TABLE = "c/aUAorINHBLxWTy3uRiPt8J+vjsOheFG1E0q2X9CYwDZlnmd4Kb5M6gSVzfk7pQ"
 
 
 def cipher_keyed(key, plaintext):
@@ -18,7 +17,7 @@ def cipher_keyed(key, plaintext):
 
     i = j = 0
     for f in range(0, len(plaintext)):
-        j = (j + f) % 256
+        j = (j + 1) % 256  # NOTE: Previously, this was 'j = (j + f) % 256'
         i = (i + mapping[j]) % 256
         mapping[i], mapping[j] = mapping[j], mapping[i]
         cipher += chr(ord(plaintext[f]) ^ mapping[(mapping[i] + mapping[j]) % 256])
@@ -33,7 +32,7 @@ def get_salted_code(plaintext):
     )
 
 
-def encrypt(data, *, table=BASE64_TABLE):
+def encrypt(data, *, table=NORMAL_TABLE):
     return "".join(
         table[int(segment.ljust(6, "0"), 2) if len(segment) < 6 else int(segment, 2)]
         for segment in wrap(
@@ -42,15 +41,15 @@ def encrypt(data, *, table=BASE64_TABLE):
     )
 
 
-def decrypt_url(encrypted_url, n=6):
-    return unquote(cipher_keyed(encrypted_url[:n], decrypt(encrypted_url[n:])))
+def decrypt_url(encrypted_url, secret):
+    return unquote(cipher_keyed(secret, decrypt(encrypted_url)))
 
 
-def encrypt_url(url):
-    return "kr1337" + encrypt(cipher_keyed("kr1337", quote(url)))
+def encrypt_url(url, key):
+    return encrypt(cipher_keyed(key, quote(url)))
 
 
-def decrypt(data, *, table=BASE64_TABLE):
+def decrypt(data, *, table=NORMAL_TABLE):
     return "".join(
         map(
             chr,

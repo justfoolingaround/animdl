@@ -36,7 +36,7 @@ CONFIGURATION_FILE_PATH = get_existent_path(
 DEFAULT_CONFIG = {
     "default_provider": "animixplay",
     "site_urls": {
-        "9anime": "https://9anime.to/",
+        "9anime": "https://9anime.pl/",
         "allanime": "https://allanime.site/",
         "animekaizoku": "https://animekaizoku.com/",
         "animeout": "https://animeout.xyz/",
