@@ -13,9 +13,15 @@ def search(
 ):
 
     pattern = regex.compile(
-        r".*?".join(map(regex.escape, query.strip())) + r".*", flags=regex.IGNORECASE
+        r"(.*?)".join(map(regex.escape, query.strip())) + r"(.*)",
+        flags=regex.IGNORECASE,
     )
 
-    for search_value in possibilities:
-        if pattern.fullmatch(processor(search_value)):
-            yield search_value
+    def genexp():
+        for search_value in possibilities:
+            match = pattern.fullmatch(processor(search_value))
+            if match:
+                yield sum(len(_) for _ in match.groups()), search_value
+
+    for _, search_value in sorted(genexp(), key=lambda x: x[0]):
+        yield search_value
