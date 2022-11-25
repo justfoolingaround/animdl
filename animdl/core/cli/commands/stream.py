@@ -91,7 +91,11 @@ def animdl_stream(
         playing = True
         while playing:
 
-            window_title = content_title + ": Episode {}".format(episode_number)
+            window_title = (
+                (content_title + f": Episode {episode_number}")
+                if content_title is not None
+                else f"Episode {episode_number}"
+            )
 
             stream_urls = list(
                 helpers.ensure_extraction(http_client.client, stream_urls_caller)
