@@ -65,6 +65,10 @@ def animdl_download(
     logger.debug(f"Download directory: {content_dir.as_posix()!r}")
     total = len(streams)
 
+    if total < 1:
+        logger.critical("No streams found, failed to download.")
+        raise SystemExit(exit_codes.NO_CONTENT_FOUND)
+
     for count, (stream_urls_caller, episode_number) in enumerate(streams, 1):
 
         content_title = "E{:02d}".format(int(episode_number))

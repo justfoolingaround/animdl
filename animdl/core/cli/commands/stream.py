@@ -81,6 +81,11 @@ def animdl_stream(
     content_title = anime["name"]
 
     total = len(streams)
+
+    if total < 1:
+        logger.critical("No streams found, failed to stream.")
+        raise SystemExit(exit_codes.NO_CONTENT_FOUND)
+
     for count, (stream_urls_caller, episode_number) in enumerate(streams, 1):
 
         playing = True
