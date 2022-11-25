@@ -39,11 +39,19 @@ gql = """query (
 def arrange_template(data):
     template = defaultdict(lambda: defaultdict(list))
 
+    datetime_now = datetime.now()
+
     for airing in data[::-1]:
         datetime_object = datetime.fromtimestamp(airing.get("airingAt", 0))
-        template[format(datetime_object, DATE_FORMAT)][
-            (format(datetime_object, TIME_FORMAT), datetime_object)
-        ].append(
+
+        if datetime_object < datetime_now:
+            date_string = f"Aired @ {datetime_object.strftime(DATE_FORMAT)}"
+        else:
+            date_string = f"On {datetime_object.strftime(DATE_FORMAT)}"
+
+        time_string = datetime_object.strftime(TIME_FORMAT)
+
+        template[date_string][time_string, datetime_object].append(
             {
                 "name": airing.get("media", {}).get("title", {}).get("userPreferred"),
                 "episode": airing.get("episode", 0),
@@ -79,15 +87,24 @@ def iter_schedules(session, unix_time):
 
 
 @click.command(name="schedule", help="Know which animes are going over the air when.")
+@click.option(
+    "--offset",
+    "-o",
+    type=int,
+    default=86400,
+    help="Subtract the offset from the current time to get the schedule for aired anime.",
+)
 @helpers.decorators.logging_options()
 @helpers.decorators.setup_loggers()
 @helpers.decorators.banner_gift_wrapper(client, __core__)
-def animdl_schedule(**kwargs):
+def animdl_schedule(offset: int, **kwargs):
+
+    including_yesterday = int(time.time()) - offset
 
     for date_format, child_component in arrange_template(
-        list(iter_schedules(client, int(time.time())))
+        list(iter_schedules(client, including_yesterday))
     ).items():
-        click.secho(f"On {date_format}", fg="cyan")
+        click.secho(date_format, fg="cyan")
         for (time_format, _), anime_components in sorted(
             child_component.items(), key=lambda component: component[0][1], reverse=True
         ):
