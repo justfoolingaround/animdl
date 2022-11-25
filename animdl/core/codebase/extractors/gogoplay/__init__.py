@@ -37,18 +37,7 @@ def aes_decrypt(data: str, *, key, iv):
 
 
 def extract(session, url, **opts):
-    """
-    Extract content off of GogoAnime.
 
-    Next time you dare change gogo, I'll add a trace to your
-    stupid site's JS and automate the Python code conversion
-    from there.
-
-    Now, now, there's no fun in the games where your opponent
-    is faster than you by a landslide, is it?
-
-    Resistance is futile.
-    """
     parsed_url = yarl.URL(url)
     content_id = parsed_url.query["id"]
     next_host = "https://{}/".format(parsed_url.host)
@@ -82,14 +71,12 @@ def extract(session, url, **opts):
             yield {
                 "stream_url": origin.get("file"),
                 "quality": get_quality(origin.get("label", "")),
-                "headers": {"referer": next_host},
             }
 
         for backups in content.get("source_bk"):
             yield {
                 "stream_url": backups.get("file"),
                 "quality": get_quality(origin.get("label", "")),
-                "headers": {"referer": next_host},
             }
 
     return list(yielder())
