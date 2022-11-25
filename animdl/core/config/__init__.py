@@ -1,5 +1,6 @@
 import os
 import sys
+import warnings
 from pathlib import Path
 
 import yaml
@@ -15,17 +16,33 @@ def merge_dicts(dict1, dict2):
     return dict2
 
 
-def get_existent_path(*paths):
-    for path in paths:
-        path_object = Path(path)
-        if path_object.exists():
-            return path_object
+def get_existent_path(*user_paths):
+    for _ in user_paths:
+        if not isinstance(_, Path):
+            _ = Path(_)
+        if _.exists():
+            return _
 
 
 if sys.platform == "win32":
-    USERPROFILE_ANIMDL_PATH = os.getenv("userprofile", ".") + "/.animdl/config.yml"
+    USERPROFILE_ANIMDL_PATH = (
+        Path(os.getenv("LOCALAPPDATA", ".")) / ".config" / "animdl" / "config.yml"
+    )
+    OLD_DEPRECATED_PATH = Path(os.getenv("USERPROFILE")) / ".animdl" / "config.yml"
+
+    if OLD_DEPRECATED_PATH.exists():
+        if not USERPROFILE_ANIMDL_PATH.exists():
+            warnings.warn(
+                f"The config file path @ {OLD_DEPRECATED_PATH.as_posix()} is deprecated and will be removed in the future. "
+                f"Please migrate to {USERPROFILE_ANIMDL_PATH.as_posix()}. "
+                f"This is not done automatically because this project does not want to mess with your files.",
+            )
+            USERPROFILE_ANIMDL_PATH = OLD_DEPRECATED_PATH
+
 else:
-    USERPROFILE_ANIMDL_PATH = os.getenv("HOME", ".") + "/.config/animdl/config.yml"
+    USERPROFILE_ANIMDL_PATH = (
+        Path(os.getenv("HOME", ".")) / ".config" / "animdl" / "config.yml"
+    )
 
 CONFIGURATION_FILE_PATH = get_existent_path(
     os.getenv("ANIMDL_CONFIG", "./animdl_config.yml"),
