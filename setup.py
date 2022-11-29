@@ -5,6 +5,9 @@ from animdl.core.__version__ import __core__
 with open("requirements.txt") as requirements_txt:
     requirements = requirements_txt.read().splitlines()
 
+with open("console_entry_points.conf") as console_entry_points_conf:
+    console_entry_points = console_entry_points_conf.read()
+
 
 setup(
     name="animdl",
@@ -14,16 +17,7 @@ setup(
     description="A highly efficient, fast, powerful and light-weight anime downloader and streamer for your favorite anime.",
     packages=find_packages(),
     url="https://github.com/justfoolingaround/animdl",
-    keywords=[
-        "stream",
-        "cli",
-        "anime",
-        "download",
-    ],
     install_requires=requirements,
-    entry_points="""
-        [console_scripts]
-        animdl=animdl.__main__:__animdl_cli__
-    """,
+    entry_points=console_entry_points,
     include_package_data=True,
 )

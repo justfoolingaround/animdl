@@ -1,4 +1,4 @@
-<h1 align="center"><img src="https://capsule-render.vercel.app/api?type=soft&fontColor=703ee5&text=justfoolingaround/animdl&height=150&fontSize=60&desc=Ridiculously efficient, fast and light-weight.&descAlignY=75&descAlign=60&color=00000000&animation=twinkling"></h1>
+<h1 align="center"><img src="https://capsule-render.vercel.app/api?type=soft&fontColor=703ee5&text=justfoolingaround/animdl&height=150&fontSize=60&desc=Ridiculously%20efficient,%20fast%20and%20light-weight.&descAlignY=75&descAlign=60&color=00000000&animation=twinkling"></h1>
 <p align="center"><sup>A highly efficient, powerful and fast anime scraper.</sup></p>
 
 -------
