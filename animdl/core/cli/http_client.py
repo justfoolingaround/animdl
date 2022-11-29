@@ -35,14 +35,13 @@ def httpx_exception():
 
     def exception_hook(exctype, value, traceback):
         if issubclass(exctype, (httpx.HTTPError)):
-            exit(
-                AnimeHttpClient.http_logger.critical(
-                    "{!r}, this issue originates due to connection issues on your or the servers' side. Retry after troubleshooting connection issues on your side.".format(
-                        value
-                    )
-                )
-                or INTERNET_ISSUE
+            AnimeHttpClient.http_logger.error(
+                f"{value!r}, this issue originates due to connection issues on your or the server's side. "
+                "Retry after troubleshooting connection issues on your system.",
+                exc_info=True,
             )
+
+            raise SystemExit(INTERNET_ISSUE)
 
         return hook(exctype, value, traceback)
 
