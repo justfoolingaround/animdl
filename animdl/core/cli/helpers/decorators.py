@@ -3,7 +3,7 @@ from anchor.strings.parsing.ranges import iter_conditions
 
 from .banner import banner_gift_wrapper
 from .logger import setup_loggers
-from .player import PLAYER_MAPPING
+from .player import player_mapping
 
 accept_all = lambda *args, **kwargs: True
 
@@ -172,7 +172,7 @@ def player_options(
                 default=default_player,
                 show_default=True,
                 show_choices=True,
-                type=click.Choice(PLAYER_MAPPING.keys(), case_sensitive=False),
+                type=click.Choice(player_mapping.keys(), case_sensitive=False),
             ),
         ]
     )

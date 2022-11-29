@@ -6,7 +6,6 @@ import click
 
 from .core import __version__
 from .core.cli.commands import download, grab, schedule, search, stream, update
-from .core.cli.helpers.player import supported_streamers
 
 commands = {
     "download": download.animdl_download,
@@ -14,12 +13,8 @@ commands = {
     "schedule": schedule.animdl_schedule,
     "search": search.animdl_search,
     "update": update.animdl_update,
+    "stream": stream.animdl_stream,
 }
-
-executable = list(supported_streamers())
-
-if executable:
-    commands.update({"stream": stream.animdl_stream})
 
 
 @click.group(commands=commands)

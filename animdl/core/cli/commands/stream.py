@@ -45,13 +45,18 @@ def animdl_stream(
     r = kwargs.get("range")
 
     logger = logging.getLogger("streamer")
-    streamer = helpers.handle_streamer(
-        click.parser.split_arg_string(player_opts or "") or [], **{player: True}
-    )
 
-    if streamer is False:
-        logger.critical(
-            "Streaming failed due to selection of a unsupported streamer; please configure the streamer in the config to use it."
+    if player_opts is not None:
+        player_opts = tuple(click.parser.split_arg_string(player_opts))
+    else:
+        player_opts = ()
+
+    try:
+        streamer = helpers.player.handle_player(DEFAULT_PLAYER, player_opts, player)
+    except Exception as e:
+        logger.error(
+            "Streaming failed due to: {!r}.".format(e),
+            exc_info=True,
         )
         raise SystemExit(exit_codes.STREAMER_CONFIGURATION_REQUIRED)
 
@@ -88,26 +93,34 @@ def animdl_stream(
 
     for count, (stream_urls_caller, episode_number) in enumerate(streams, 1):
 
-        playing = True
-        while playing:
+        if episode_number == 0:
+            episode_text = "Special Episode"
+        else:
+            episode_text = f"Episode {episode_number}"
 
-            window_title = (
-                (content_title + f": Episode {episode_number}")
-                if content_title is not None
-                else f"Episode {episode_number}"
-            )
+        if content_title:
+            media_title = f"{content_title}: {episode_text}"
+        else:
+            media_title = episode_text
+
+        playing = True
+
+        while playing:
 
             stream_urls = list(
                 helpers.ensure_extraction(http_client.client, stream_urls_caller)
             )
 
             if not stream_urls:
+
                 logger.warning(
-                    "There were no stream links available at the moment. Ignoring {!r}, retry using a different provider.".format(
-                        window_title
-                    )
+                    f"Could not find stream urls for {content_title!r}. "
+                    "The episode may not be available or the scraper has broke."
                 )
-                playing = False
+
+                if log_level <= logging.DEBUG:
+                    playing = click.confirm("Retry stream url extraction?")
+
                 continue
 
             selection = helpers.prompts.quality_prompt(
@@ -119,52 +132,40 @@ def animdl_stream(
                 else None,
             )
 
-            logger.debug("Calling streamer for {!r}".format(stream_urls))
-
             headers = selection.get("headers", {})
-            _ = headers.pop("ssl_verification", True)
 
             logger.info(
-                "Streaming {!r}, [{:d}/{:d}, {:d} remaining]".format(
-                    window_title, count, total, total - count
-                )
+                f"Streaming {media_title!r}, [{count:d}/{total:d}, {total - count:d} remaining]"
             )
+            logger.debug(f"Obtained streams: {stream_urls!r}")
 
             if "title" in selection:
-                window_title += " ({})".format(selection["title"])
+                media_title += " ({})".format(selection["title"])
 
-            player_process = streamer(
-                selection.get("stream_url"),
-                headers=headers,
-                content_title=window_title,
-                subtitles=selection.get("subtitle", []),
-            )
-            if DISCORD_PRESENCE:
-                set_streaming_episode(http_client.client, content_title, episode_number)
+            with streamer:
+                streamer.play(
+                    selection["stream_url"],
+                    title=media_title,
+                    headers=headers,
+                    subtitle=selection.get("subtitle", []),
+                )
 
-            player_process.wait()
-
-            if player_process.returncode:
-                logger.warning(
-                    "Detected a non-zero return code: {:d}.".format(
-                        player_process.returncode
+                if DISCORD_PRESENCE:
+                    set_streaming_episode(
+                        http_client.client, content_title, episode_number
                     )
-                )
-                playing = (
-                    False
-                    if log_level > 20
-                    else click.confirm(
-                        "Retry playback for {!r}?".format(window_title),
-                        show_default=True,
-                        default=False,
-                    )
-                )
-                continue
 
-            playing = (
-                False
-                if log_level > 10
-                else click.confirm(
-                    "Replay {!r}?".format(window_title), show_default=True, default=True
-                )
-            )
+            error_indication = streamer.indicate_error()
+
+            if bool(error_indication):
+                logger.warning(f"Streamer indicated an error {error_indication!r}.")
+
+                if log_level <= logging.INFO:
+                    if click.confirm("Retry streaming this episode?"):
+                        continue
+
+            if log_level <= logging.DEBUG:
+                if click.confirm("Replay episode?"):
+                    continue
+
+            playing = False
