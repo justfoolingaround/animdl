@@ -64,9 +64,11 @@ def fetcher(session, url, check, match):
     per_page = initial_session["per_page"]
     total = initial_session["total"]
 
-    for page in range(1, total + 1):
-        if check(page):
-            current_page = page // per_page + 1
+    iterated_episode = set()
+
+    for episode in range(1, total + 1):
+        if check(episode) and episode not in iterated_episode:
+            current_page = episode // per_page + 1
 
             for episode in fetch_session(session, release_id, page=current_page)[
                 "data"
@@ -80,6 +82,8 @@ def fetcher(session, url, check, match):
                         release_id,
                         episode["session"],
                     ), episode.get("episode", 0)
+
+        iterated_episode.add(episode)
 
 
 def metadata_fetcher(session, url, match):
