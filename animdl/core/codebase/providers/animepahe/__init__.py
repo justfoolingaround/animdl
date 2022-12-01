@@ -41,7 +41,7 @@ def iter_episode_streams(session, release_id, per_page, episode_number):
     current_page = episode_number // per_page + 1
 
     episode = fetch_session(session, release_id, page=current_page)["data"][
-        episode_number % per_page
+        episode_number % per_page - 1
     ]
 
     yield from iter_stream_url_from_stream_session(
