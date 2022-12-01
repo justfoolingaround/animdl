@@ -58,7 +58,6 @@ def bypass_ddos_guard(session):
 
 @functools.lru_cache()
 def fetch_session(session, release_id, *, page=None):
-    print(page)
     return session.get(
         ANIMEPAHE + "api",
         params={"m": "release", "id": release_id, "sort": "episode_asc", "page": page},
