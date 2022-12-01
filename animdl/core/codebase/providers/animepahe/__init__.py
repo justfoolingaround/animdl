@@ -21,7 +21,7 @@ def get_streams_from_embed_url(session, embed_uri):
     )
 
 
-def get_stream_url(session, release_id, stream_session):
+def iter_stream_url_from_stream_session(session, release_id, stream_session):
 
     stream_url_data = session.get(
         ANIMEPAHE + "api",
@@ -36,6 +36,19 @@ def get_stream_url(session, release_id, stream_session):
             }
 
 
+def iter_episode_streams(session, release_id, per_page, episode_number):
+
+    current_page = episode_number // per_page + 1
+
+    episode = fetch_session(session, release_id, page=current_page)["data"][
+        episode_number % per_page
+    ]
+
+    yield from iter_stream_url_from_stream_session(
+        session, release_id, episode["session"]
+    )
+
+
 def bypass_ddos_guard(session):
     js_bypass_uri = regex.search(
         r"'(.*?)'", session.get("https://check.ddos-guard.net/check.js").text
@@ -45,6 +58,7 @@ def bypass_ddos_guard(session):
 
 @functools.lru_cache()
 def fetch_session(session, release_id, *, page=None):
+    print(page)
     return session.get(
         ANIMEPAHE + "api",
         params={"m": "release", "id": release_id, "sort": "episode_asc", "page": page},
@@ -60,30 +74,20 @@ def fetcher(session, url, check, match):
 
     release_id = ID_RE.search(anime_page.text).group(1)
 
-    initial_session = fetch_session(session, release_id)
+    initial_session = fetch_session(session, release_id, page=1)
     per_page = initial_session["per_page"]
     total = initial_session["total"]
 
-    iterated_episode = set()
-
-    for episode in range(1, total + 1):
-        if check(episode) and episode not in iterated_episode:
-            current_page = episode // per_page + 1
-
-            for episode in fetch_session(session, release_id, page=current_page)[
-                "data"
-            ]:
-                if check(episode.get("episode", 0)):
-                    yield functools.partial(
-                        lambda session, release_id, episode: (
-                            list(get_stream_url(session, release_id, episode))
-                        ),
-                        session,
-                        release_id,
-                        episode["session"],
-                    ), episode.get("episode", 0)
-
-        iterated_episode.add(episode)
+    for episode_number in range(1, total + 1):
+        if check(episode_number):
+            yield functools.partial(
+                (
+                    lambda episode_number: iter_episode_streams(
+                        session, release_id, per_page, episode_number
+                    )
+                ),
+                episode_number,
+            ), episode_number
 
 
 def metadata_fetcher(session, url, match):
