@@ -57,12 +57,11 @@ class CelluloidPlayer(MPVDefaultPlayer):
         "--new-window",
     ]
 
-    def __new__(cls, *args, **kwargs):
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
 
-        for key, value in cls.opts_spec.items():
-            cls.opts_spec[key] = f"--mpv-{value.lstrip('-')}"
-
-        return super().__new__(cls, *args, **kwargs)
+        for key, value in self.opts_spec.items():
+            self.opts_spec[key] = f"--mpv-{value.lstrip('-')}"
 
 
 IINAPlayer = CelluloidPlayer
