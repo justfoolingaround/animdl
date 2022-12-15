@@ -62,7 +62,7 @@ class CelluloidPlayer(MPVDefaultPlayer):
         for key, value in cls.opts_spec.items():
             cls.opts_spec[key] = f"--mpv-{value.lstrip('-')}"
 
-        return super().__new__(cls, *args, **kwargs)
+        return cls
 
 
 IINAPlayer = CelluloidPlayer
