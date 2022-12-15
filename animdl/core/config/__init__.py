@@ -66,7 +66,7 @@ DEFAULT_CONFIG = {
         "kawaiifu": "https://kawaiifu.com/",
         "gogoanime": "https://gogoanime.cm/",
         "haho": "https://haho.moe/",
-        "hentaistream": "https://hentaistream.moe/",
+        "hentaistream": "https://hstream.moe/",
         "kamyroll_api": "https://kamyroll.herokuapp.com/",
         "tenshi": "https://tenshi.moe/",
         "nyaasi": "https://nyaa.si/",

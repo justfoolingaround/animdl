@@ -196,11 +196,11 @@ def search_zoro(session, query):
 
 def search_h_ntai_stream(session, query):
     for result in htmlparser.fromstring(
-        session.get(HENTAISTREAM, params={"s": query}).text
+        session.get(HENTAISTREAM + "search/", params={"s": query}).text
     ).cssselect("article > .bsx > a"):
         yield {
-            "name": result.get("title"),
-            "anime_url": result.get("href"),
+            "name": result.get("title") or result.get("oldtitle"),
+            "anime_url": HENTAISTREAM + result.get("href")[1:],
         }
 
 
