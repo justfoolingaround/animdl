@@ -16,7 +16,6 @@ presence_client.update(
     state="Queuing up the streams",
     large_image="mascot",
     large_text="https://github.com/justfoolingaround/animdl",
-    buttons=[ { "label": "View Repo", "url": "https://github.com/justfoolingaround/animdl" } ],
 )
 
 KITSU_ENDPOINT = "https://kitsu.io/api/"
