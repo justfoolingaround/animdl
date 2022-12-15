@@ -10,7 +10,7 @@ import yarl
 from .hardstream import get_hardstream_generator, hard_urls
 
 ID_MATCHER = regex.compile(r"\?id=([^&]+)")
-EMBED_URL_BASE = "https://animixplay.to/api/live"
+EMBED_URL_BASE = "https://animixplay.to/api/cW9"
 EMBED_M3U8_MATCHER = regex.compile(r"player\.html?[^#]*#([^#]+)")
 EMBED_B64_MATCHER = regex.compile(r"#(aHR0[^#]+)")
 EMBED_VIDEO_MATCHER = regex.compile(r'iframesrc="(.+?)"')
