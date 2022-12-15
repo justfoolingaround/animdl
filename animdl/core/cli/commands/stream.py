@@ -147,7 +147,7 @@ def animdl_stream(
                     selection["stream_url"],
                     title=media_title,
                     headers=headers,
-                    subtitle=selection.get("subtitle", []),
+                    subtitles=selection.get("subtitle", []),
                 )
 
                 if DISCORD_PRESENCE:
