@@ -14,6 +14,8 @@ presence_client.connect()
 
 presence_client.update(
     state="Queuing up the streams",
+    large_image="mascot",
+    large_text="https://github.com/justfoolingaround/animdl",
 )
 
 KITSU_ENDPOINT = "https://kitsu.io/api/"
@@ -47,7 +49,7 @@ def set_streaming_episode(session, anime_name, episode):
     state = anime_name
 
     if episode:
-        state += ": Episode {}".format(episode)
+        state += " - Episode {}".format(episode)
 
     content_list = get_anime(session, anime_name)
 
@@ -55,6 +57,7 @@ def set_streaming_episode(session, anime_name, episode):
         return presence_client.update(
             state=state,
             large_image="mascot",
+            large_text="https://github.com/justfoolingaround/animdl",
             start=int(time.time()),
         )
 
@@ -64,20 +67,28 @@ def set_streaming_episode(session, anime_name, episode):
 
     image = anime_attributes["posterImage"]["original"]
     count = anime_attributes["episodeCount"]
+    url = "https://kitsu.io/{}/{}".format(anime['type'], anime_attributes['slug'])
+    url_button = [ { "label": "View Anime", "url": url } ]
+
+    if count:
+        state += "/{}".format(count)
 
     if count is None or (episode > count):
         return presence_client.update(
             state=state,
             large_image=image,
+            large_text=anime_name,
             small_image="mascot",
-            large_text="https://github.com/justfoolingaround/animdl",
+            small_text="https://github.com/justfoolingaround/animdl",
             start=int(time.time()),
+            buttons=url_button,
         )
 
     around = episode - (episode % 10)
 
     current = get_episodes(session, anime["id"], around)[episode % 10 - 1]
 
+    episode_name = current.get("attributes", {}).get("canonicalTitle")
     episode_thumbnail = (current.get("attributes", {}).get("thumbnail", {}) or {}).get(
         "original", "mascot"
     )
@@ -86,9 +97,12 @@ def set_streaming_episode(session, anime_name, episode):
         image, episode_thumbnail = episode_thumbnail, image
 
     return presence_client.update(
-        state=state + ("/{}".format(count)) if count else "~",
+        state=state,
         large_image=episode_thumbnail,
+        large_text=episode_name if image != "mascot" else anime_name,
         small_image=image,
-        details=current.get("attributes", {}).get("canonicalTitle"),
+        small_text=anime_name if image != "mascot" else "https://github.com/justfoolingaround/animdl",
+        details=episode_name,
         start=int(time.time()),
+        buttons=url_button,
     )
