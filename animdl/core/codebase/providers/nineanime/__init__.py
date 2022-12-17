@@ -4,7 +4,7 @@ import lxml.html as htmlparser
 import regex
 
 from ....config import NINEANIME
-from ...helper import construct_site_based_regex
+from ...helpers import construct_site_based_regex
 from .decipher import decrypt_url
 
 CONTENT_ID_REGEX = regex.compile(r'data-id="(.+?)"')

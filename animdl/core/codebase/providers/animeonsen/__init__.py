@@ -3,7 +3,7 @@ from functools import partial
 import lxml.html as htmlparser
 
 from ....config import ANIMEONSEN
-from ...helper import construct_site_based_regex
+from ...helpers import construct_site_based_regex
 
 REGEX = construct_site_based_regex(
     ANIMEONSEN,

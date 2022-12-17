@@ -1,7 +1,7 @@
 import lxml.html as htmlparser
 
 from ....config import HAHO
-from ...helper import construct_site_based_regex
+from ...helpers import construct_site_based_regex
 from ..tenshimoe import fetcher as tenshimoe_fetcher
 from ..tenshimoe import metadata_fetcher as tenshimoe_metadata_fetcher
 

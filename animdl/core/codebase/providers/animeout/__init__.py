@@ -5,7 +5,7 @@ import regex
 import yarl
 
 from ....config import ANIMEOUT
-from ...helper import construct_site_based_regex, group_episodes, parse_from_content
+from ...helpers import construct_site_based_regex, group_episodes, parse_from_content
 
 REGEX = construct_site_based_regex(ANIMEOUT, extra_regex=r"/([^?&/]+)")
 

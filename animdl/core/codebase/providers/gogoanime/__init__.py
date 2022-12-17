@@ -4,7 +4,7 @@ import lxml.html as htmlparser
 import regex
 
 from ....config import GOGOANIME
-from ...helper import construct_site_based_regex
+from ...helpers import construct_site_based_regex
 
 REGEX = construct_site_based_regex(
     GOGOANIME,

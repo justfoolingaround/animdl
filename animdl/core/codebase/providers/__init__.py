@@ -1,7 +1,7 @@
 import importlib
 import pathlib
 
-from ..helper import append_protocol
+from ..helpers import append_protocol
 
 EXEMPT = ["__init__.py", "__pycache__"]
 

@@ -3,7 +3,7 @@ import functools
 import regex
 
 from ....config import ANIMEPAHE
-from ...helper import construct_site_based_regex
+from ...helpers import construct_site_based_regex
 from .inner import get_animepahe_url
 
 REGEX = construct_site_based_regex(ANIMEPAHE, extra_regex=r"/(anime|play)/([^?&/]+)")

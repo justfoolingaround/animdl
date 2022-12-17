@@ -6,7 +6,7 @@ import json
 
 import lxml.html as htmlparser
 
-from ...codebase.helper import uwu
+from ...codebase.helpers import uwu
 from ...config import *
 from .fuzzysearch import search
 
@@ -60,19 +60,34 @@ def search_animekaizoku(session, query):
 def search_allanime(session, query):
 
     gql_response = session.get(
-        ALLANIME + "graphql",
+        ALLANIME + "allanimeapi",
         params={
-            "variables": '{"search":{"allowAdult":true,"query":"%s"},"translationType":"sub"}'
-            % query.replace('"', '\\"'),
-            "extensions": '{"persistedQuery":{"version":1,"sha256Hash":"9343797cc3d9e3f444e2d3b7db9a84d759b816a4d84512ea72d079f85bb96e98"}}',
+            "variables": json.dumps(
+                {
+                    "search": {
+                        "allowAdult": True,
+                        "allowUnknown": True,
+                        "query": query,
+                    },
+                    "limit": 40,
+                }
+            ),
+            "extensions": json.dumps(
+                {
+                    "persistedQuery": {
+                        "version": 1,
+                        "sha256Hash": "9c7a8bc1e095a34f2972699e8105f7aaf9082c6e1ccd56eab99c2f1a971152c6",
+                    }
+                }
+            ),
         },
-    )
+    ).json()
 
-    for result in gql_response.json().get("data", {}).get("shows", {}).get("edges", []):
-        if any(a for k, a in result.get("availableEpisodes", {}).items()):
+    for result in gql_response.get("data", {}).get("shows", {}).get("edges", []):
+        if any(a for _, a in result.get("availableEpisodes", {}).items()):
             yield {
-                "anime_url": ALLANIME + "anime/{[_id]}".format(result),
-                "name": result.get("name"),
+                "anime_url": ALLANIME + f"anime/{result['_id']}",
+                "name": result["name"],
             }
 
 

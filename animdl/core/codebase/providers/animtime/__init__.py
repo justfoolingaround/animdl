@@ -4,7 +4,7 @@ from functools import partial
 import regex
 
 from ....config import ANIMTIME
-from ...helper import construct_site_based_regex
+from ...helpers import construct_site_based_regex
 
 CONTENT_RE = regex.compile(r't\[t\.(?P<name>.+?)=(?P<id>\d+)\]="\1"')
 REGEX = construct_site_based_regex(ANIMTIME, extra_regex=r"/title/([^/?&]+)")

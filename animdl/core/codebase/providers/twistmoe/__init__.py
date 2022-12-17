@@ -3,7 +3,7 @@ from functools import partial
 import yarl
 
 from ....config import TWIST
-from ...helper import construct_site_based_regex, parse_from_content
+from ...helpers import construct_site_based_regex, parse_from_content
 from .stream_url import *
 
 REGEX = construct_site_based_regex(TWIST, extra_regex=r"/a/([^?&/]+)")

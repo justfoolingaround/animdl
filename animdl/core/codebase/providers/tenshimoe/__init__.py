@@ -4,7 +4,7 @@ import lxml.html as htmlparser
 import regex
 
 from ....config import TENSHI
-from ...helper import construct_site_based_regex, uwu
+from ...helpers import construct_site_based_regex, uwu
 
 REGEX = construct_site_based_regex(TENSHI, extra_regex=r"/anime/([^?&/]+)")
 TITLES_REGEX = regex.compile(r'<h1 class="mb-3">(.+?)</h1>')

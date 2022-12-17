@@ -4,7 +4,7 @@ import lxml.html as htmlparser
 import regex
 
 from ....config import HENTAISTREAM
-from ...helper import construct_site_based_regex
+from ...helpers import construct_site_based_regex
 
 EPISODE_REGEX = regex.compile(r"/\d+/[^&?/]+")
 TITLES_REGEX = regex.compile(r'<h1 class="entry-title" itemprop="name">(.+?)</h1>')

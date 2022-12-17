@@ -4,7 +4,7 @@ import lxml.html as htmlparser
 import regex
 
 from ....config import ZORO
-from ...helper import construct_site_based_regex
+from ...helpers import construct_site_based_regex
 
 REGEX = construct_site_based_regex(ZORO, extra_regex=r"(/watch)?/[\w-]+-(\d+)")
 TITLES_REGEX = regex.compile(r'<h2 class="film-name dynamic-name" .+?>(.+?)</h2>')
