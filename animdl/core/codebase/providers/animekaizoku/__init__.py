@@ -10,7 +10,7 @@ from functools import partial
 import regex
 
 from ....config import ANIMEKAIZOKU
-from ...helper import construct_site_based_regex, group_episodes, parse_from_content
+from ...helpers import construct_site_based_regex, group_episodes, parse_from_content
 
 REGEX = construct_site_based_regex(ANIMEKAIZOKU, extra_regex=r"/([^?&/]+)")
 

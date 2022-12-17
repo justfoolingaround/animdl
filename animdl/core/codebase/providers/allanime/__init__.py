@@ -7,7 +7,7 @@ import regex
 import yarl
 
 from ....config import ALLANIME
-from ...helper import construct_site_based_regex
+from ...helpers import construct_site_based_regex
 
 REGEX = construct_site_based_regex(ALLANIME, extra_regex=r"/anime/([^?&/]+)")
 
