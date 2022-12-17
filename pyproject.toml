@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "animdl"
-version = "1.6.42"
+version = "1.6.43"
 description = "A highly efficient, fast, powerful and light-weight anime downloader and streamer for your favorite anime."
 readme = "readme.txt"
 authors = ["justfoolingaround <kr.justfoolingaround@gmail.com>"]
@@ -17,7 +17,7 @@ httpx = "~=0.23.0"
 lxml = "~=4.9.1"
 tqdm = "~=4.62.3"
 pycryptodomex = "~=3.14.1"
-regex = "~=2022.3.15"
+regex = "~=2022.10.31"
 yarl = "~=1.8.1"
 pyyaml = "~=6.0"
 

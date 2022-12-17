@@ -190,7 +190,7 @@ python-versions = ">=3.6"
 
 [[package]]
 name = "regex"
-version = "2022.3.15"
+version = "2022.10.31"
 description = "Alternative regular expression module, to replace re."
 category = "main"
 optional = false
@@ -270,7 +270,7 @@ testing = ["pytest (>=6)", "pytest-checkdocs (>=2.4)", "flake8 (<5)", "pytest-co
 [metadata]
 lock-version = "1.1"
 python-versions = ">=3.7,<4.0"
-content-hash = "b645ff85bd8249189901e4ee683d59ca950e8dc64f24a113c8d2f626c17cfe65"
+content-hash = "9dc422a3707173bcf0df169ee99d94b35fdba139b77a778f2a408421099ac13b"
 
 [metadata.files]
 anchor-kr = []
