@@ -32,11 +32,11 @@ def iter_general_timestamps(aniskip_data):
             "end": item["interval"]["end_time"],
         }
 
-    if op_end is not None and ed_start is not None:
+    if op_end is not None:
         yield {
             "chapter": "Episode",
             "start": op_end,
-            "end": ed_start,
+            "end": ed_start or op_end,
         }
 
     # NOTE: This is a continuation fix, mpv does not seem to like unmarked chapters between two chapters.
