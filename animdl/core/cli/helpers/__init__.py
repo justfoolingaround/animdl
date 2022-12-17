@@ -4,7 +4,7 @@ import logging
 import traceback
 
 from ...codebase import downloader, extractors
-from . import banner, constants, decorators, intelliq, player, prompts, special
+from . import aniskip, banner, constants, decorators, intelliq, player, prompts, special
 from .processors import process_query, provider_searcher_mapping
 
 fe_logger = logging.getLogger("further-extraction")

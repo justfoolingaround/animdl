@@ -1,4 +1,5 @@
 from sys import platform
+from tempfile import NamedTemporaryFile
 
 from .base_player import BasePlayer
 
@@ -23,7 +24,14 @@ class MPVDefaultPlayer(BasePlayer):
     }
 
     def play(
-        self, stream_url, subtitles=None, headers=None, title=None, opts=None, **kwargs
+        self,
+        stream_url,
+        subtitles=None,
+        headers=None,
+        title=None,
+        opts=None,
+        chapters=None,
+        **kwargs,
     ):
 
         args = (self.executable, stream_url)
@@ -46,6 +54,30 @@ class MPVDefaultPlayer(BasePlayer):
             args += (
                 f"{self.opts_spec['subtitles']}={self.path_joiner.join(subtitles)}",
             )
+
+        if chapters:
+
+            # NOTE: This could be achieved with a PIPE.
+            # This is not done in this case because you
+            # only PIPE one argument at a time, and this
+            # is expected to be limiting in the future.
+            # PIPE-ing whole media is more suitable.
+
+            with NamedTemporaryFile("w", delete=False) as chapters_file:
+                chapters_file.write(";FFMETADATA1")
+
+                for chapter in chapters:
+                    chapters_file.write(
+                        f"""
+[CHAPTER]
+TIMEBASE=1/1000
+START={int(chapter["start"] * 1000)}
+END={int(chapter["end"] * 1000)}
+TITLE={chapter["chapter"]}"""
+                    )
+
+                chapters_file.write("\n")
+            args += (f"--chapters-file={chapters_file.name}",)
 
         args += tuple(self.optimisation_args)
 

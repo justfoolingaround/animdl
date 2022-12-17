@@ -121,6 +121,7 @@ DEFAULT_CONFIG = {
     "download_directory": ".",
     "check_for_updates": True,
     "force_streaming_quality_selection": True,
+    "aniskip": False,
 }
 
 CONFIG = DEFAULT_CONFIG
@@ -183,3 +184,5 @@ CHECK_FOR_UPDATES = CONFIG.get("check_for_updates", True)
 FORCE_STREAMING_QUALITY_SELECTION = CONFIG.get(
     "force_streaming_quality_selection", True
 )
+
+USE_ANISKIP = CONFIG.get("aniskip", False)

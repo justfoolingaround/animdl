@@ -11,6 +11,7 @@ from ...config import (
     DISCORD_PRESENCE,
     FORCE_STREAMING_QUALITY_SELECTION,
     QUALITY,
+    USE_ANISKIP,
 )
 from .. import exit_codes, helpers, http_client
 
@@ -142,12 +143,20 @@ def animdl_stream(
             if "title" in selection:
                 media_title += " ({})".format(selection["title"])
 
+            if USE_ANISKIP:
+                chapters = helpers.aniskip.get_timestamps(
+                    http_client.client, content_title, episode_number
+                )
+            else:
+                chapters = []
+
             with streamer:
                 streamer.play(
                     selection["stream_url"],
                     title=media_title,
                     headers=headers,
                     subtitles=selection.get("subtitle", []),
+                    chapters=chapters,
                 )
 
                 if DISCORD_PRESENCE:
