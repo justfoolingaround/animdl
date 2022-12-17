@@ -1,7 +1,8 @@
 [tool.poetry]
 name = "animdl"
-version = "1.6.41"
+version = "1.6.42"
 description = "A highly efficient, fast, powerful and light-weight anime downloader and streamer for your favorite anime."
+readme = "readme.txt"
 authors = ["justfoolingaround <kr.justfoolingaround@gmail.com>"]
 license = "GPT-3"
 
