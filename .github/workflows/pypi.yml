@@ -8,21 +8,12 @@ jobs:
   build:
     runs-on: ubuntu-latest
     steps:
-      - name: Checking out repository content
-        uses: actions/checkout@v2
-
-      - name: Setting up Python 3.9
-        uses: actions/setup-python@v2
+      - name: Checkout
+        uses: actions/checkout@v3
         with:
-          python-version: '3.9'
-
-      - name: Build the file
-        run: |
-          pip install setuptools wheel
-          python setup.py sdist
-
-      - name: Publish a Python distribution to PyPI
+          fetch-depth: 0
+      - run: python3 -m pip install --upgrade build && python3 -m build
+      - name: Publish package
         uses: pypa/gh-action-pypi-publish@release/v1
         with:
-          user: __token__
           password: ${{ secrets.PYPI_API_TOKEN }}
