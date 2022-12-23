@@ -51,7 +51,7 @@ CONFIGURATION_FILE_PATH = get_existent_path(
 )
 
 DEFAULT_CONFIG = {
-    "default_provider": "animixplay",
+    "default_provider": "allanime",
     "site_urls": {
         "9anime": "https://9anime.pl/",
         "allanime": "https://allanime.site/",
