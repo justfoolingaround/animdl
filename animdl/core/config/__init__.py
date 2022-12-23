@@ -122,6 +122,7 @@ DEFAULT_CONFIG = {
     "check_for_updates": True,
     "force_streaming_quality_selection": True,
     "aniskip": False,
+    "superanime": {"return_all": False, "type_of": "sub"},
 }
 
 CONFIG = DEFAULT_CONFIG
@@ -186,3 +187,8 @@ FORCE_STREAMING_QUALITY_SELECTION = CONFIG.get(
 )
 
 USE_ANISKIP = CONFIG.get("aniskip", False)
+
+SUPERANIME = CONFIG.get("superanime", {})
+
+SUPERANIME_RETURN_ALL = SUPERANIME.get("return_all", False)
+SUPERANIME_TYPE_OF = SUPERANIME.get("type_of", "sub")

@@ -57,7 +57,9 @@ def get_timestamps(session, anime_name, anime_episode):
     if not data:
         return
 
-    top_result = tuple(search(anime_name, data, processor=lambda _: _["name"]))[0]
+    top_result = (
+        tuple(search(anime_name, data, processor=lambda _: _["name"])) or data
+    )[0]
 
     ani_skip_response = session.get(
         f"{ENDPOINT}/skip-times/{top_result['id']}/{anime_episode}",
