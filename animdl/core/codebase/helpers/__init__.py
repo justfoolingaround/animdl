@@ -2,7 +2,8 @@ from collections import defaultdict
 from typing import Callable, DefaultDict, Dict, List, TypeVar
 
 import anitopy
-import regex
+
+from . import optopt
 
 content_type = TypeVar("content_type")
 
@@ -10,10 +11,12 @@ content_type = TypeVar("content_type")
 def construct_site_based_regex(
     site_url: "str", *, extra: "str" = "", extra_regex: "str" = ""
 ):
-    return regex.compile(
+    return optopt.regexlib.compile(
         "(?:https?://)?(?:\\S+\\.)*{}".format(
-            regex.escape(
-                regex.search(r"(?:https?://)?((?:\S+\.)+[^/]+)/?", site_url).group(1)
+            optopt.regexlib.escape(
+                optopt.regexlib.search(
+                    r"(?:https?://)?((?:\S+\.)+[^/]+)/?", site_url
+                ).group(1)
             )
             + extra
         )
@@ -23,7 +26,7 @@ def construct_site_based_regex(
 
 def append_protocol(uri: "str", *, protocol: "str" = "https"):
 
-    if regex.search(r"^.+?://", uri):
+    if optopt.regexlib.search(r"^.+?://", uri):
         return uri
     return "{}://{}".format(protocol.rstrip(":/"), uri.lstrip("/"))
 

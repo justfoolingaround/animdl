@@ -5,6 +5,7 @@ import yarl
 
 from ....config import ALLANIME, SUPERANIME_RETURN_ALL, SUPERANIME_TYPE_OF
 from ...helpers import construct_site_based_regex, optopt
+from .superscrapers import iter_unpacked_from_packed_hls
 
 REGEX = construct_site_based_regex(ALLANIME, extra_regex=r"/anime/([^?&/]+)")
 
@@ -40,10 +41,7 @@ def iter_episodes(
 
         for episode in episode_numbers:
             episodes[int(episode) if episode.isdigit() else 0].append(
-                (
-                    f"Episode {episode}",
-                    anime_page_url + "/episodes/{}/{}".format(type_of, episode),
-                )
+                anime_page_url + "/episodes/{}/{}".format(type_of, episode)
             )
 
     yield from sorted(episodes.items(), key=lambda x: x[0])
@@ -57,7 +55,7 @@ def to_json_url(url: "yarl.URL"):
     return url.with_name(url.name + ".json").with_query(url.query)
 
 
-def iter_prioritised(session, urls, *, title):
+def iter_prioritised(session, urls):
 
     for url, (priority, name) in urls:
         data = session.get(url.human_repr()).text
@@ -77,11 +75,13 @@ def iter_prioritised(session, urls, *, title):
             if "subtitles" in link:
                 stream_attr["subtitles"] = [_["src"] for _ in link["subtitles"]]
 
-            yield {
-                "stream_url": link.get("link"),
-                "title": title,
-                **stream_attr,
-            }
+            stream_url = link["link"]
+
+            yield list(
+                iter_unpacked_from_packed_hls(
+                    session, yarl.URL(stream_url), **stream_attr
+                )
+            )
 
 
 def extract_content(
@@ -92,7 +92,7 @@ def extract_content(
     return_all: bool = SUPERANIME_RETURN_ALL,
 ):
 
-    for title, url in content:
+    for url in content:
 
         direct_providers = set()
         embed_providers = set()
@@ -120,7 +120,7 @@ def extract_content(
                     embed_providers.add((parsed_url, (priority, name)))
 
         iterator = iter_prioritised(
-            session, sorted(direct_providers, key=lambda x: x[1][0]), title=title
+            session, sorted(direct_providers, key=lambda x: x[1][0])
         )
 
         if return_all:
@@ -129,7 +129,7 @@ def extract_content(
             child = next(iterator, None)
 
             if child is not None:
-                yield child
+                yield from child
 
 
 def fetcher(session, url: "str", check, match):
