@@ -3,6 +3,7 @@ on:
   push:
     paths:
       - "animdl/core/__version__.py"
+      - "pyproject.toml"
 
 jobs:
   build:
