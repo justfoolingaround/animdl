@@ -73,13 +73,13 @@ def iter_prioritised(session, urls):
                 stream_attr["quality"] = link["resolution"]
 
             if "subtitles" in link:
-                stream_attr["subtitles"] = [_["src"] for _ in link["subtitles"]]
+                stream_attr["subtitle"] = [_["src"] for _ in link["subtitles"]]
 
             stream_url = link["link"]
 
             yield list(
                 iter_unpacked_from_packed_hls(
-                    session, yarl.URL(stream_url), **stream_attr
+                    session, yarl.URL(stream_url), stream_attribs=stream_attr
                 )
             )
 
