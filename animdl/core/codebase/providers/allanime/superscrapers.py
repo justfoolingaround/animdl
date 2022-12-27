@@ -13,6 +13,18 @@ WIXMP_URL_REGEX = helpers.optopt.regexlib.compile(
 
 def iter_ufph_vrv(session, url: yarl.URL, *, stream_attribs=None):
 
+    if stream_attribs is not None:
+        vrv_preferences = stream_attribs.pop("vrv", None)
+
+        if vrv_preferences is not None:
+            stream_language = vrv_preferences["stream_type"][9:] or None
+
+            if (
+                stream_language
+                != vrv_preferences["provider_configuration"]["subtitle_language"]
+            ):
+                return
+
     hls_response = session.get(url.human_repr()).text
 
     for match in VRV_RESPONSE_REGEX.finditer(hls_response):

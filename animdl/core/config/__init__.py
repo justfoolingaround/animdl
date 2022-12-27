@@ -122,7 +122,11 @@ DEFAULT_CONFIG = {
     "check_for_updates": True,
     "force_streaming_quality_selection": True,
     "aniskip": False,
-    "superanime": {"return_all": False, "type_of": "sub"},
+    "superanime": {
+        "return_all": False,
+        "type_of": "sub",
+        "crunchyroll": {"subtitles": "en-US"},
+    },
 }
 
 CONFIG = DEFAULT_CONFIG
@@ -192,3 +196,4 @@ SUPERANIME = CONFIG.get("superanime", {})
 
 SUPERANIME_RETURN_ALL = SUPERANIME.get("return_all", False)
 SUPERANIME_TYPE_OF = SUPERANIME.get("type_of", "sub")
+SUPERANIME_CRUNCHYROLL = SUPERANIME.get("crunchyroll", {"subtitles": "en-US"})

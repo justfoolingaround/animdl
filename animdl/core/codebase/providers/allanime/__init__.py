@@ -3,7 +3,12 @@ from functools import partial
 
 import yarl
 
-from ....config import ALLANIME, SUPERANIME_RETURN_ALL, SUPERANIME_TYPE_OF
+from ....config import (
+    ALLANIME,
+    SUPERANIME_CRUNCHYROLL,
+    SUPERANIME_RETURN_ALL,
+    SUPERANIME_TYPE_OF,
+)
 from ...helpers import construct_site_based_regex, optopt
 from .superscrapers import iter_unpacked_from_packed_hls
 
@@ -65,23 +70,32 @@ def iter_prioritised(session, urls):
 
         json_parsed = optopt.jsonlib.loads(data)["links"]
 
-        for link in json_parsed:
+        def iter_all():
+            for link in json_parsed:
 
-            stream_attr = {}
+                stream_attr = {}
 
-            if "resolution" in link:
-                stream_attr["quality"] = link["resolution"]
+                if "resolution" in link:
+                    stream_attr["quality"] = link["resolution"]
 
-            if "subtitles" in link:
-                stream_attr["subtitle"] = [_["src"] for _ in link["subtitles"]]
+                if "subtitles" in link:
+                    stream_attr["subtitle"] = [_["src"] for _ in link["subtitles"]]
 
-            stream_url = link["link"]
+                if "resolutionStr" in link:
+                    stream_attr["vrv"] = {
+                        "stream_type": link["resolutionStr"],
+                        "provider_configuration": SUPERANIME_CRUNCHYROLL,
+                    }
 
-            yield list(
-                iter_unpacked_from_packed_hls(
-                    session, yarl.URL(stream_url), stream_attribs=stream_attr
+                stream_url = link["link"]
+
+                yield from (
+                    iter_unpacked_from_packed_hls(
+                        session, yarl.URL(stream_url), stream_attribs=stream_attr
+                    )
                 )
-            )
+
+        yield list(iter_all())
 
 
 def extract_content(
