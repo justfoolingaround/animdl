@@ -1,64 +1,103 @@
 import functools
-from collections import defaultdict
+import time
 
-API_ACCESS_TOKEN = "Basic vrvluizpdr2eby+RjSKM17dOLacExxq1HAERdxQDO6+2pHvFHTKKnByPD7b6kZVe1dJXifb6SG5NWMz49ABgJA=="
-CLIENT_REFRESH_TOKEN = "vDruXuycqziQocWmI8irARTQa9txXvUKW/LQpGjklYNN1wwJ1dL9KtG19IjPgJVcwSbJ8zUIhlaR4W+IlmY3xiJZ+9nefH4RF4ugWvGWPFq1Q2mcJfxStP/qxfdln2K4UqfOqSjTC/Q8gekarRa9n+fdjUqum6YSV18Coz8gUDQoCTh2ljBwF5mtYZIXGxFn3zC2t8GANTGtmViOLxNNF1axa/m2Rgo8aC3B/tiX+Hg6brP2LtCR/EY0P5IHOB5xClUh1/xqTdD4U4NkYEdfrFB/JZ33+vu/pUHrM/Fa0u7qH6X8w/UtBMkfz/LVOCd8pMgrziOYX+oQTyhFcYncJSaoTsR8V0uEQDu6Z9rkR/xIAe8vq4T8D/PMFOFmgIaDN2UG/Rfh0167Esn9D1PmT8wOyPKeTgmlRuXwwJehn3o="
+API_URL = "https://api.kamyroll.tech"
+
+
+class Kamyroll:
+
+    API_URL = "https://api.kamyroll.tech/"
+
+    def __init__(self, session):
+
+        self.session = session
+        self.raw_token = {}
+
+    def get_token(self):
+        expires = self.raw_token.get("expires_in", 0)
+
+        if expires < time.time():
+
+            response = self.session.post(
+                self.API_URL + "auth/v1/token",
+                data={
+                    "device_id": "web",
+                    "device_type": "python.animdl",
+                    "access_token": "HMbQeThWmZq4t7w",
+                },
+            ).json()
+
+            self.raw_token = response
+        else:
+            return f"{self.raw_token['token_type']} {self.raw_token['access_token']}"
+
+        return self.get_token()
+
+    def fetch_seasons(self, media_id, *, channel_id="crunchyroll", locale="en-US"):
+        return self.session.get(
+            self.API_URL + "content/v1/seasons",
+            headers={
+                "Authorization": self.get_token(),
+            },
+            params={"channel_id": channel_id, "id": media_id, "locale": locale},
+        ).json()
+
+    def fetch_streams(
+        self,
+        media_id,
+        *,
+        channel_id="crunchyroll",
+        locale="en-US",
+        media_type="adaptive_hls",
+    ):
+        return self.session.get(
+            self.API_URL + "videos/v1/streams",
+            params={
+                "channel_id": channel_id,
+                "locale": locale,
+                "id": media_id,
+                "type": media_type,
+            },
+            headers={
+                "Authorization": self.get_token(),
+            },
+        ).json()
+
+    def iter_search_results(self, query, *, channel_id="crunchyroll", locale="en-US"):
+        results = self.session.get(
+            self.API_URL + "content/v1/search",
+            params={
+                "channel_id": channel_id,
+                "limit": 250,
+                "query": query,
+            },
+            headers={
+                "Authorization": self.get_token(),
+            },
+        ).json()["items"]
+
+        for medias in results:
+            for search_results in medias["items"]:
+                yield {
+                    "title": search_results["title"],
+                    "media_id": search_results["id"],
+                    "type": medias["type"],
+                }
+
+    def fetch_media(self, media_id, *, channel_id="crunchyroll", locale="en-US"):
+        return self.session.get(
+            self.API_URL + "content/v1/media",
+            params={
+                "channel_id": channel_id,
+                "id": media_id,
+                "locale": locale,
+            },
+            headers={
+                "Authorization": self.get_token(),
+            },
+        ).json()
 
 
 @functools.lru_cache()
-def fetch_api_grant_token(session, api_endpoint):
-    return "%(token_type)s %(access_token)s" % (
-        session.post(
-            api_endpoint + "auth/v1/token",
-            data={
-                "refresh_token": CLIENT_REFRESH_TOKEN,
-                "grant_type": "refresh_token",
-                "scope": "all",
-            },
-            headers={
-                "Authorization": API_ACCESS_TOKEN,
-            },
-        ).json()
-    )
-
-
-def fetch_seasons(session, api_endpoint, media_id, *, predicate=None):
-    media = session.get(
-        api_endpoint + "content/v1/seasons",
-        headers={
-            "Authorization": fetch_api_grant_token(session, api_endpoint),
-        },
-        params={"channel_id": "crunchyroll", "id": media_id, "locale": "en-US"},
-    ).json()
-
-    episodes = defaultdict(list)
-
-    for season in media.get("items", []):
-        for episode in season.get("episodes", []):
-            if predicate is None or predicate(episode):
-                episodes[episode["episode_number"]].append(episode)
-
-    return episodes
-
-
-def get_media_streams(
-    session,
-    api_endpoint,
-    media_id,
-    *,
-    channel_id="crunchyroll",
-    locale="en-US",
-    media_type="adaptive_hls"
-):
-    return session.get(
-        api_endpoint + "videos/v1/streams",
-        params={
-            "channel_id": channel_id,
-            "locale": locale,
-            "id": media_id,
-            "type": media_type,
-        },
-        headers={
-            "Authorization": fetch_api_grant_token(session, api_endpoint),
-        },
-    ).json()
+def get_api(session):
+    return Kamyroll(session)

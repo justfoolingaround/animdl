@@ -90,11 +90,4 @@ def fetcher(session, url, check, match):
 
 
 def metadata_fetcher(session, url, match):
-    return {
-        "titles": TITLES_REGEX.findall(
-            session.get(
-                CRUNCHYROLL + match.group(1),
-                headers={"Referer": "https://www.google.com/"},
-            ).text
-        )
-    }
+    return {"titles": [None]}

@@ -124,6 +124,16 @@ def animdl_stream(
 
                 continue
 
+            titles = set(_["title"] for _ in stream_urls)
+
+            if len(titles) > 1:
+                logger.warning(
+                    f"Multiple titles found for the same streams, multiple seasons may be available. Please adjust the quality string as required: {', '.join(map(repr, titles))}"
+                )
+                logger.info(
+                    "quality_string set to \"best[title='(Season XYZ)']\" may work. (use r'.+?' for regex support!)"
+                )
+
             selection = helpers.prompts.quality_prompt(
                 logger,
                 log_level,
