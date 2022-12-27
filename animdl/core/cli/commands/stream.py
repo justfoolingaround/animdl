@@ -124,7 +124,7 @@ def animdl_stream(
 
                 continue
 
-            titles = set(_["title"] for _ in stream_urls)
+            titles = set(_.get("title") for _ in stream_urls)
 
             if len(titles) > 1:
                 logger.warning(
