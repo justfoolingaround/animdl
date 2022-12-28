@@ -125,7 +125,7 @@ DEFAULT_CONFIG = {
     "superanime": {
         "return_all": False,
         "type_of": "sub",
-        "crunchyroll": {"subtitles": "en-US"},
+        "crunchyroll": {"subtitle_language": "en-US"},
     },
 }
 

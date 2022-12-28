@@ -19,7 +19,7 @@ REGEX = helpers.optopt.regexlib.compile(
 
 def fetch_streams(api: Kamyroll, medias: "list"):
 
-    superanime_subtitle = SUPERANIME_CRUNCHYROLL.get("subtitles") or ""
+    superanime_subtitle = SUPERANIME_CRUNCHYROLL.get("subtitle_language") or ""
 
     for stream_attrs, media_id in medias:
         streams_data = api.fetch_streams(media_id)
