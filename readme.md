@@ -1,9 +1,11 @@
 <h1 align="center"><img src="https://capsule-render.vercel.app/api?type=soft&fontColor=703ee5&text=justfoolingaround/animdl&height=150&fontSize=60&desc=Ridiculously%20efficient,%20fast%20and%20light-weight.&descAlignY=75&descAlign=60&color=00000000&animation=twinkling"></h1>
 <p align="center"><sup>A highly efficient, powerful and fast anime scraper.</sup></p>
 
--------
 
-https://user-images.githubusercontent.com/44473782/160827857-cc51d72c-a6e9-4d25-a9f2-e2badda0133c.mp4
+<p align="center">
+<img src="https://media.discordapp.net/attachments/968112266362896384/1060089933991260181/qx96hFI.gif"></p>
+
+-------
 
 ## Overview
 
