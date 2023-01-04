@@ -70,6 +70,9 @@ def iter_prioritised(session, urls):
 
         json_parsed = optopt.jsonlib.loads(data)["links"]
 
+        if isinstance(json_parsed, dict) and json_parsed.get("type") == "Not Found":
+            continue
+
         def iter_all():
             for link in json_parsed:
 
@@ -117,21 +120,21 @@ def extract_content(
 
         if has_on_embed:
             direct_providers.add(
-                (to_json_url(yarl.URL(has_on_embed.group(1))), (0, "embed"))
+                (to_json_url(yarl.URL(has_on_embed.group(1))), ("", "embed"))
             )
-        else:
-            for source_urls in SOURCE_URLS.finditer(content_page):
 
-                raw_url = unicode_escape(source_urls.group(1))
-                parsed_url = yarl.URL(raw_url)
+        for source_urls in SOURCE_URLS.finditer(content_page):
 
-                priority, name = source_urls.group("priority", "name")
+            raw_url = unicode_escape(source_urls.group(1))
+            parsed_url = yarl.URL(raw_url)
 
-                if parsed_url.host is None:
-                    parsed_url = api_endpoint.join(to_json_url(parsed_url))
-                    direct_providers.add((parsed_url, (priority, name)))
-                else:
-                    embed_providers.add((parsed_url, (priority, name)))
+            priority, name = source_urls.group("priority", "name")
+
+            if parsed_url.host is None:
+                parsed_url = api_endpoint.join(to_json_url(parsed_url))
+                direct_providers.add((parsed_url, (priority, name)))
+            else:
+                embed_providers.add((parsed_url, (priority, name)))
 
         iterator = iter_prioritised(
             session, sorted(direct_providers, key=lambda x: x[1][0])
