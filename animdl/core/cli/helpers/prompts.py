@@ -4,13 +4,16 @@ from collections import defaultdict
 
 import click
 import yarl
+from rich.prompt import Prompt
+from rich.text import Text
 
 from ...config import FZF_EXECUTABLE, FZF_OPTS, FZF_STATE
 from .intelliq import filter_quality
+from .stream_handlers import context_raiser
 
 
 def default_prompt(
-    logger,
+    console,
     components,
     *,
     processor=None,
@@ -21,45 +24,47 @@ def default_prompt(
     escape_output=False,
 ):
 
-    if processor is None:
-        components = list(components)
-    else:
-        components = list(processor(component) for component in components)
+    with context_raiser(
+        console, f"[b]Waiting for you to select a {component_name!r}.[/]"
+    ):
+        if processor is None:
+            components = list(components)
+        else:
+            components = list(processor(component) for component in components)
 
-    if not components:
-        if error_message is not None:
-            logger.critical(error_message)
-        return fallback
+        if len(components) == 1:
+            return components[0]
 
-    for component_id, component in enumerate(components, 1):
-        out = stdout_processor(component) if stdout_processor else component
-
-        if escape_output:
-            out = repr(out)[1:-1]
-
-        logger.info("{:02d}: {}".format(component_id, out))
-
-    if len(component) == 1:
-        logger.debug(
-            "The prompt list has only one {}. Returning it.".format(component_name)
+        processed_components = list(
+            stdout_processor(component) if stdout_processor is not None else component
+            for component in components
         )
-        return components[0]
 
-    user_selection = (
-        click.prompt(
-            "Select the {} using index".format(component_name),
+        for n, cout in enumerate(processed_components, 1):
+            if not isinstance(cout, str):
+                raise TypeError(
+                    "The stdout_processor must return a string and not {!r}.".format(
+                        type(cout)
+                    )
+                )
+            console.print(f"[bold blue]{n}[/bold blue].", Text(cout, style="u b red"))
+
+        choice = Prompt.ask(
+            Text(
+                f"Select the {component_name} (automatically selects the top {component_name})",
+                style="dim",
+            ),
             default=1,
-            type=int,
-            show_default=True,
+            console=console,
+            choices=list(map(str, range(1, n + 1))),
+            show_choices=True,
         )
-        - 1
-    )
 
-    return components[user_selection % len(components)]
+    return components[int(choice) - 1]
 
 
 def fzf_prompt(
-    logger,
+    console,
     components,
     *,
     processor=None,
@@ -103,7 +108,7 @@ def fzf_prompt(
 
     if not stdout_mapout:
         if error_message is not None:
-            logger.critical(error_message)
+            console.print(error_message, style="bold red")
         return fallback
 
     fzf_args = [

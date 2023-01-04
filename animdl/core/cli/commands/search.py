@@ -1,9 +1,7 @@
-import json as json_
-import logging
-
 import click
 
 from ...__version__ import __core__
+from ...codebase.helpers import optopt
 from ...codebase.providers import get_provider
 from ...config import CHECK_FOR_UPDATES, DEFAULT_PROVIDER
 from .. import helpers
@@ -32,7 +30,8 @@ from ..http_client import client
     client, __core__, check_for_updates=CHECK_FOR_UPDATES
 )
 def animdl_search(query, json, provider, **kwargs):
-    logger = logging.getLogger("searcher")
+
+    console = helpers.stream_handlers.get_console()
 
     match, module, _ = get_provider(query, raise_on_failure=False)
 
@@ -51,6 +50,8 @@ def animdl_search(query, json, provider, **kwargs):
 
     for count, search_data in enumerate(genexp, 1):
         if json:
-            print(json_.dumps(search_data))
+            print(optopt.jsonlib.dumps(search_data))
         else:
-            logger.info("{0:02d}: {1[name]} {1[anime_url]}".format(count, search_data))
+            console.print(
+                f"{count}. {search_data['name']} / {search_data['anime_url']}"
+            )

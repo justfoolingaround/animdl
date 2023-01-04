@@ -2,6 +2,7 @@ import logging
 from pathlib import Path
 
 import click
+from rich.text import Text
 
 from ...__version__ import __core__
 from ...codebase import providers, sanitize_filename
@@ -33,14 +34,16 @@ def animdl_download(
 ):
     r = kwargs.get("range")
 
+    console = helpers.stream_handlers.get_console()
+
     logger = logging.getLogger("downloader")
 
     anime, provider = helpers.process_query(
-        http_client.client, query, logger, auto_index=index, provider=DEFAULT_PROVIDER
+        http_client.client, query, console, auto_index=index, provider=DEFAULT_PROVIDER
     )
 
     if not anime:
-        logger.critical("Searcher returned no anime to stream, failed to stream.")
+        console.print(Text("Could not find an anime of that name :/."))
         raise SystemExit(exit_codes.NO_CONTENT_FOUND)
 
     logger.name = "{}/{}".format(provider, logger.name)
@@ -49,59 +52,80 @@ def animdl_download(
         providers.append_protocol(anime.get("anime_url"))
     )
 
-    streams = list(
-        provider_module.fetcher(http_client.client, anime.get("anime_url"), r, match)
-    )
-
-    if special:
-        streams = list(helpers.special.special_parser(streams, special))
-
-    download_directory = Path(download_dir).resolve(strict=True)
-    content_name = sanitize_filename(anime["name"])
-
-    content_dir = download_directory / content_name
-    content_dir.mkdir(exist_ok=True)
-
-    logger.debug(f"Download directory: {content_dir.as_posix()!r}")
-    total = len(streams)
-
-    if total < 1:
-        logger.critical("No streams found, failed to download.")
-        raise SystemExit(exit_codes.NO_CONTENT_FOUND)
-
-    for count, (stream_urls_caller, episode_number) in enumerate(streams, 1):
-
-        content_title = "E{:02d}".format(int(episode_number))
-        stream_urls = helpers.ensure_extraction(http_client.client, stream_urls_caller)
-
-        if not stream_urls:
-            logger.warning(
-                "There were no stream links available at the moment. Ignoring {!r}, retry using a different provider.".format(
-                    content_title
-                )
-            )
-            continue
-
-        logger.info(
-            "Downloading {!r} [{:02d}/{:02d}, {:02} remaining] ".format(
-                content_title, count, total, total - count
+    with helpers.stream_handlers.context_raiser(
+        console,
+        Text(
+            f"Scraping juicy streams from {provider!r}@{anime['anime_url']}",
+            style="bold magenta",
+        ),
+        name="scraping",
+    ):
+        streams = list(
+            provider_module.fetcher(
+                http_client.client, anime.get("anime_url"), r, match
             )
         )
-        success, reason = helpers.download(
-            http_client.client,
-            logger,
-            content_dir,
-            content_title,
-            stream_urls,
-            quality,
-            idm=idm,
-            retry_timeout=AUTO_RETRY,
-            log_level=log_level,
-        )
 
-        if not success:
-            logger.warning(
-                "Could not download {!r} due to: {}. Please retry with other providers.".format(
-                    content_title, reason
-                )
+        if special:
+            streams = list(helpers.special.special_parser(streams, special))
+
+        download_directory = Path(download_dir).resolve(strict=True)
+        content_name = sanitize_filename(anime["name"])
+
+        content_dir = download_directory / content_name
+        content_dir.mkdir(exist_ok=True)
+
+        console.print(
+            "The project will download to:",
+            Text(content_dir.resolve().as_posix(), style="bold"),
+        )
+        total = len(streams)
+
+        if total < 1:
+            console.print(Text("Could not find any streams on the site :/."))
+            console.print(
+                "This could mean that, either those episodes are unavailable or that the scraper has broke.",
+                style="dim",
             )
+            raise SystemExit(exit_codes.NO_CONTENT_FOUND)
+
+        with helpers.stream_handlers.context_raiser(
+            console, f"Now downloading {content_name!r}", name="downloading"
+        ):
+            for count, (stream_urls_caller, episode_number) in enumerate(streams, 1):
+
+                content_title = "E{:02d}".format(int(episode_number))
+                stream_urls = helpers.ensure_extraction(
+                    http_client.client, stream_urls_caller
+                )
+
+                if not stream_urls:
+                    console.print(
+                        Text(
+                            f"Could not find any streams for {content_title!r} :/.",
+                        )
+                    )
+                    continue
+
+                console.print(
+                    f"Currently downloading: {content_title!r}. [dim]{total-count:d} episodes in queue.[/]",
+                )
+
+                success, reason = helpers.download(
+                    http_client.client,
+                    logger,
+                    content_dir,
+                    content_title,
+                    stream_urls,
+                    quality,
+                    idm=idm,
+                    retry_timeout=AUTO_RETRY,
+                    log_level=log_level,
+                )
+
+                if not success:
+                    console.print(
+                        Text(
+                            f"Could not download {content_title!r} because of {reason!r} :/, a good option would be to retry using better providers :/.",
+                        )
+                    )

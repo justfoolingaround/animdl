@@ -5,8 +5,7 @@ import regex
 from anchor.strings import iter_contentaware_segments
 
 from .constants import SOURCE_REPOSITORY, VERSION_FILE_PATH
-
-terminal_columns = shutil.get_terminal_size((0, 0)).columns
+from .stream_handlers import get_console
 
 VERSION_REGEX = regex.compile(r'__core__ = "(.*?)"')
 
@@ -51,17 +50,8 @@ def iter_banner(
 
     author, repository_name = SOURCE_REPOSITORY
 
-    if terminal_columns:
-        processor = lambda _: iter_contentaware_segments(
-            str.center(_, terminal_columns), terminal_columns
-        )
-    else:
-        processor = lambda _: iter((_,))
-
-    yield from processor(
-        click.style(f"{author}/{repository_name} - v{current_version}", fg="magenta")
-    )
-    yield from processor(click.style(description, fg="magenta"))
+    yield (f"{author}/{repository_name} - v{current_version}")
+    yield (description)
 
     if check_for_updates:
 
@@ -72,12 +62,8 @@ def iter_banner(
         ), tuple(current_version.split("."))
 
         if tuplised_upstream > tuplised_current_version:
-            yield from processor(
-                click.style(
-                    f"Update ↑ {upstream_version} ↓ {current_version}", fg="yellow"
-                )
-            )
-            yield from processor(click.style(f"To update, `animdl update`."))
+            yield (f"Update ↑ {upstream_version} ↓ {current_version}")
+            yield (f"To update, use: animdl update")
 
 
 def banner_gift_wrapper(session, current_version, *, check_for_updates=False):
@@ -86,13 +72,6 @@ def banner_gift_wrapper(session, current_version, *, check_for_updates=False):
 
             if log_level > 20:
                 return f(*args, log_level=log_level, log_file=log_file, **kwargs)
-
-            for _ in iter_banner(
-                session,
-                current_version,
-                check_for_updates=check_for_updates,
-            ):
-                click.echo(_)
 
             return f(*args, log_level=log_level, log_file=log_file, **kwargs)
 

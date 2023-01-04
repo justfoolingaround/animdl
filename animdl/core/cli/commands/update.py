@@ -1,19 +1,16 @@
-import logging
+import asyncio
 import pathlib
+import shlex
 import shutil
-import subprocess
 import sys
 
 import click
-import pip
 import regex
 
 from ...__version__ import __core__
-from .. import helpers, http_client
+from .. import helpers
 
-GIT_CONFIG_REPO_NAME = regex.compile(
-    r'\[remote ".+?"\].+?url = (\S+)', flags=regex.S
-)
+GIT_CONFIG_REPO_NAME = regex.compile(r'\[remote ".+?"\].+?url = (\S+)', flags=regex.S)
 
 
 def is_repository(author, repository):
@@ -36,58 +33,81 @@ def is_repository(author, repository):
 @helpers.decorators.setup_loggers()
 def animdl_update(*args, **kwargs):
 
-    if is_repository(*helpers.constants.SOURCE_REPOSITORY):
-        update_logger = logging.getLogger(f"updater/git")
+    console = helpers.stream_handlers.get_console()
 
-        if not shutil.which("git"):
-            return update_logger.error("Couldn't find git to attempt.")
+    with helpers.stream_handlers.context_raiser(
+        console,
+        helpers.stream_handlers.Text(
+            f"Updating {helpers.constants.MODULE_NAME!r}",
+            style="bold white",
+        ),
+        name="update",
+    ):
 
-        process = subprocess.Popen(
-            ["git", "pull"],
-            stdout=subprocess.PIPE,
-            stderr=subprocess.PIPE,
-        )
+        executable = None
 
-    else:
+        async def __asyncio__():
 
-        update_logger = logging.getLogger(f"updater/pip v{pip.__version__}")
+            if is_repository(*helpers.constants.SOURCE_REPOSITORY):
 
-        upstream_version = helpers.banner.fetch_upstream_version(http_client.client)
-        tuplised_upstream, tuplised_current_version = tuple(
-            upstream_version.split(".")
-        ), tuple(__core__.split("."))
+                executable = shutil.which("git")
+                args = [
+                    executable,
+                    "pull",
+                ]
 
-        comparison, description = helpers.banner.compare_version(
-            tuplised_current_version, tuplised_upstream
-        )
+                console.print(
+                    f"Pulling latest changes from the repository via git: {shlex.join(args)}"
+                )
 
-        if description is not None:
-            update_logger.info(description)
+                if not executable:
+                    return console.print("[red]Cannot find git.[/]")
 
-        if not comparison:
-            return update_logger.error("Already up to date.")
+                process = await asyncio.subprocess.create_subprocess_exec(
+                    *args,
+                    stdout=asyncio.subprocess.PIPE,
+                    stderr=asyncio.subprocess.PIPE,
+                )
 
-        update_logger.info(
-            f"Updating module {helpers.constants.MODULE_NAME!r} via PIP: pip install --upgrade {helpers.constants.MODULE_NAME}"
-        )
+            else:
 
-        process = subprocess.Popen(
-            [
-                sys.executable,
-                "-m",
-                "pip",
-                "install",
-                "--upgrade",
-                helpers.constants.MODULE_NAME,
-                "--user",
-                "--no-warn-script-location",
-            ],
-            stdout=subprocess.PIPE,
-            stderr=subprocess.PIPE,
-        )
+                executable = sys.executable
 
-    for line in process.stdout:
-        update_logger.info(f"[stdout] {line.decode().rstrip()}")
+                args = [
+                    executable,
+                    "-m",
+                    "pip",
+                    "install",
+                    "--upgrade",
+                    helpers.constants.MODULE_NAME,
+                    "--user",
+                    "--no-warn-script-location",
+                ]
 
-    for line in process.stderr:
-        update_logger.error(f"[stderr] {line.decode().rstrip()}")
+                console.print(
+                    f"Updating module {helpers.constants.MODULE_NAME!r} via PIP: {shlex.join(args)}"
+                )
+
+                process = await asyncio.subprocess.create_subprocess_exec(
+                    *args,
+                    stdout=asyncio.subprocess.PIPE,
+                    stderr=asyncio.subprocess.PIPE,
+                )
+
+            async def async_stream_reader(stream, style, name):
+
+                line = await stream.readline()
+                while line:
+                    console.print(
+                        helpers.stream_handlers.Text(name, style=style),
+                        helpers.stream_handlers.Text(line.decode().strip()),
+                    )
+                    line = await stream.readline()
+
+            await asyncio.gather(
+                async_stream_reader(process.stdout, "green", f"[{executable} stdout]"),
+                async_stream_reader(process.stderr, "red", f"[{executable} stderr]"),
+            )
+
+        loop = asyncio.new_event_loop()
+        loop.run_until_complete(__asyncio__())

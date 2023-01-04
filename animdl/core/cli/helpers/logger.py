@@ -38,7 +38,7 @@ def setup_loggers(
     file_logging_format=f"[%(filename)s:%(lineno)d - %(asctime)s - %(name)s: %(levelname)s] %(message)s",
 ):
     def wrapper(f):
-        def __inner__(*args, log_level=20, log_file=None, **kwargs):
+        def __inner__(*args, log_level=100, log_file=None, **kwargs):
 
             basic_config_kwargs = {
                 "format": logging_format,

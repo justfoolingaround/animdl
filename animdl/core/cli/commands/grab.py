@@ -1,5 +1,4 @@
 import json
-import logging
 
 import click
 
@@ -23,25 +22,22 @@ from ..http_client import client
 @helpers.decorators.banner_gift_wrapper(
     client, __core__, check_for_updates=CHECK_FOR_UPDATES
 )
-def animdl_grab(query, index, log_level, **kwargs):
+def animdl_grab(query, index, **kwargs):
 
-    r = kwargs.get("range")
+    console = helpers.stream_handlers.get_console()
+    console.print(
+        "The content is outputted to [green]stdout[/] while these messages are outputted to [red]stderr[/]."
+    )
 
-    logger = logging.getLogger("grabber")
     anime, provider = helpers.process_query(
-        client, query, logger, auto_index=index, provider=DEFAULT_PROVIDER
+        client, query, console, auto_index=index, provider=DEFAULT_PROVIDER
     )
 
     if not anime:
         return
 
-    logger.name = "{}/{}".format(provider, logger.name)
-    logger.info("Initializing grabbing session.")
-
     for stream_url_caller, episode in providers.get_appropriate(
-        client, anime.get("anime_url"), check=r
+        client, anime.get("anime_url"), check=kwargs.get("range")
     ):
         stream_url = list(helpers.ensure_extraction(client, stream_url_caller))
         click.echo(json.dumps({"episode": episode, "streams": stream_url}))
-
-    logger.info("Grabbing session complete.")

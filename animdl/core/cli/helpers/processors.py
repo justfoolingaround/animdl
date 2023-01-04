@@ -18,7 +18,7 @@ def prompt_user(logger, anime_list_genexp, provider):
     )
 
 
-def process_query(session, query: str, logger, provider: str, *, auto_index=1):
+def process_query(session, query: str, console, provider: str, *, auto_index=1):
 
     match, module, provider_name = get_provider(query, raise_on_failure=False)
 
@@ -38,7 +38,7 @@ def process_query(session, query: str, logger, provider: str, *, auto_index=1):
     genexp = provider_searcher_mapping[provider](session, query)
 
     if auto_index is None:
-        return prompt_user(logger, genexp, provider)
+        return prompt_user(console, genexp, provider)
 
     expanded = list(genexp)
     return expanded[(auto_index - 1) % len(expanded)], provider

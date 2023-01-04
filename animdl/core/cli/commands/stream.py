@@ -1,6 +1,9 @@
+import base64
 import logging
 
 import click
+import yarl
+from rich.text import Text
 
 from ...__version__ import __core__
 from ...codebase import providers
@@ -44,6 +47,7 @@ def animdl_stream(
     Streamer call for animdl streaming session.
     """
     r = kwargs.get("range")
+    console = helpers.stream_handlers.get_console()
 
     logger = logging.getLogger("streamer")
 
@@ -54,137 +58,178 @@ def animdl_stream(
 
     try:
         streamer = helpers.player.handle_player(DEFAULT_PLAYER, player_opts, player)
-    except Exception as e:
-        logger.error(
-            "Streaming failed due to: {!r}.".format(e),
-            exc_info=True,
-        )
+    except Exception:
+        console.print_exception()
         raise SystemExit(exit_codes.STREAMER_CONFIGURATION_REQUIRED)
 
     anime, provider = helpers.process_query(
-        http_client.client, query, logger, auto_index=index, provider=DEFAULT_PROVIDER
+        http_client.client, query, console, auto_index=index, provider=DEFAULT_PROVIDER
     )
 
     if not anime:
-        logger.critical("Searcher returned no anime to stream, failed to stream.")
+        console.print(Text("Could not find an anime of that name :/."))
         raise SystemExit(exit_codes.NO_CONTENT_FOUND)
 
-    logger.name = "{}/{}".format(provider, logger.name)
-    logger.debug("Will scrape from {}".format(anime))
-    logger.info("Now initiating your stream session")
+    with helpers.stream_handlers.context_raiser(
+        console,
+        Text(
+            f"Scraping juicy streams from {provider!r}@{anime['anime_url']}",
+            style="bold magenta",
+        ),
+        name="scraping",
+    ):
 
-    match, provider_module, _ = providers.get_provider(
-        providers.append_protocol(anime.get("anime_url"))
-    )
+        match, provider_module, _ = providers.get_provider(
+            providers.append_protocol(anime.get("anime_url"))
+        )
 
-    streams = list(
-        provider_module.fetcher(http_client.client, anime.get("anime_url"), r, match)
-    )
-
-    if special:
-        streams = list(helpers.special.special_parser(streams, special))
-
-    content_title = anime["name"]
-
-    total = len(streams)
-
-    if total < 1:
-        logger.critical("No streams found, failed to stream.")
-        raise SystemExit(exit_codes.NO_CONTENT_FOUND)
-
-    for count, (stream_urls_caller, episode_number) in enumerate(streams, 1):
-
-        if episode_number == 0:
-            episode_text = "Special Episode"
-        else:
-            episode_text = f"Episode {episode_number}"
-
-        if content_title:
-            media_title = f"{content_title}: {episode_text}"
-        else:
-            media_title = episode_text
-
-        playing = True
-
-        while playing:
-
-            stream_urls = list(
-                helpers.ensure_extraction(http_client.client, stream_urls_caller)
+        streams = list(
+            provider_module.fetcher(
+                http_client.client, anime.get("anime_url"), r, match
             )
+        )
 
-            if not stream_urls:
+        if special:
+            streams = list(helpers.special.special_parser(streams, special))
 
-                logger.warning(
-                    f"Could not find stream urls for {content_title!r}. "
-                    "The episode may not be available or the scraper has broke."
-                )
+        content_title = anime["name"]
 
-                if log_level <= logging.DEBUG:
-                    playing = click.confirm("Retry stream url extraction?")
+        total = len(streams)
 
-                continue
-
-            titles = set(_.get("title") for _ in stream_urls)
-
-            if len(titles) > 1:
-                logger.warning(
-                    f"Multiple titles found for the same streams, multiple seasons may be available. Please adjust the quality string as required: {', '.join(map(repr, titles))}"
-                )
-                logger.info(
-                    "quality_string set to \"best[title='(Season XYZ)']\" may work. (use r'.+?' for regex support!)"
-                )
-
-            selection = helpers.prompts.quality_prompt(
-                logger,
-                log_level,
-                stream_urls,
-                force_selection_string=quality
-                if FORCE_STREAMING_QUALITY_SELECTION
-                else None,
+        if total < 1:
+            console.print(Text("Could not find any streams on the site :/."))
+            console.print(
+                "This could mean that, either those episodes are unavailable or that the scraper has broke.",
+                style="dim",
             )
+            return exit(exit_codes.NO_CONTENT_FOUND)
 
-            headers = selection.get("headers", {})
+        with helpers.stream_handlers.context_raiser(
+            console, f"Now streaming {content_title!r}", name="streaming"
+        ):
 
-            logger.info(
-                f"Streaming {media_title!r}, [{count:d}/{total:d}, {total - count:d} remaining]"
-            )
-            logger.debug(f"Obtained streams: {stream_urls!r}")
+            for count, (stream_urls_caller, episode_number) in enumerate(streams, 1):
 
-            if "title" in selection:
-                media_title += " ({})".format(selection["title"])
+                if episode_number == 0:
+                    episode_text = "Special Episode"
+                else:
+                    episode_text = f"Episode {episode_number}"
 
-            if USE_ANISKIP:
-                chapters = helpers.aniskip.get_timestamps(
-                    http_client.client, content_title, episode_number
-                )
-            else:
-                chapters = []
+                if content_title:
+                    media_title = f"{content_title}: {episode_text}"
+                else:
+                    media_title = episode_text
 
-            with streamer:
-                streamer.play(
-                    selection["stream_url"],
-                    title=media_title,
-                    headers=headers,
-                    subtitles=selection.get("subtitle", []),
-                    chapters=chapters,
-                )
+                playing = True
 
-                if DISCORD_PRESENCE:
-                    set_streaming_episode(
-                        http_client.client, content_title, episode_number
+                while playing:
+
+                    stream_urls = list(
+                        helpers.ensure_extraction(
+                            http_client.client, stream_urls_caller
+                        )
                     )
 
-            error_indication = streamer.indicate_error()
+                    if not stream_urls:
 
-            if bool(error_indication):
-                logger.warning(f"Streamer indicated an error {error_indication!r}.")
+                        console.print(
+                            Text(
+                                f"Could not find any streams for {episode_text!r} :/."
+                            ),
+                            Text(
+                                "Loading in DEBUG [--log-level=0] mode allows extraction retrial.",
+                                style="dim",
+                            ),
+                        )
 
-                if log_level <= logging.INFO:
-                    if click.confirm("Retry streaming this episode?"):
+                        if log_level <= logging.DEBUG:
+                            playing = click.confirm("Retry stream url extraction?")
+
                         continue
 
-            if log_level <= logging.DEBUG:
-                if click.confirm("Replay episode?"):
-                    continue
+                    titles = set(_.get("title") for _ in stream_urls)
 
-            playing = False
+                    if len(titles) > 1:
+                        console.print(
+                            Text(
+                                f"Multiple titles found for the same streams, multiple seasons may be available. Please adjust the quality string as required: {', '.join(map(repr, titles))}",
+                                dim=True,
+                            ),
+                        )
+
+                    selection = helpers.prompts.quality_prompt(
+                        logger,
+                        log_level,
+                        stream_urls,
+                        force_selection_string=quality
+                        if FORCE_STREAMING_QUALITY_SELECTION
+                        else None,
+                    )
+
+                    headers = selection.get("headers", {})
+
+                    logger.debug(f"Obtained streams: {stream_urls!r}")
+
+                    if "title" in selection:
+                        media_title += f" ({selection['title']})"
+
+                    if USE_ANISKIP:
+                        chapters = helpers.aniskip.get_timestamps(
+                            http_client.client, content_title, episode_number
+                        )
+                    else:
+                        chapters = []
+
+                    with helpers.stream_handlers.context_raiser(
+                        console,
+                        f"Currently playing: {episode_text!r}. [dim]{total-count:d} episodes in queue.[/]",
+                        name="playing",
+                    ):
+                        if not headers:
+                            shareable_url = yarl.URL(
+                                "https://plyr.link/p/player.html"
+                            ).with_fragment(
+                                base64.b64encode(
+                                    selection["stream_url"].encode()
+                                ).decode()
+                            )
+                            console.print(
+                                Text(
+                                    f"This stream may be share-able [embeddable and playable as a single URL] (please note that subtitles, chapters and titles won't be embedded)."
+                                ),
+                                style="dim",
+                            )
+                            console.print(
+                                f"[dim]Share-ables: [link={shareable_url}]embed[/], [link={selection['stream_url']}]direct url[/][/]"
+                            )
+
+                        with streamer:
+                            streamer.play(
+                                selection["stream_url"],
+                                title=media_title,
+                                headers=headers,
+                                subtitles=selection.get("subtitle", []),
+                                chapters=chapters,
+                            )
+
+                            if DISCORD_PRESENCE:
+                                set_streaming_episode(
+                                    http_client.client, content_title, episode_number
+                                )
+
+                    error_indication = streamer.indicate_error()
+
+                    if bool(error_indication):
+                        logger.warning(
+                            f"Streamer indicated an error {error_indication!r}."
+                        )
+
+                        if log_level <= logging.INFO:
+                            if click.confirm("Retry streaming this episode?"):
+                                continue
+
+                    if log_level <= logging.DEBUG:
+                        if click.confirm("Replay episode?"):
+                            continue
+
+                    playing = False
