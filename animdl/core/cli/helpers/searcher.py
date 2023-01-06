@@ -7,36 +7,27 @@ import json
 import lxml.html as htmlparser
 
 from ...codebase.helpers import uwu
-from ...config import *
+from ...codebase.providers.kamyroll.api import get_api
+from ...config import (
+    ALLANIME,
+    ANIMEKAIZOKU,
+    ANIMEOUT,
+    ANIMEPAHE,
+    ANIMIXPLAY,
+    GOGOANIME,
+    HAHO,
+    HENTAISTREAM,
+    KAWAIIFU,
+    NINEANIME,
+    TENSHI,
+    TWIST,
+    ZORO,
+)
 from .fuzzysearch import search
-
-NINEANIME_URL_SEARCH = NINEANIME + "filter"
-
-ANIMEPAHE_URL_CONTENT = ANIMEPAHE + "anime/%s"
-ANIMEPAHE_URL_SEARCH_AJAX = ANIMEPAHE + "api"
-
-ANIMEOUT_URL_SEARCH_AJAX = ANIMEOUT + "wp-admin/admin-ajax.php"
-
-ANIMIX_URL_SEARCH_API = "https://cdn.animixplay.to/api/search"
-
-ANIMIX_URL_SEARCH_POST = "https://v1.zv5vxk4uogwdp7jzbh6ku.workers.dev/"
-ANIMIX_URL_CONTENT = ANIMIXPLAY.rstrip("/")
-
-GOGOANIME_URL_SEARCH = GOGOANIME + "/search.html?"
-
-TENSHI_URL_SEARCH_POST = TENSHI + "anime/search"
-HAHO_URL_SEARCH_POST = HAHO + "anime/search"
-
-TWIST_URL_CONTENT_API = "https://api.twist.moe/api/anime"
-TWIST_URL_CONTENT = TWIST + "a/"
-
-
-def placeholder(session, query):
-    yield from []
 
 
 def search_9anime(session, query):
-    nineanime_results = session.get(NINEANIME_URL_SEARCH, params={"keyword": query})
+    nineanime_results = session.get(NINEANIME + "filter", params={"keyword": query})
 
     parsed = htmlparser.fromstring(nineanime_results.text)
     for results in parsed.cssselect("a.name"):
@@ -94,13 +85,13 @@ def search_allanime(session, query):
 def search_animepahe(session, query):
 
     animepahe_results = session.get(
-        ANIMEPAHE_URL_SEARCH_AJAX, params={"q": query, "m": "search"}
+        ANIMEPAHE + "api", params={"q": query, "m": "search"}
     )
     content = animepahe_results.json()
 
     for results in content.get("data", []):
         yield {
-            "anime_url": ANIMEPAHE_URL_CONTENT % results.get("session"),
+            "anime_url": ANIMEPAHE + "anime/" + results.get("session"),
             "name": results.get("title"),
         }
 
@@ -127,7 +118,7 @@ def search_animixplay(session, query):
 
 def search_gogoanime(session, query):
     parsed = htmlparser.fromstring(
-        session.get(GOGOANIME_URL_SEARCH, params={"keyword": query}).text
+        session.get(GOGOANIME + "/search.html", params={"keyword": query}).text
     )
 
     for results in parsed.xpath('//p[@class="name"]/a'):
@@ -146,7 +137,7 @@ def search_kawaiifu(session, query):
 
 def search_twist(session, query):
     content = session.get(
-        TWIST_URL_CONTENT_API,
+        "https://api.twist.moe/api/anime",
         headers={"x-access-token": "0df14814b9e590a1f26d3071a4ed7974"},
     )
     animes = content.json()
@@ -155,37 +146,19 @@ def search_twist(session, query):
         query, animes, processor=lambda r: r.get("title") or r.get("alt_title")
     ):
         yield {
-            "anime_url": TWIST_URL_CONTENT + anime.get("slug", {}).get("slug"),
+            "anime_url": TWIST + "a/" + anime.get("slug", {}).get("slug"),
             "name": anime.get("title", ""),
         }
 
 
 def search_crunchyroll(session, query, *, scheme="http"):
-    content = json.loads(
-        session.get(
-            CRUNCHYROLL + "ajax/?req=RpcApiSearch_GetSearchCandidates",
-            headers={
-                "Referer": "https://www.google.com/",
-            },
-        ).text.strip("*/\n -secur")
-    )
+    # ajax/?req=RpcApiSearch_GetSearchCandidates
 
-    for anime in search(
-        query, content.get("data", []), processor=lambda r: r.get("name")
-    ):
+    kamyroll = get_api(session)
+    for anime in kamyroll.iter_search_results(query):
         yield {
-            "anime_url": scheme + anime.get("link", "").strip("/")[5:],
-            "name": anime.get("name", ""),
-        }
-
-
-def search_nyaasi(session, query):
-    for anime in htmlparser.fromstring(
-        session.get(NYAASI, params={"q": query, "s": "seeders", "o": "desc"}).text
-    ).cssselect('tr > td[colspan="2"] > a[title]:last-child	'):
-        yield {
-            "anime_url": NYAASI + anime.get("href")[1:],
-            "name": anime.get("title", "").strip(),
+            "anime_url": f"{scheme}://www.crunchyroll.com/{anime['type']}/{anime['media_id']}",
+            "name": anime["title"],
         }
 
 
@@ -239,7 +212,6 @@ provider_searcher_mapping = {
     "haho": search_haho,
     "hentaistream": search_h_ntai_stream,
     "tenshi": search_tenshi,
-    "nyaa": search_nyaasi,
     "twist": search_twist,
     "zoro": search_zoro,
 }
