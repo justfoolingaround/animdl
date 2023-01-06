@@ -1,5 +1,8 @@
+import base64
 from collections import defaultdict
 from functools import lru_cache, partial
+
+import yarl
 
 from ....config import CRUNCHYROLL, SUPERANIME_CRUNCHYROLL
 from ... import helpers
@@ -9,12 +12,27 @@ VRV_RESPONSE_REGEX = helpers.optopt.regexlib.compile(
     r"^#EXT-X-STREAM-INF:.*?RESOLUTION=\d+x(?P<resolution>\d+).*?\n(.+?)$",
     flags=helpers.optopt.regexlib.MULTILINE,
 )
-CR_GUID_REGEX = helpers.optopt.regexlib.compile(r"crunchyroll\.com/.+?/(.+?)/.+?")
+CR_GUID_REGEX = helpers.optopt.regexlib.compile(
+    r"crunchyroll\.com(?:/.+?)?/series/(.+?)(?:/|$)"
+)
 
 
 REGEX = helpers.optopt.regexlib.compile(
-    r"kamyroll://(?:.+?\.)+?crunchyroll\.com/([^&?/]+)"
+    r"kamyroll://(?:.+?\.)+?crunchyroll\.com(?:/.+?)?/series/(.+?)(?:/|$)"
 )
+
+
+def fix_subtitle_url(url):
+    parsed_url = yarl.URL(url)
+
+    token = parsed_url.query.get("token")
+
+    if token is None:
+        return url
+
+    url_base = base64.urlsafe_b64decode(token + "=" * (4 - len(token) % 4)).decode()
+
+    return url_base[2:-2]
 
 
 def fetch_streams(api: Kamyroll, medias: "list"):
@@ -38,12 +56,13 @@ def fetch_streams(api: Kamyroll, medias: "list"):
             hls_response = api.session.get(stream["url"]).text
 
             for match in VRV_RESPONSE_REGEX.finditer(hls_response):
-                stream_url = match.group(2).replace("/index-v1-a1.m3u8", "")
+
+                url_base, _, policies = match.group(2).partition("/index-v1-a1.m3u8")
 
                 yield {
-                    "stream_url": stream_url,
+                    "stream_url": url_base + policies,
                     "quality": int(match.group(1)),
-                    "subtitle": [_["url"] for _ in subtitles],
+                    "subtitle": [fix_subtitle_url(_["url"]) for _ in subtitles],
                     **stream_attrs,
                 }
 
@@ -67,29 +86,9 @@ def fetch_episodes(api: Kamyroll, media_id):
     return episodes
 
 
-@lru_cache()
-def get_crunchyroll_guid(session, url):
-    cr_guid = CR_GUID_REGEX.search(
-        session.get(
-            CRUNCHYROLL + url,
-            headers={"Referer": "https://google.com/"},
-            follow_redirects=False,
-        ).headers.get("Location")
-    )
-
-    if cr_guid is None:
-        return
-
-    return cr_guid.group(1)
-
-
 def fetcher(session, url, check, match):
     api = Kamyroll(session)
-
-    cr_guid = get_crunchyroll_guid(session, match.group(1))
-
-    if cr_guid is None:
-        return
+    cr_guid = match.group(1)
 
     episodes = fetch_episodes(api, cr_guid)
 
@@ -105,11 +104,7 @@ def fetcher(session, url, check, match):
 
 def metadata_fetcher(session, url, match):
     api = Kamyroll(session)
-
-    cr_guid = get_crunchyroll_guid(session, match.group(1))
-
-    if cr_guid is None:
-        return
+    cr_guid = match.group(1)
 
     metadata = api.fetch_media(cr_guid)
 
