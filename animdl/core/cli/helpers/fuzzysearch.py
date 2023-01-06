@@ -33,7 +33,7 @@ def search(
 
             match = pattern.search(processed_search_value)
             if match:
-                yield len(processed_search_value) - len(query.strip()), search_value
+                yield len(processed_search_value), search_value
 
     for _, search_value in sorted(genexp(), key=lambda x: x[0]):
         yield search_value
