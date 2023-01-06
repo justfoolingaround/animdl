@@ -189,7 +189,7 @@ def animdl_stream(
                             shareable_url = yarl.URL(
                                 "https://plyr.link/p/player.html"
                             ).with_fragment(
-                                base64.b64encode(
+                                base64.urlsafe_b64encode(
                                     selection["stream_url"].encode()
                                 ).decode()
                             )
