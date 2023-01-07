@@ -32,6 +32,9 @@ def default_prompt(
         else:
             components = list(processor(component) for component in components)
 
+        if not components:
+            return fallback
+
         if len(components) == 1:
             return components[0]
 
