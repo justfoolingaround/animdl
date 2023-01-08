@@ -21,6 +21,7 @@ from ...config import (
     NINEANIME,
     TENSHI,
     TWIST,
+    YUGEN,
     ZORO,
 )
 from .fuzzysearch import search
@@ -172,6 +173,20 @@ def search_tenshi(session, query, *, domain=TENSHI):
         yield {"name": result.get("title"), "anime_url": result.get("href")}
 
 
+def search_yugen(session, query):
+    for result in search(
+        query,
+        htmlparser.fromstring(
+            session.get(YUGEN + "discover/", params={"dq": query}).text
+        ).cssselect("a.anime-meta[href][title]"),
+        processor=lambda r: r.get("title"),
+    ):
+        yield {
+            "name": result.get("title"),
+            "anime_url": YUGEN + result.get("href")[1:],
+        }
+
+
 def search_zoro(session, query):
     for result in htmlparser.fromstring(
         session.get(ZORO + "/search", params={"keyword": query}).text
@@ -213,5 +228,6 @@ provider_searcher_mapping = {
     "hentaistream": search_h_ntai_stream,
     "tenshi": search_tenshi,
     "twist": search_twist,
+    "yugen": search_yugen,
     "zoro": search_zoro,
 }

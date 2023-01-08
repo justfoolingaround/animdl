@@ -6,8 +6,12 @@ import regex
 from ....config import ZORO
 from ...helpers import construct_site_based_regex
 
-REGEX = construct_site_based_regex(ZORO, extra_regex=r"(/watch)?/[\w-]+-(\d+)")
-TITLES_REGEX = regex.compile(r'<h2 class="film-name dynamic-name" .+?>(.+?)</h2>')
+REGEX = construct_site_based_regex(
+    ZORO, extra_regex=r"(/watch)?/(?P<slug>[\w-]+-(?P<id>\d+))"
+)
+TITLES_REGEX = regex.compile(
+    r'<h2 class="film-name dynamic-name".+?>(.+?)</h2>', flags=regex.DOTALL
+)
 
 XHR_HEADERS = {
     "X-Requested-With": "XMLHttpRequest",
@@ -62,7 +66,7 @@ def extract_episode(session, data_id, title):
 
 
 def fetcher(session, url, check, match):
-    slug = match.group(2)
+    slug = match.group("id")
 
     for episode in htmlparser.fromstring(
         session.get(ZORO + f"ajax/v2/episode/list/{slug}", headers=XHR_HEADERS)
@@ -79,4 +83,6 @@ def fetcher(session, url, check, match):
 
 
 def metadata_fetcher(session, url, match):
-    return {"titles": TITLES_REGEX.findall(session.get(ZORO + match.group(2)).text)}
+    return {
+        "titles": TITLES_REGEX.findall(session.get(ZORO + match.group("slug")).text)
+    }

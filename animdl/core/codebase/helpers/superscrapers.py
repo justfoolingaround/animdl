@@ -1,12 +1,12 @@
 import yarl
 
-from ... import helpers
+from .optopt import regexlib
 
-VRV_RESPONSE_REGEX = helpers.optopt.regexlib.compile(
+VRV_RESPONSE_REGEX = regexlib.compile(
     r"^#EXT-X-STREAM-INF:.*?RESOLUTION=\d+x(?P<resolution>\d+).*?\n(.+?)$",
-    flags=helpers.optopt.regexlib.MULTILINE,
+    flags=regexlib.MULTILINE,
 )
-WIXMP_URL_REGEX = helpers.optopt.regexlib.compile(
+WIXMP_URL_REGEX = regexlib.compile(
     r"https://.+?/(?P<base>.+?/),(?P<resolutions>(?:\d+p,)+)"
 )
 

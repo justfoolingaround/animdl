@@ -3,7 +3,7 @@ from typing import Callable, DefaultDict, Dict, List, TypeVar
 
 import anitopy
 
-from . import optopt
+from . import optopt, superscrapers
 
 content_type = TypeVar("content_type")
 

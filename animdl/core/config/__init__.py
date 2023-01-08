@@ -71,6 +71,7 @@ DEFAULT_CONFIG = {
         "tenshi": "https://tenshi.moe/",
         "nyaasi": "https://nyaa.si/",
         "twist": "https://twist.moe/",
+        "yugen": "https://yugen.to/",
         "zoro": "https://zoro.to/",
     },
     "quality_string": "best[subtitle]/best",
@@ -155,6 +156,7 @@ TENSHI = SITE_URLS.get("tenshi")
 HAHO = SITE_URLS.get("haho")
 HENTAISTREAM = SITE_URLS.get("hentaistream")
 TWIST = SITE_URLS.get("twist")
+YUGEN = SITE_URLS.get("yugen")
 ZORO = SITE_URLS.get("zoro")
 
 QUALITY = CONFIG.get("quality_string")

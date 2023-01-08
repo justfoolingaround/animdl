@@ -9,8 +9,7 @@ from ....config import (
     SUPERANIME_RETURN_ALL,
     SUPERANIME_TYPE_OF,
 )
-from ...helpers import construct_site_based_regex, optopt
-from .superscrapers import iter_unpacked_from_packed_hls
+from ...helpers import construct_site_based_regex, optopt, superscrapers
 
 REGEX = construct_site_based_regex(ALLANIME, extra_regex=r"/anime/([^?&/]+)")
 
@@ -93,7 +92,7 @@ def iter_prioritised(session, urls):
                 stream_url = link["link"]
 
                 yield from (
-                    iter_unpacked_from_packed_hls(
+                    superscrapers.iter_unpacked_from_packed_hls(
                         session, yarl.URL(stream_url), stream_attribs=stream_attr
                     )
                 )

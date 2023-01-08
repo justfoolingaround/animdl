@@ -8,7 +8,6 @@ from .utils import decipher_salted_aes
 
 CONTENT_ID_REGEX = regex.compile(r"embed-6/([^?#&/.]+)")
 
-SID_ENDPOINT = "https://api.enime.moe/tool/rapid-cloud/server-id"
 SALT_SECRET_ENDPOINT = (
     "https://raw.githubusercontent.com/consumet/rapidclown/main/key.txt"
 )
@@ -21,13 +20,11 @@ def get_associative_key(session, endpoint):
 
 def extract(session, url, **opts):
 
-    sid = get_associative_key(session, SID_ENDPOINT)
-
     url = yarl.URL(url)
 
     ajax_response = session.get(
         f"https://{url.host}/ajax/embed-6/getSources",
-        params={"id": url.name, "sId": sid},
+        params={"id": url.name},
     )
 
     sources = ajax_response.json()
@@ -42,14 +39,12 @@ def extract(session, url, **opts):
             yield {
                 "stream_url": _["file"],
                 "subtitle": subtitles,
-                "headers": {"SID": sid},
             }
 
         for _ in json.loads(decipher_salted_aes(sources["sourcesBackup"], salt_secret)):
             yield {
                 "stream_url": _["file"],
                 "subtitle": subtitles,
-                "headers": {"SID": sid},
             }
 
     return list(yielder())
