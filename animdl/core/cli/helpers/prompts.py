@@ -151,7 +151,7 @@ def get_prompt_manager(*, fallback=default_prompt):
     return fallback
 
 
-def quality_prompt(console, streams: list[dict], *, force_selection_string=None):
+def quality_prompt(console, streams, *, force_selection_string=None):
 
     if len(streams) == 1:
         return streams[0]
