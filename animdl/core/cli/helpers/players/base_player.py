@@ -64,7 +64,7 @@ class BasePlayer:
         if self.process is not None:
             self.process.kill()
 
-        self.process = subprocess.Popen(*args, **kwargs)
+        self.process = subprocess.Popen(*(self.args + args), **kwargs)
 
     def __enter__(self):
         return self
