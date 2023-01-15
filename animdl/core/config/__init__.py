@@ -68,8 +68,7 @@ DEFAULT_CONFIG = {
         "haho": "https://haho.moe/",
         "hentaistream": "https://hstream.moe/",
         "kamyroll_api": "https://kamyroll.herokuapp.com/",
-        "tenshi": "https://tenshi.moe/",
-        "nyaasi": "https://nyaa.si/",
+        "marin": "https://marin.moe/",
         "twist": "https://twist.moe/",
         "yugen": "https://yugen.to/",
         "zoro": "https://zoro.to/",
@@ -151,8 +150,7 @@ CRUNCHYROLL = SITE_URLS.get("crunchyroll")
 KAWAIIFU = SITE_URLS.get("kawaiifu")
 KAMYROLL_API = SITE_URLS.get("kamyroll_api")
 GOGOANIME = SITE_URLS.get("gogoanime")
-NYAASI = SITE_URLS.get("nyaasi")
-TENSHI = SITE_URLS.get("tenshi")
+MARIN = SITE_URLS.get("marin")
 HAHO = SITE_URLS.get("haho")
 HENTAISTREAM = SITE_URLS.get("hentaistream")
 TWIST = SITE_URLS.get("twist")

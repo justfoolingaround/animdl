@@ -3,6 +3,7 @@ All the search algorithms for all the providers available in AnimDL.
 """
 
 import json
+from urllib.parse import unquote
 
 import lxml.html as htmlparser
 
@@ -18,8 +19,8 @@ from ...config import (
     HAHO,
     HENTAISTREAM,
     KAWAIIFU,
+    MARIN,
     NINEANIME,
-    TENSHI,
     TWIST,
     YUGEN,
     ZORO,
@@ -163,14 +164,30 @@ def search_crunchyroll(session, query, *, scheme="http"):
         }
 
 
-def search_tenshi(session, query, *, domain=TENSHI):
-    uwu.bypass_ddos_guard(session, domain)
-    tenshi_page = htmlparser.fromstring(
-        session.get(domain + "anime", params={"q": query}).text
-    )
+def search_marin(session, query, *, domain=MARIN):
 
-    for result in tenshi_page.cssselect(".list > li > a"):
-        yield {"name": result.get("title"), "anime_url": result.get("href")}
+    session.get(domain, headers={"range": "bytes=0-0"})
+
+    for result in (
+        session.post(
+            domain + "anime",
+            json={
+                "search": query,
+            },
+            headers={
+                "x-inertia": "true",
+                "x-xsrf-token": unquote(session.cookies.get("XSRF-TOKEN")),
+            },
+        )
+        .json()
+        .get("props", {})
+        .get("anime_list", {})
+        .get("data", [])
+    ):
+        yield {
+            "name": result.get("title"),
+            "anime_url": domain + "anime/" + result.get("slug"),
+        }
 
 
 def search_yugen(session, query):
@@ -208,7 +225,12 @@ def search_h_ntai_stream(session, query):
 
 
 def search_haho(session, query):
-    yield from search_tenshi(session, query, domain=HAHO)
+    tenshi_page = htmlparser.fromstring(
+        session.get(HAHO + "anime", params={"q": query}).text
+    )
+
+    for result in tenshi_page.cssselect(".list > li > a"):
+        yield {"name": result.get("title"), "anime_url": result.get("href")}
 
 
 provider_searcher_mapping = {
@@ -226,7 +248,7 @@ provider_searcher_mapping = {
     "gogoanime": search_gogoanime,
     "haho": search_haho,
     "hentaistream": search_h_ntai_stream,
-    "tenshi": search_tenshi,
+    "marin": search_marin,
     "twist": search_twist,
     "yugen": search_yugen,
     "zoro": search_zoro,
