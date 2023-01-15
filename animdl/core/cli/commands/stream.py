@@ -149,17 +149,16 @@ def animdl_stream(
 
                     titles = set(_.get("title") for _ in stream_urls)
 
-                    if len(titles) > 1:
+                    if len(titles) > 1 and FORCE_STREAMING_QUALITY_SELECTION:
                         console.print(
                             Text(
                                 f"Multiple titles found for the same streams, multiple seasons may be available. Please adjust the quality string as required: {', '.join(map(repr, titles))}",
-                                dim=True,
+                                style="dim",
                             ),
                         )
 
                     selection = helpers.prompts.quality_prompt(
-                        logger,
-                        log_level,
+                        console,
                         stream_urls,
                         force_selection_string=quality
                         if FORCE_STREAMING_QUALITY_SELECTION
