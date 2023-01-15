@@ -53,18 +53,11 @@ def fetch_streams(api: Kamyroll, medias: "list"):
         subtitles = streams_data["subtitles"]
 
         for stream in selected_streams:
-            hls_response = api.session.get(stream["url"]).text
-
-            for match in VRV_RESPONSE_REGEX.finditer(hls_response):
-
-                url_base, _, policies = match.group(2).partition("/index-v1-a1.m3u8")
-
-                yield {
-                    "stream_url": url_base + policies,
-                    "quality": int(match.group(1)),
-                    "subtitle": [fix_subtitle_url(_["url"]) for _ in subtitles],
-                    **stream_attrs,
-                }
+            yield {
+                "stream_url": stream["url"],
+                "subtitle": [fix_subtitle_url(_["url"]) for _ in subtitles],
+                **stream_attrs,
+            }
 
 
 @lru_cache()

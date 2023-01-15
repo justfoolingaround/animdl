@@ -18,16 +18,16 @@ class Kamyroll:
 
         if expires < time.time():
 
-            response = self.session.post(
+            response = self.session.get(
                 self.API_URL + "auth/v1/token",
-                data={
+                params={
                     "device_id": "web",
                     "device_type": "python.animdl",
                     "access_token": "HMbQeThWmZq4t7w",
                 },
-            ).json()
+            )
 
-            self.raw_token = response
+            self.raw_token = response.json()
         else:
             return f"{self.raw_token['token_type']} {self.raw_token['access_token']}"
 
