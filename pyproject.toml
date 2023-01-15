@@ -1,13 +1,13 @@
 [build-system]
-requires = [ "poetry-core>=1.0.0",]
+requires = ["poetry-core>=1.0.0"]
 build-backend = "poetry.core.masonry.api"
 
 [tool.poetry]
 name = "animdl"
-version = "1.6.55"
+version = "1.7.0"
 description = "A highly efficient, fast, powerful and light-weight anime downloader and streamer for your favorite anime."
 readme = "readme.txt"
-authors = [ "justfoolingaround <kr.justfoolingaround@gmail.com>",]
+authors = ["justfoolingaround <kr.justfoolingaround@gmail.com>"]
 license = "GPT-3"
 
 [tool.poetry.dependencies]
