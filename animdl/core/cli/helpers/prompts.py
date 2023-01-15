@@ -43,24 +43,29 @@ def default_prompt(
             for component in components
         )
 
-        for n, cout in enumerate(processed_components, 1):
+        enumerated_components = tuple(enumerate(processed_components, 1))
+
+        for n, cout in reversed(enumerated_components):
             if not isinstance(cout, str):
                 raise TypeError(
                     "The stdout_processor must return a string and not {!r}.".format(
                         type(cout)
                     )
                 )
-            console.print(f"[bold blue]{n}[/bold blue].", Text(cout, style="u b red"))
+            console.print(Text(f"{n}.", style="b blue"), cout)
+
+        choices = list(map(str, range(1, len(enumerated_components) + 1)))
 
         choice = Prompt.ask(
             Text(
-                f"Select the {component_name} (automatically selects the top {component_name})",
+                f"Select the {component_name} (automatically selects the top {component_name}) ",
                 style="dim",
-            ),
+            )
+            + Text(f'[{"/".join(choices)}]', style="b blue"),
             default=1,
             console=console,
-            choices=list(map(str, range(1, n + 1))),
-            show_choices=True,
+            choices=choices,
+            show_choices=False,
         )
 
     return components[int(choice) - 1]
