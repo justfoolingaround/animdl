@@ -18,6 +18,7 @@ class AndroidIntentVIEW(BasePlayer):
             self.intent,
             "-d",
             stream_url,
+            *self.args,
         )
 
         keys = set(kwargs.keys())

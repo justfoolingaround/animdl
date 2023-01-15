@@ -16,7 +16,7 @@ class VLCPlayer(BasePlayer):
     def play(
         self, stream_url, subtitles=None, headers=None, title=None, opts=None, **kwargs
     ):
-        args = (self.executable, stream_url)
+        args = (self.executable, *self.args, stream_url)
 
         if opts is not None:
             args += tuple(opts)

@@ -34,7 +34,7 @@ class MPVDefaultPlayer(BasePlayer):
         **kwargs,
     ):
 
-        args = (self.executable, stream_url)
+        args = (self.executable, *self.args, stream_url)
 
         if opts is not None:
             args += tuple(opts)
