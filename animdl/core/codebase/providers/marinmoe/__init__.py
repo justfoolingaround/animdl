@@ -1,17 +1,12 @@
 import functools
 
-import lxml.html as htmlparser
-import regex
+from animdl.utils import optopt
+from animdl.utils.powertools import ctx
 
 from ....config import MARIN
-from ...helpers import construct_site_based_regex, optopt
+from ...helpers import construct_site_based_regex
 
 REGEX = construct_site_based_regex(MARIN, extra_regex=r"/anime/([^?&/]+)")
-
-inertia_headers = {
-    "x-inertia-version": "67023a9481a03976f4d5ae9b16e8f752",
-    "x-inertia": "true",
-}
 
 
 class HashableDict(dict):
@@ -19,11 +14,30 @@ class HashableDict(dict):
         return hash(tuple(sorted(self.items())))
 
 
+def get_inertia_version(session):
+
+    if "marin_inertia_version" in ctx:
+        return ctx["marin_inertia_version"]
+
+    response = session.get(MARIN)
+
+    intertia_version = optopt.regexlib.search(
+        r"version&quot;:&quot;(.+?)&quot;", response.text
+    ).group(1)
+
+    ctx.update(marin_inertia_version=intertia_version)
+
+    return intertia_version
+
+
 def iter_episode_streams(session, url):
 
     episodes_data = session.get(
         url,
-        headers=inertia_headers,
+        headers={
+            "x-inertia": "true",
+            "x-inertia-version": get_inertia_version(session),
+        },
     ).json()
 
     props = episodes_data.get("props", {})
@@ -46,7 +60,10 @@ def fetch_anime_data(session, url):
     return HashableDict(
         session.get(
             url,
-            headers=inertia_headers,
+            headers={
+                "x-inertia": "true",
+                "x-inertia-version": get_inertia_version(session),
+            },
         ).json()
     )
 

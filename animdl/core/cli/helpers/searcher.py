@@ -7,6 +7,8 @@ from urllib.parse import unquote
 
 import lxml.html as htmlparser
 
+from animdl.utils.powertools import ctx
+
 from ...codebase.helpers import uwu
 from ...codebase.providers.kamyroll.api import get_api
 from ...config import (
@@ -168,21 +170,21 @@ def search_marin(session, query, *, domain=MARIN):
 
     session.get(domain, headers={"range": "bytes=0-0"})
 
+    response = session.post(
+        domain + "anime",
+        json={
+            "search": query,
+        },
+        headers={
+            "x-xsrf-token": unquote(session.cookies.get("XSRF-TOKEN")),
+            "x-inertia": "true",
+        },
+    )
+
+    ctx.update(marin_inertia_version=response.json().get("version"))
+
     for result in (
-        session.post(
-            domain + "anime",
-            json={
-                "search": query,
-            },
-            headers={
-                "x-inertia": "true",
-                "x-xsrf-token": unquote(session.cookies.get("XSRF-TOKEN")),
-            },
-        )
-        .json()
-        .get("props", {})
-        .get("anime_list", {})
-        .get("data", [])
+        response.json().get("props", {}).get("anime_list", {}).get("data", [])
     ):
         yield {
             "name": result.get("title"),

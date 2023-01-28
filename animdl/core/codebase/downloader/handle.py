@@ -10,7 +10,8 @@ from tqdm import tqdm
 
 from ...config import FFMPEG_EXECUTABLE, FFMPEG_HLS, FFMPEG_SUBMERGE
 from .content_mt import mimetypes
-from .ffmpeg import FFMPEG_EXTENSIONS, ffmpeg_download, has_ffmpeg, merge_subtitles
+from .ffmpeg import (FFMPEG_EXTENSIONS, ffmpeg_download, has_ffmpeg,
+                     merge_subtitles)
 from .hls import HLS_STREAM_EXTENSIONS, hls_yield
 
 if FFMPEG_EXECUTABLE:
@@ -118,7 +119,9 @@ def standard_download(
             if ranges:
                 temporary_headers.update({"Ranges": "bytes={}-".format(downloaded)})
             try:
-                with session.stream("GET", url, headers=headers) as http_stream:
+                with session.stream(
+                    "GET", url, headers=headers
+                ) as http_stream:
                     http_stream.raise_for_status()
 
                     for chunks in http_stream.iter_bytes():
