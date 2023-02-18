@@ -20,7 +20,7 @@ ALLANIME_GQL_EXTENSIONS = {
 ALLANIME_GQL_EPISODE_QUERY_EXTENSIONS = optopt.jsonlib.dumps(
     {
         "persistedQuery": {
-            **ALLANIME_GQL_EXTENSIONS.copy(),
+            **ALLANIME_GQL_EXTENSIONS["persistedQuery"].copy(),
             "sha256Hash": "1f0a5d6c9ce6cd3127ee4efd304349345b0737fbf5ec33a60bbc3d18e3bb7c61",
         }
     }
