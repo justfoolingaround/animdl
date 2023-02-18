@@ -19,6 +19,7 @@ def construct_site_based_regex(
         extra=extra,
         extra_re=extra_regex,
         match_subdomains=False,
+        retain_scheme=False,
     )
 
 
