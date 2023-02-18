@@ -54,7 +54,7 @@ DEFAULT_CONFIG = {
     "default_provider": "allanime",
     "site_urls": {
         "9anime": "https://9anime.pl/",
-        "allanime": "https://allanime.site/",
+        "allanime": "https://allanime.to/",
         "animekaizoku": "https://animekaizoku.com/",
         "animeout": "https://animeout.xyz/",
         "animepahe": "https://animepahe.com/",

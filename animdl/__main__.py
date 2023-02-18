@@ -66,8 +66,9 @@ def __animdl_cli__(ctx: click.Context, disable_update):
             console.print(greeting, style="white")
 
         if not disable_update:
+            from animdl.utils.optopt import regexlib
+
             from .core.cli.http_client import client
-            from .core.codebase.helpers.optopt import regexlib
 
             branch, version_file = constants.VERSION_FILE_PATH
 

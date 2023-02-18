@@ -2,8 +2,11 @@ from collections import defaultdict
 from typing import Callable, DefaultDict, Dict, List, TypeVar
 
 import anitopy
+from anchor.strings import regexify_url
 
-from . import optopt, superscrapers
+from animdl.utils import optopt
+
+from . import superscrapers
 
 content_type = TypeVar("content_type")
 
@@ -11,16 +14,12 @@ content_type = TypeVar("content_type")
 def construct_site_based_regex(
     site_url: "str", *, extra: "str" = "", extra_regex: "str" = ""
 ):
-    return optopt.regexlib.compile(
-        "(?:https?://)?(?:\\S+\\.)*{}".format(
-            optopt.regexlib.escape(
-                optopt.regexlib.search(
-                    r"(?:https?://)?((?:\S+\.)+[^/]+)/?", site_url
-                ).group(1)
-            )
-            + extra
-        )
-        + extra_regex
+    return regexify_url(
+        site_url,
+        extra=extra,
+        extra_re=extra_regex,
+        match_subdomains=False,
+        retain_scheme=False,
     )
 
 

@@ -6,9 +6,7 @@ import regex
 
 SPECIAL_PARSER = regex.compile(r"(?P<special>\D+)(-?\d*)", regex.IGNORECASE)
 
-strings = {
-    "last": ["l", "latest"],
-}
+strings = {"last": ["l", "latest"], "last*": ["l*", "latest*", "latest-all"]}
 
 
 def get_qualified_name(special):
@@ -31,11 +29,13 @@ def special_parser(streams, string):
             continue
 
         if special == "last":
-            returnee.extend(streams[-(index or 1) :])
+            returnee.extend([streams[-(index or 1)]])
         else:
+            if special == "last*":
+                returnee.extend(streams[-(index or 1) :])
+                returnee.extend(streams[: -(index or 1)])
             """
             More specials to be thought about.
             """
 
     yield from returnee
-    yield from (stream for stream in streams if stream not in returnee)

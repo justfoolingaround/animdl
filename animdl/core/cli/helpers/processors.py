@@ -41,4 +41,8 @@ def process_query(session, query: str, console, provider: str, *, auto_index=1):
         return prompt_user(console, genexp, provider)
 
     expanded = list(genexp)
+
+    if not expanded:
+        return {}, None
+
     return expanded[(auto_index - 1) % len(expanded)], provider

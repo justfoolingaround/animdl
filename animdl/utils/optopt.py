@@ -1,3 +1,7 @@
+"""
+animdl: Optional optimisations for the project.
+"""
+
 try:
     import regex as regexlib
 except ImportError:

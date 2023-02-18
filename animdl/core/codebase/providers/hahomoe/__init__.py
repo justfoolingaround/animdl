@@ -9,7 +9,7 @@ REGEX = construct_site_based_regex(HAHO, extra_regex=r"/anime/([^?&/]+)")
 
 TITLES_REGEX = optopt.regexlib.compile(r'<h1 class="mb-3">(.+?)</h1>')
 SORUCES_REGEX = optopt.regexlib.compile(
-    r'<source src="(.+?)" title="([0-9]+?)p" .+?>',
+    r'<source.*? src="(.+?)" title="([0-9]+?)p" .+?>',
     flags=optopt.regexlib.I,
 )
 
