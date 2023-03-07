@@ -56,7 +56,7 @@ DEFAULT_CONFIG = {
         "9anime": "https://9anime.pl/",
         "allanime": "https://allanime.to/",
         "animekaizoku": "https://animekaizoku.com/",
-        "animeout": "https://animeout.xyz/",
+        "animeout": "https://www.animeout.xyz/",
         "animepahe": "https://animepahe.com/",
         "animeonsen": "https://animeonsen.xyz/",
         "animexin": "https://animexin.xyz/",

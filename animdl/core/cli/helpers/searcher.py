@@ -117,7 +117,7 @@ def search_animepahe(session, query):
 
 
 def search_animeout(session, query):
-    animeout_results = session.cf_request("GET", ANIMEOUT, params={"s": query})
+    animeout_results = session.cf_request(session, "GET", ANIMEOUT, params={"s": query})
     content = htmlparser.fromstring(animeout_results.text)
 
     for result in content.xpath('//h3[@class="post-title entry-title"]/a'):

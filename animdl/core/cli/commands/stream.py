@@ -3,6 +3,7 @@ import logging
 
 import click
 import yarl
+from rich.errors import MarkupError
 from rich.text import Text
 
 from ...__version__ import __core__
@@ -198,9 +199,13 @@ def animdl_stream(
                                 ),
                                 style="dim",
                             )
-                            console.print(
-                                f"[dim]Share-ables: [link={shareable_url}]embed[/], [link={selection['stream_url']}]direct url[/][/]"
-                            )
+
+                            try:
+                                console.print(
+                                    f"[dim]Share-ables: [link={shareable_url}]embed[/link], [link={selection['stream_url']}]direct url[/link][/dim]"
+                                )
+                            except MarkupError:
+                                pass
 
                         with streamer:
                             streamer.play(

@@ -36,7 +36,7 @@ def animeout_stream_url(url: "yarl.URL") -> str:
 
 
 def fetcher(session, url, check, match):
-    animeout_page = session.cf_request("GET", url)
+    animeout_page = session.cf_request(session, "GET", url)
     parsed = htmlparser.fromstring(animeout_page.text)
 
     downloadables = (
