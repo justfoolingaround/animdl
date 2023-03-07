@@ -1,15 +1,15 @@
 import functools
 from functools import partial
 
-import regex
+from animdl.utils.optopt import regexlib
 
 from ....config import ANIMTIME
 from ...helpers import construct_site_based_regex
 
-CONTENT_RE = regex.compile(r't\[t\.(?P<name>.+?)=(?P<id>\d+)\]="\1"')
+CONTENT_RE = regexlib.compile(r't\[t\.(?P<name>.+?)=(?P<id>\d+)\]="\1"')
 REGEX = construct_site_based_regex(ANIMTIME, extra_regex=r"/title/([^/?&]+)")
 
-MAIN_JS_FILE = "main.0eab142b791320871345.js"
+MAIN_JS_RE = regexlib.compile(r'<script src="(main\..+?\.js)".+?>')
 
 
 def get_content(content_id, js_content):
@@ -20,7 +20,10 @@ def get_content(content_id, js_content):
 
 @functools.lru_cache()
 def get_js_content(session):
-    return session.get(ANIMTIME + MAIN_JS_FILE).text
+    content = session.get(ANIMTIME).text
+    main_js = MAIN_JS_RE.search(content).group(1)
+
+    return session.get(ANIMTIME + main_js).text
 
 
 def fetcher(session, url, check, match):
@@ -33,13 +36,13 @@ def fetcher(session, url, check, match):
         return
 
     episode_count = int(
-        regex.search(rf"Ld\[Kd\.{regex.escape(anime)}\]=(\d+)", content).group(1)
+        regexlib.search(rf"Ld\[Kd\.{regexlib.escape(anime)}\]=(\d+)", content).group(1)
     )
 
-    constructor, end = regex.search(
-        regex.escape(f"Fd[Kd.{anime}]=function(t){{return")
+    constructor, end = regexlib.search(
+        regexlib.escape(f"Fd[Kd.{anime}]=function(t){{return")
         + '"(.+?)"'
-        + regex.escape("+t+")
+        + regexlib.escape("+t+")
         + r'"(.+?)"\}',
         content,
     ).groups()
@@ -58,6 +61,6 @@ def metadata_fetcher(session, url, match):
     anime_name = get_content(match.group(1), content)
 
     if anime_name is not None:
-        anime_name = " ".join(regex.split(r"(?=[A-Z])", anime_name)).strip()
+        anime_name = " ".join(regexlib.split(r"(?=[A-Z])", anime_name)).strip()
 
     return {"titles": [anime_name]}
