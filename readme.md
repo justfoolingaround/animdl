@@ -159,8 +159,6 @@ This argument is shared by **stream**, **download** and **grab**, it can be used
 
 This argument is shared by **stream** and **download**, it can be used to hand over the latest episode of the anime by using `-s latest`. Similarly, the latest 2 episodes can be selected via `latest-2`.
 
-This argument changes the **flow** of episodes. This means, this will not isolate the other streams but just bring forward the required episodes. If an anime has 10 episodes, the flow will be changed to `10, 1, 2, 3, 4, 5, 6, 7, 8, 9` if `latest` is in used.
-
 - This argument is compatible with `-r`, you will get the last episode of the range.
 
 ### `-q` / `--quality` argument
@@ -209,23 +207,9 @@ This project posses powerful commands and arguments to aid them, there are **man
 
 ## Providers
 
-| Website                                      | Searcher Prefix      | Available Qualities | Status / Elapsed Time | Content Extension |
-| :------------------------------------------: | :-----------------: | :-----------------:  | :----: | :-----------------: |
-| [9Anime](https://9anime.to/)                 | `9anime`             | 720p, 1080p | <img height="25" src="https://github.com/justfoolingaround/animdl-provider-benchmarks/raw/master/api/providers/nineanime.png">  | MP4 / TS  |
-| [AllAnime](https://allanime.site/)           | `allanime`            | 720p, 1080p | <img height="25" src="https://github.com/justfoolingaround/animdl-provider-benchmarks/raw/master/api/providers/allanime.png">  | MP4 / TS          |
-| [AnimePahe](https://www.animepahe.com/)      | `animepahe`          | 720p, 1080p         | <img height="25" src="https://github.com/justfoolingaround/animdl-provider-benchmarks/raw/master/api/providers/animepahe.png">  | MP4               |
-| [AnimeOut](https://www.animeout.xyz/)        | `animeout`           | 720p, 1080p         | <img height="25" src="https://github.com/justfoolingaround/animdl-provider-benchmarks/raw/master/api/providers/animeout.png">  | MKV               |
-| [Animixplay](https://www.animixplay.to/)     | `animixplay`         | 480p, 720p, 1080p   | <img height="25" src="https://github.com/justfoolingaround/animdl-provider-benchmarks/raw/master/api/providers/animixplay.png">  | MP4 / TS          |
-| [Animtime](https://animtime.com/)            | No searcher included | 720p, 1080p         |  <img height="25" src="https://github.com/justfoolingaround/animdl-provider-benchmarks/raw/master/api/providers/animtime.png">   | MP4               |
-| [Crunchyroll](https://www.crunchyroll.com/)  | `crunchyroll`        | All                 |  <img height="25" src="https://github.com/justfoolingaround/animdl-provider-benchmarks/raw/master/api/providers/crunchyroll.png">   | TS                |
-| [Kawaiifu](https://www.kawaiifu.com/) (NSFW) | `kawaiifu`           | 720p, 1080p         |  <img height="25" src="https://github.com/justfoolingaround/animdl-provider-benchmarks/raw/master/api/providers/kawaiifu.png">   | MP4               |
-| [GogoAnime](https://www.gogoanime.pe/)       | `gogoanime`          | 480p, 720p, 1080p   | <img height="25" src="https://github.com/justfoolingaround/animdl-provider-benchmarks/raw/master/api/providers/gogoanime.png">  | MP4 / TS          |
-| [Haho](https://www.haho.moe/) (NSFW)         | `haho`           | 720p, 1080p         | <img height="25" src="https://github.com/justfoolingaround/animdl-provider-benchmarks/raw/master/api/providers/haho.png">  | MP4               |
-| [Tenshi](https://www.tenshi.moe/)            | `tenshi`             | 720p, 1080p         | <img height="25" src="https://github.com/justfoolingaround/animdl-provider-benchmarks/raw/master/api/providers/tenshi.png">  | MP4               |
-| [Twist](https://www.twist.moe/)              | `twist`              | 720p, 1080p         | <img height="25" src="https://github.com/justfoolingaround/animdl-provider-benchmarks/raw/master/api/providers/twist.png">  | MP4               |
-| [Zoro](https://www.zoro.to/)                 | `zoro`   | 720p, 1080p         | <img height="25" src="https://github.com/justfoolingaround/animdl-provider-benchmarks/raw/master/api/providers/zoro.png">  | TS |
+Please head to [animdl's official provider benchmarks](https://github.com/justfoolingaround/animdl-provider-benchmarks).
 
-The images above are automatically updated every few hours, hence, please be aware that the developers already know what's broken.
+The images in that repository are automatically updated every few hours, hence, please be aware that the developers already know what's broken.
 
 Some providers may not work due to DDoS protection services. We try our best to fix what's fixable. There are plenty of alternatives even if one goes down in the project.
 
