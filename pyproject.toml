@@ -26,6 +26,7 @@ pyyaml = "~=6.0"
 packaging = "^22.0"
 pkginfo = "^1.9.2"
 rich = "^13.0.0"
+lxml = { version = "4.9.0", markers = "sys_platform != 'win32'" }
 
 [tool.poetry.dev-dependencies]
 
