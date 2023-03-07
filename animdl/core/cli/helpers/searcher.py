@@ -52,6 +52,31 @@ def search_animekaizoku(session, query):
         }
 
 
+ALLANIME_GQL = """
+query(
+        $search: SearchInput
+        $translationType: VaildTranslationTypeEnumType
+        $countryOrigin: VaildCountryOriginEnumType
+    ) {
+        shows(
+            search: $search
+            limit: 40
+            page: 1
+            translationType: $translationType
+            countryOrigin: $countryOrigin
+        ) {
+            pageInfo {
+                total
+            }
+            edges {
+                _id
+                name
+            }
+        }
+    }
+"""
+
+
 def search_allanime(session, query):
 
     gql_response = session.get(
@@ -64,26 +89,17 @@ def search_allanime(session, query):
                         "allowUnknown": True,
                         "query": query,
                     },
-                    "limit": 40,
                 }
             ),
-            "extensions": json.dumps(
-                {
-                    "persistedQuery": {
-                        "version": 1,
-                        "sha256Hash": "9c7a8bc1e095a34f2972699e8105f7aaf9082c6e1ccd56eab99c2f1a971152c6",
-                    }
-                }
-            ),
+            "query": ALLANIME_GQL,
         },
     ).json()
 
     for result in gql_response.get("data", {}).get("shows", {}).get("edges", []):
-        if any(a for _, a in result.get("availableEpisodes", {}).items()):
-            yield {
-                "anime_url": ALLANIME + f"anime/{result['_id']}",
-                "name": result["name"],
-            }
+        yield {
+            "anime_url": ALLANIME + f"anime/{result['_id']}",
+            "name": result["name"],
+        }
 
 
 def search_animepahe(session, query):

@@ -11,21 +11,6 @@ REGEX = construct_site_based_regex(ALLANIME, extra_regex=r"/anime/([^?&/]+)")
 EPISODES_REGEX = optopt.regexlib.compile(r'\\"availableEpisodesDetail\\":({.+?})')
 TITLES_REGEX = optopt.regexlib.compile(r'<span class="mr-1">(.+?);?</span>')
 
-ALLANIME_GQL_EXTENSIONS = {
-    "persistedQuery": {
-        "version": 1,
-    }
-}
-
-ALLANIME_GQL_EPISODE_QUERY_EXTENSIONS = optopt.jsonlib.dumps(
-    {
-        "persistedQuery": {
-            **ALLANIME_GQL_EXTENSIONS["persistedQuery"].copy(),
-            "sha256Hash": "1f0a5d6c9ce6cd3127ee4efd304349345b0737fbf5ec33a60bbc3d18e3bb7c61",
-        }
-    }
-)
-
 
 def iter_episodes(
     episode_dictionary: dict,
@@ -50,6 +35,21 @@ def to_clock_json(url: str):
     return optopt.regexlib.sub(r"(?<=/clock)(?=[?&#])", ".json", url, count=1)
 
 
+ALLANIME_EPISODES_GQL = """
+query ($showId: String!, $translationType: VaildTranslationTypeEnumType!, $episodeString: String!) {
+    episode(
+        showId: $showId
+        translationType: $translationType
+        episodeString: $episodeString
+    ) {
+        episodeString
+        sourceUrls
+        notes
+    }
+}
+"""
+
+
 def extract_content(
     session,
     content: "iter_episodes",
@@ -71,7 +71,7 @@ def extract_content(
                         "episodeString": episode,
                     }
                 ),
-                "extensions": ALLANIME_GQL_EPISODE_QUERY_EXTENSIONS,
+                "query": ALLANIME_EPISODES_GQL,
             },
         ).json()
 
