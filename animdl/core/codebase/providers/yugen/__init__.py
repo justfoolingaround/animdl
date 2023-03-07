@@ -12,7 +12,7 @@ REGEX = construct_site_based_regex(
 EPISODE_REGEX = optopt.regexlib.compile(
     r'<div class="ap-.+?">Episodes</div><span class="description" .+?>(\d+)</span></div>'
 )
-EPISODE_TITLE_REGEX = optopt.regexlib.compile(r'<h1 class="p-10-t">\n(.+?)\n</h1>')
+EPISODE_TITLE_REGEX = optopt.regexlib.compile(r'<h1 class="p-10-t">\s+(.+?)\s+</h1>')
 
 
 def iter_streams(session, anime_id, episode_id):
