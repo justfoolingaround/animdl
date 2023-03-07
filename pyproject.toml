@@ -4,7 +4,7 @@ build-backend = "poetry.core.masonry.api"
 
 [tool.poetry]
 name = "animdl"
-version = "1.7.6"
+version = "1.7.7"
 description = "A highly efficient, fast, powerful and light-weight anime downloader and streamer for your favorite anime."
 readme = "readme.txt"
 authors = [ "justfoolingaround <kr.justfoolingaround@gmail.com>",]
@@ -26,9 +26,12 @@ pyyaml = "~=6.0"
 packaging = "^22.0"
 pkginfo = "^1.9.2"
 rich = "^13.0.0"
-lxml = { version = "4.9.0", markers = "sys_platform != 'win32'" }
 
 [tool.poetry.dev-dependencies]
 
 [tool.poetry.scripts]
 animdl = "animdl.__main__:__animdl_cli__"
+
+[tool.poetry.dependencies.lxml]
+version = "4.9.0"
+markers = "sys_platform != 'win32'"
