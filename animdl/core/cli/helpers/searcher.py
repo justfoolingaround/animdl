@@ -7,6 +7,7 @@ from urllib.parse import unquote
 
 import lxml.html as htmlparser
 
+from animdl.core.codebase.providers.allanime import gql_api as allanime_gql_api
 from animdl.utils.powertools import ctx
 
 from ...codebase.helpers import uwu
@@ -52,50 +53,9 @@ def search_animekaizoku(session, query):
         }
 
 
-ALLANIME_GQL = """
-query(
-        $search: SearchInput
-        $translationType: VaildTranslationTypeEnumType
-        $countryOrigin: VaildCountryOriginEnumType
-    ) {
-        shows(
-            search: $search
-            limit: 40
-            page: 1
-            translationType: $translationType
-            countryOrigin: $countryOrigin
-        ) {
-            pageInfo {
-                total
-            }
-            edges {
-                _id
-                name
-            }
-        }
-    }
-"""
-
-
 def search_allanime(session, query):
 
-    gql_response = session.get(
-        ALLANIME + "allanimeapi",
-        params={
-            "variables": json.dumps(
-                {
-                    "search": {
-                        "allowAdult": True,
-                        "allowUnknown": True,
-                        "query": query,
-                    },
-                }
-            ),
-            "query": ALLANIME_GQL,
-        },
-    ).json()
-
-    for result in gql_response.get("data", {}).get("shows", {}).get("edges", []):
+    for result in allanime_gql_api.api.iter_search_results(session, query):
         yield {
             "anime_url": ALLANIME + f"anime/{result['_id']}",
             "name": result["name"],
