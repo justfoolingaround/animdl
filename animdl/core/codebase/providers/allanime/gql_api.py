@@ -59,6 +59,26 @@ class AllAnimeGQLAPI:
     def __init__(self, *, endpoint: str = ENDPOINT):
         self.api_endpoint = endpoint
 
+    def fetch_gql(
+        self,
+        session,
+        query: str,
+        variables: dict = None,
+    ):
+
+        response = session.get(
+            self.api_endpoint,
+            params={
+                "variables": optopt.jsonlib.dumps(variables),
+                "query": query,
+            },
+        ).json()
+
+        if response.get("errors"):
+            return {}
+
+        return response.get("data", {})
+
     def iter_search_results(
         self,
         session,
@@ -101,15 +121,9 @@ class AllAnimeGQLAPI:
             variables["page"] = page
             variables["limit"] = limit or 40
 
-            response = session.get(
-                self.api_endpoint,
-                params={
-                    "variables": optopt.jsonlib.dumps(variables),
-                    "query": gql,
-                },
-            ).json()
+            response = self.fetch_gql(session, gql, variables)
 
-            edges = response.get("data", {}).get("shows", {}).get("edges", [])
+            edges = response.get("shows", {}).get("edges", [])
 
             if not edges:
                 return
@@ -124,10 +138,7 @@ class AllAnimeGQLAPI:
             page += 1
 
             total = total or (
-                response.get("data", {})
-                .get("shows", {})
-                .get("pageInfo", {})
-                .get("total", limit)
+                response.get("shows", {}).get("pageInfo", {}).get("total", limit)
             )
             if limit is None:
                 limit = total
@@ -151,19 +162,15 @@ class AllAnimeGQLAPI:
             "showId": show_id,
         }
 
-        response = session.get(
-            self.api_endpoint,
-            params={
-                "variables": optopt.jsonlib.dumps(variables),
-                "query": ALLANIME_SHOW_GQL % " ".join(keys),
-            },
-        ).json()
-
-        self.info_table.setdefault(show_id, {}).update(
-            response.get("data", {}).get("show", {})
+        response = self.fetch_gql(
+            session,
+            ALLANIME_SHOW_GQL % " ".join(keys),
+            variables,
         )
 
-        return response.get("data", {}).get("show", {})
+        self.info_table.setdefault(show_id, {}).update(response.get("show", {}))
+
+        return response.get("show", {})
 
     def fetch_episode(
         self,
@@ -180,31 +187,9 @@ class AllAnimeGQLAPI:
             "episodeString": episode_string,
         }
 
-        response = session.get(
-            self.api_endpoint,
-            params={
-                "variables": optopt.jsonlib.dumps(variables),
-                "query": ALLANIME_EPISODES_GQL % " ".join(keys),
-            },
-        ).json()
-
-        return response.get("data", {})
-
-    def iter_episodes(
-        self,
-        session,
-        show_id: str,
-        *,
-        translation_type: str = "sub",
-    ):
-        show_info = self.fetch_show_info(session, show_id)
-
-        for episode_string in show_info.get("availableEpisodesDetail", {}).get(
-            translation_type, []
-        ):
-            yield self.fetch_episode(
-                session, show_id, episode_string, translation_type=translation_type
-            )
+        return self.fetch_gql(
+            session, ALLANIME_EPISODES_GQL % " ".join(keys), variables
+        )
 
 
 api = AllAnimeGQLAPI()

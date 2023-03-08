@@ -7,7 +7,11 @@ from ....config import ALLANIME, SUPERANIME_RETURN_ALL, SUPERANIME_TYPE_OF
 from ...helpers import construct_site_based_regex, optopt, superscrapers
 from .gql_api import api
 
-REGEX = construct_site_based_regex(ALLANIME, extra_regex=r"/anime/([^?&/]+)")
+REGEX = construct_site_based_regex(ALLANIME, extra_regex=r"/(?:anime|watch)/([^?&/]+)")
+
+LEGACY_CONTENT_REGEX = optopt.regexlib.compile(
+    r'date:g,data:"({.+?})"}},calling:', optopt.regexlib.DOTALL
+)
 
 
 def iter_episodes(
@@ -33,6 +37,28 @@ def to_clock_json(url: str):
     return optopt.regexlib.sub(r"(?<=/clock)(?=[?&#])", ".json", url, count=1)
 
 
+def fetch_legacy(session, episode, type_of, show_id):
+    """
+    This is a fallback method for fetching the content of an episode
+    when the GQL hits server-side rate-limits.
+    """
+
+    match = LEGACY_CONTENT_REGEX.search(
+        session.get(
+            ALLANIME + f"watch/{show_id}//episode-{episode}-{type_of}",
+        ).text
+    )
+
+    if match:
+        return (
+            optopt.jsonlib.loads(match.group(1).replace('\\"', '"'))
+            .get("data", {})
+            .get("episode", {})
+        )
+
+    return {}
+
+
 def extract_content(
     session,
     content: "iter_episodes",
@@ -43,12 +69,16 @@ def extract_content(
 ):
 
     for type_of, episode in content:
-
         api_response = api.fetch_episode(
             session, show_id, episode, translation_type=type_of
         )
 
-        episode_info = api_response["episode"]
+        episode_info = api_response.get("episode") or fetch_legacy(
+            session, episode, type_of, show_id
+        )
+
+        if not episode_info:
+            continue
 
         attrs = {}
 
@@ -56,7 +86,7 @@ def extract_content(
             attrs.update(title=episode_info["notes"].replace("<note-split>", " // "))
 
         sources = sorted(
-            api_response["episode"]["sourceUrls"],
+            episode_info["sourceUrls"],
             key=lambda value: value.get("priority", 0),
             reverse=True,
         )
