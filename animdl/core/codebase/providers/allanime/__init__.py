@@ -8,9 +8,6 @@ from ...helpers import construct_site_based_regex, optopt, superscrapers
 
 REGEX = construct_site_based_regex(ALLANIME, extra_regex=r"/anime/([^?&/]+)")
 
-EPISODES_REGEX = optopt.regexlib.compile(r'\\"availableEpisodesDetail\\":({.+?})')
-TITLES_REGEX = optopt.regexlib.compile(r'<span class="mr-1">(.+?);?</span>')
-
 
 def iter_episodes(
     episode_dictionary: dict,
@@ -35,6 +32,8 @@ def to_clock_json(url: str):
     return optopt.regexlib.sub(r"(?<=/clock)(?=[?&#])", ".json", url, count=1)
 
 
+ALLANIME_GQL_API = "https://api.allanime.co/allanimeapi"
+
 ALLANIME_EPISODES_GQL = """
 query ($showId: String!, $translationType: VaildTranslationTypeEnumType!, $episodeString: String!) {
     episode(
@@ -45,6 +44,26 @@ query ($showId: String!, $translationType: VaildTranslationTypeEnumType!, $episo
         episodeString
         sourceUrls
         notes
+    }
+}
+"""
+
+ALLANIME_EPISODE_LIST_GQL = """
+query ($showId: String!) {
+    show(
+        _id: $showId
+    ) {
+        availableEpisodesDetail
+    }
+}
+"""
+
+ALLANIME_TITLE_GQL = """
+query ($showId: String!) {
+    show(
+        _id: $showId
+    ) {
+        name
     }
 }
 """
@@ -62,7 +81,7 @@ def extract_content(
     for type_of, episode in content:
 
         api_response = session.get(
-            "https://api.allanime.co/allanimeapi",
+            ALLANIME_GQL_API,
             params={
                 "variables": optopt.jsonlib.dumps(
                     {
@@ -130,19 +149,26 @@ def extract_content(
 
 
 def fetcher(session, url: "str", check, match):
-    anime_url = ALLANIME + f"anime/{match.group(1)}"
 
     api_endpoint = (
         session.get(ALLANIME + "getVersion").json().get("episodeIframeHead", "")
     )
 
-    for episode, content in iter_episodes(
-        optopt.jsonlib.loads(
-            EPISODES_REGEX.search(session.get(anime_url).text)
-            .group(1)
-            .replace('\\"', '"')
-        ),
-    ):
+    available_episodes = (
+        session.get(
+            ALLANIME_GQL_API,
+            params={
+                "variables": optopt.jsonlib.dumps({"showId": match.group(1)}),
+                "query": ALLANIME_EPISODE_LIST_GQL,
+            },
+        )
+        .json()
+        .get("data", {})
+        .get("show", {})
+        .get("availableEpisodesDetail", {})
+    )
+
+    for episode, content in iter_episodes(available_episodes):
 
         if check(episode):
             yield partial(
@@ -158,6 +184,19 @@ def fetcher(session, url: "str", check, match):
 
 
 def metadata_fetcher(session, url: "str", match):
-    anime_url = ALLANIME + f"anime/{match.group(1)}"
 
-    return {"titles": TITLES_REGEX.findall(session.get(anime_url).text)}
+    anime_name = (
+        session.get(
+            ALLANIME_GQL_API,
+            params={
+                "variables": optopt.jsonlib.dumps({"showId": match.group(1)}),
+                "query": ALLANIME_TITLE_GQL,
+            },
+        )
+        .json()
+        .get("data", {})
+        .get("show", {})
+        .get("name", "")
+    )
+
+    return {"titles": [anime_name]}
