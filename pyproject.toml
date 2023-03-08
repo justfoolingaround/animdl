@@ -33,5 +33,5 @@ rich = "^13.0.0"
 animdl = "animdl.__main__:__animdl_cli__"
 
 [tool.poetry.dependencies.lxml]
-version = "4.9.0"
+version = "4.9.1"
 markers = "sys_platform != 'win32'"
