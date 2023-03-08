@@ -49,31 +49,19 @@ This project can be installed on to your device via different mechanisms, these 
     pip install animdl
     ```
 
-2. Source Code Download
+2. Installation from source
+
+    First ensure [Poetry is installed](https://python-poetry.org/docs/#installation).
+
+    Then run the following command:
 
     ```sh
-    git clone https://www.github.com/justfoolingaround/animdl
+    git clone https://www.github.com/justfoolingaround/animdl.git \
+    && cd animdl \
+    && poetry build \
+    && pip install animdl \
+    && cd ..
     ```
-
-    Given that you have [`git`](https://git-scm.com/) installed, you can clone the repository from GitHub. If you do not have or want to deal with installation of [`git`](https://git-scm.com/), you can simply download the repository using [this link.](https://github.com/justfoolingaround/animdl/archive/refs/heads/master.zip)
-
-    After the repository is downloaded and placed in an appropriate directory, you can, either use [`runner.py`](./runner.py) to use the project without installation **or** use [`setup.py`](./setup.py) to proceed with the installation.
-
-    The former can be done via:
-
-    ```py
-    python runner.py
-    ```
-
-    The latter can be done via:
-
-    ```py
-    pip install .
-    ```
-
-    Both commands are to be executed from the directory where the repository is located.
-
-**Additional information:** You **must** have Python installed **and** in PATH to use this project properly. Your Python executable may be `py` **or** `python` **or** `python3`. **Only Python 3.6 and higher versions are supported by the project.**
 
 ## Support
 
