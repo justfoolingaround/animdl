@@ -23,7 +23,7 @@ pycryptodomex = "~=3.14.1"
 regex = "~=2022.10.31"
 yarl = "~=1.8.1"
 pyyaml = "~=6.0"
-packaging = "^22.0"
+packaging = ">=22,<24"
 pkginfo = "^1.9.2"
 rich = "^13.0.0"
 
