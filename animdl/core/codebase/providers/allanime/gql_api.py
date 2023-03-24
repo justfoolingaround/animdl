@@ -64,17 +64,41 @@ class AllAnimeGQLAPI:
         session,
         query: str,
         variables: dict = None,
+        *,
+        persistent_query: str = None,
     ):
+        variables = optopt.jsonlib.dumps(variables)
 
         response = session.get(
             self.api_endpoint,
             params={
-                "variables": optopt.jsonlib.dumps(variables),
+                "variables": variables,
                 "query": query,
             },
         ).json()
 
         if response.get("errors"):
+            if persistent_query is not None:
+                response = session.get(
+                    self.api_endpoint,
+                    params={
+                        "variables": variables,
+                        "extensions": optopt.jsonlib.dumps(
+                            {
+                                "persistedQuery": {
+                                    "version": 1,
+                                    "sha256Hash": persistent_query,
+                                }
+                            }
+                        ),
+                    },
+                ).json()
+
+                if response.get("errors"):
+                    return {}
+
+                return response.get("data", {})
+
             return {}
 
         return response.get("data", {})
@@ -188,7 +212,10 @@ class AllAnimeGQLAPI:
         }
 
         return self.fetch_gql(
-            session, ALLANIME_EPISODES_GQL % " ".join(keys), variables
+            session,
+            ALLANIME_EPISODES_GQL % " ".join(keys),
+            variables,
+            persistent_query="0ac09728ee9d556967c1a60bbcf55a9f58b4112006d09a258356aeafe1c33889",
         )
 
 
