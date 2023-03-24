@@ -26,20 +26,27 @@ def extract(session, url, **opts):
     )
 
     sources = ajax_response.json()
-    salt_secret = get_associative_key(session, SALT_SECRET_ENDPOINT).encode("utf-8")
+
+    salt_secret = None
+    encrypted = sources["encrypted"]
+
+    if encrypted:
+        salt_secret = get_associative_key(session, SALT_SECRET_ENDPOINT).encode("utf-8")
 
     subtitles = [
         _.get("file") for _ in sources.get("tracks") if _.get("kind") == "captions"
     ]
 
-    def yielder():
-        for _ in json.loads(decipher_salted_aes(sources["sources"], salt_secret)):
-            yield {
-                "stream_url": _["file"],
-                "subtitle": subtitles,
-            }
+    if encrypted:
+        retval = json.loads(
+            decipher_salted_aes(sources["sources"], salt_secret)
+        ) + json.loads(decipher_salted_aes(sources["sourcesBackup"], salt_secret))
 
-        for _ in json.loads(decipher_salted_aes(sources["sourcesBackup"], salt_secret)):
+    else:
+        retval = sources["sources"] + sources["sourcesBackup"]
+
+    def yielder():
+        for _ in retval:
             yield {
                 "stream_url": _["file"],
                 "subtitle": subtitles,
