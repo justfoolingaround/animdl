@@ -1,125 +1,198 @@
 """
 IntelliQ, a highly intelligent and robust quality string parser.
+
+Supports:
+
+- best
+- 720/1080/2160
+- best+subtitles
+- titled+>=720[stream_url=r"abc"]
 """
 
 
 import logging
-from typing import Callable, Generator, Iterable, List, Optional, Tuple, TypeVar, Union
+from collections import namedtuple
+from operator import eq, ge, gt, le, lt
+from typing import Generator, Iterable, List, Optional, Tuple, TypeVar, Union
 
-import regex
+from animdl.utils.optopt import regexlib
 
-PORTION_PARSER = regex.compile(r'(.+?)=(r?)("|\')((?:\\\3|.)*?)\3')
-SEGMENT_PARSER = regex.compile("(best|worst|\d+)?(.*)")
+PARENTHESES = (
+    ("(", ")"),
+    ("[", "]"),
+    ("{", "}"),
+    ("<", ">"),
+    ("«", "»"),
+    ("‹", "›"),
+    ("『", "』"),
+    ("【", "】"),
+    ("〖", "〗"),
+    ("〘", "〙"),
+    ("〚", "〛"),
+    ("﴾", "﴿"),
+    ("（", "）"),
+    ("［", "］"),
+    ("｛", "｝"),
+    ("《", "》"),
+    ("〈", "〉"),
+    ("⦗", "⦘"),
+    ("⦅", "⦆"),
+    ("⦃", "⦄"),
+)
+
+QUOTES = ('"', "'")
+ESCAPE = "\\"
+
+PORTION_PARSER = regexlib.compile(
+    r'(?P<key>.+?)=(?P<regex>r)?("|\')(?P<value>(?:\\\3|.)*?)\3'
+)
+SEGMENT_PARSER = regexlib.compile(r"(?i)(best|worst|\d+)?(.*)")
+
+QUALITY_REGEX = regexlib.compile(
+    r"(?i)\b(?P<expression>[<>=]=?)?(?:\d+x)?(?P<quality>\d+)p?\b"
+)
+
+EXPRESSION_MAPPING = {
+    ">": gt,
+    ">=": ge,
+    "<": lt,
+    "<=": le,
+    "=": eq,
+    "==": eq,
+}
+
+quality_operator = namedtuple(
+    "quality_operator", ("quality", "operator"), defaults=(0, ge)
+)
+
 
 pair_value = TypeVar("pair_value")
 stream_type = TypeVar("stream_type")
 
 
-def NO_PROCESS(stream: stream_type):
-    return stream
+def remove_parentheses(value, n=None, *, parentheses=PARENTHESES):
+
+    removed_count = 0
+    has_parenthesis = True
+
+    while has_parenthesis and (removed_count < n if n is not None else True):
+
+        for start, end in parentheses:
+            if value[0:1] == start and value[-1:] == end:
+                value = value[1:-1]
+                continue
+
+        has_parenthesis = False
+
+    return value
 
 
-def get_pair(
-    target: "pair_value", pairs: Tuple[pair_value, pair_value]
-) -> Tuple[Union[Tuple[pair_value, pair_value], Tuple[None, None], bool]]:
+def evaluate_quality_to_number(quality: Optional[Union[str, int]]):
+    if quality is None:
+        return 0
 
-    for f, l in pairs:
-        if target in (f, l):
-            return (f, l), target == f
+    if isinstance(quality, int):
+        return quality
 
-    return (None, None), False
+    if quality.isdigit():
+        return int(quality)
 
-
-def parse_parenthesized_portions(
-    segment: "str",
-) -> Tuple[str, Optional[Union[str, regex.Pattern]]]:
-    match = PORTION_PARSER.search(segment)
+    match = QUALITY_REGEX.search(quality)
 
     if match is None:
-        return (segment, None)
+        return 0
 
-    if match.group(2):
-        return (match.group(1), regex.compile(match.group(4)))
-
-    return (match.group(1), match.group(4))
+    return int(match.group("quality"))
 
 
-def portion_check(
-    portions: Iterable[Tuple[str, Optional[Union[str, regex.Pattern]]]]
-) -> Callable[[stream_type], bool]:
+def evaluate_quality_to_number_check(quality: Optional[Union[str, int]]):
+    if quality is None:
+        return quality_operator()
 
-    for key, portion in portions:
-        if portion is None:
-            yield lambda stream, k=key: bool(stream.get(k))
-            continue
+    if isinstance(quality, int):
+        return quality_operator(quality, ge)
 
-        if isinstance(portion, regex.Pattern):
-            yield lambda stream, k=key, p=portion: bool(
-                p.search(str(stream.get(k, "")))
-            )
-            continue
+    if quality.isdigit():
+        return quality_operator(int(quality), ge)
 
-        yield lambda stream, k=key, p=portion: stream.get(k, "") == p
+    match = QUALITY_REGEX.search(quality)
 
+    if match is None:
+        return quality_operator()
 
-def parenthesized_portions(
-    string: "str",
-    escape: "str" = "\\",
-    quoters: List[str] = ["'", '"'],
-    parenthesis: List[Tuple[str, str]] = [("[", "]"), ("(", ")"), ("{", "}")],
-) -> Generator[Tuple[str, Optional[Union[str, regex.Pattern]]], None, None]:
-
-    initiator, endpoint = min(
-        parenthesis, key=lambda x: (string.find(x[0]) + 1) or float("inf")
+    return quality_operator(
+        int(match.group("quality")),
+        EXPRESSION_MAPPING.get(match.group("expression"), ge),
     )
 
-    escaping = False
-    current_context = ""
 
-    multiquote_context = dict.fromkeys(quoters, False)
+SPECIAL_SELECTORS = {
+    "best": lambda streams: max(
+        streams,
+        key=lambda stream: evaluate_quality_to_number(stream.get("quality")),
+    ),
+    "worst": lambda streams: min(
+        streams,
+        key=lambda stream: evaluate_quality_to_number(stream.get("quality")),
+    ),
+}
 
-    pos = string.find(initiator)
-
-    if pos == -1:
-        return
-
-    for current_pos, content in enumerate(string[pos + 1 :], pos + 1):
-
-        if not escaping:
-            if content in quoters:
-                multiquote_context[content] = not multiquote_context[content]
-
-            if content == endpoint and not any(multiquote_context.values()):
-
-                yield parse_parenthesized_portions(current_context.strip())
-                yield from parenthesized_portions(
-                    string[current_pos:],
-                    escape=escape,
-                    quoters=quoters,
-                    parenthesis=parenthesis,
-                )
-                return
-
-        current_context += content
-        escaping = content in escape
+SPECIAL_FILTERS = {
+    "subtitles": lambda streams: [
+        stream for stream in streams if stream.get("subtitle")
+    ],
+    "titled": lambda streams: [stream for stream in streams if stream.get("title")],
+}
 
 
-def split_portion(
+def iter_portions_by(
     string: str,
-    splitters: List[str] = ["/"],
-    escape: "str" = "\\",
-    quoters: List[str] = ["'", '"'],
-    parenthesis: List[Tuple[str, str]] = [("[", "]"), ("(", ")"), ("{", "}")],
+    splitters: Tuple[str] = ["/"],
+    *,
+    escape: str = ESCAPE,
+    quoters: Tuple[str] = QUOTES,
+    parenthesis: Tuple[Tuple[str, str]] = PARENTHESES,
 ) -> Generator[str, None, None]:
+    """
+    Separate a string into portions by a list of splitters
+    while ignoring the splitters inside quotes and parenthesis.
+
+    When there is a "" in the splitters list, it will return every
+    unparenthesized and unquoted portion of the string.
+    """
 
     multiquote_context = dict.fromkeys(quoters, False)
-    parenthesis_context = dict.fromkeys(parenthesis, False)
+    parenthesis_context = dict.fromkeys(parenthesis, 0)
 
     escaping = False
     current_context = ""
     yield_this_loop = False
 
-    for content in string:
+    has_empty_splitter = "" in splitters
+
+    def is_start_of_portion(target: str) -> bool:
+        if not target:
+            return True
+
+        if any(multiquote_context.values()):
+            return False
+
+        if any(parenthesis_context.values()):
+            return False
+
+        if target in quoters:
+            return True
+
+        pair, is_initiator = get_pair(target, parenthesis)
+
+        if pair in parenthesis_context and is_initiator:
+            return True
+
+        return False
+
+    for n, content in enumerate(string):
+
+        portion_ended = False
 
         pair, is_initiator = get_pair(content, parenthesis)
 
@@ -128,19 +201,36 @@ def split_portion(
                 multiquote_context[content] = not multiquote_context[content]
 
             if pair in parenthesis_context:
-                if not parenthesis_context[pair]:
-                    if is_initiator:
-                        parenthesis_context[pair] = True
+                if is_initiator:
+                    parenthesis_context[pair] += 1
                 else:
-                    if not is_initiator:
-                        parenthesis_context[pair] = False
+                    parenthesis_context[pair] -= 1
 
-            if (
+            portion_ended = not (
+                any(multiquote_context.values()) or any(parenthesis_context.values())
+            )
+
+            is_a_splitter = (
                 content in splitters
                 and not any(multiquote_context.values())
                 and not any(parenthesis_context.values())
+            )
+
+            next_character = string[n + 1 : n + 2]
+            is_next_new = is_start_of_portion(next_character)
+
+            if (is_a_splitter or portion_ended) and (
+                has_empty_splitter and is_next_new
             ):
-                yield current_context.strip()
+
+                if portion_ended or has_empty_splitter:
+                    current_context += content
+
+                value = current_context.strip()
+
+                if value:
+                    yield value
+
                 yield_this_loop = True
 
         if yield_this_loop:
@@ -151,86 +241,85 @@ def split_portion(
         escaping = content in escape
         yield_this_loop = False
 
-    yield current_context.strip()
+    value = current_context.strip()
+
+    if value:
+        yield value
 
 
-def get_int(key: Optional[Union[int, str]]) -> int:
+def get_pair(
+    target: "pair_value", pairs: Tuple[pair_value, pair_value]
+) -> Tuple[Union[Tuple[pair_value, pair_value], Tuple[None, None], bool]]:
 
-    if key is None:
-        return 0
+    for first, last in pairs:
+        if target in (first, last):
+            return (first, last), target == first
 
-    if isinstance(key, int):
-        return key
-
-    if isinstance(key, str) and key.isdigit():
-        return int(key)
-
-    digits = regex.search(key, r"[0-9]+")
-
-    if digits:
-        return int(digits.group(0))
-
-    return 0
+    return (None, None), False
 
 
-def parse_quality_only(quality: str) -> Callable[[stream_type], bool]:
-    if quality == "best":
-        return lambda streams: [
-            max(streams, key=lambda stream: get_int(stream.get("quality", 0)))
-        ]
+def iter_fulfilling_streams(
+    streams: Iterable[stream_type], quality_string: str, *, all=False
+) -> Generator[stream_type, None, None]:
 
-    if quality == "worst":
-        return lambda streams: [
-            min(streams, key=lambda stream: get_int(stream.get("quality", 0)))
-        ]
+    for segment in iter_portions_by(quality_string):
+        """
+        Separating "best[subtitles]/best" into "best[subtitles]" and "best"
+        """
+        candidates = []
 
-    if quality and not quality.isdigit():
-        return NO_PROCESS
+        for single_portion in iter_portions_by(segment, splitters=("",)):
+            """
+            Separating "best[subtitles]" into "best" and "[subtitles]"
+            """
+            for portion in iter_portions_by(single_portion, splitters=("+",)):
+                case_insensitive_portion = portion.lower()
 
-    return lambda streams: sorted(
-        list(
-            stream
-            for stream in streams
-            if get_int(stream.get("quality", 0)) <= float(quality or "inf")
-        ),
-        key=lambda stream: get_int(stream.get("quality", 0)),
-        reverse=True,
-    )
+                quality_checker = evaluate_quality_to_number_check(
+                    case_insensitive_portion
+                )
 
+                for stream in streams:
+                    if quality_checker.operator(
+                        evaluate_quality_to_number(stream.get("quality")),
+                        quality_checker.quality,
+                    ):
+                        candidates.append(stream)
 
-def finalise_check(
-    quality_check: Callable[[stream_type], bool],
-    parsed_parenthesized_portions: "Tuple[str, Optional[Union[str, regex.Pattern]]]",
-) -> Callable[[stream_type], List[stream_type]]:
-    def internal(streams):
-        streams = list(
-            stream
-            for stream in streams
-            if all(_(stream) for _ in portion_check(parsed_parenthesized_portions))
-        )
+                if case_insensitive_portion in SPECIAL_FILTERS:
+                    candidates = SPECIAL_FILTERS[case_insensitive_portion](candidates)
 
-        if not streams:
-            return []
+                portion_match = PORTION_PARSER.search(remove_parentheses(portion))
 
-        return quality_check(streams)
+                if portion_match is not None:
+                    portion_key, regex, value = portion_match.group(
+                        "key", "regex", "value"
+                    )
+                    if portion_key in stream:
 
-    return internal
+                        compiled_regex = None
 
+                        if regex is not None:
+                            compiled_regex = regexlib.compile(value)
 
-def parse_quality_string(
-    quality_string: str,
-) -> Generator[
-    Tuple[str, Callable[[stream_type], Optional[List[stream_type]]]], None, None
-]:
+                        candidates = [
+                            stream
+                            for stream in candidates
+                            if (
+                                stream[portion_key] == value
+                                if compiled_regex is None
+                                else compiled_regex.search(stream[portion_key])
+                            )
+                        ]
 
-    quality_string = quality_string.lower()
+                if portion in SPECIAL_SELECTORS:
+                    candidates = [SPECIAL_SELECTORS[portion](candidates)]
 
-    for segment in split_portion(quality_string):
-        match = SEGMENT_PARSER.search(segment)
-        yield segment, finalise_check(
-            parse_quality_only(match.group(1)),
-            list(parenthesized_portions(match.group(2))),
-        )
+        for _ in candidates:
+            yield single_portion, candidates
+
+        if not all:
+            return
 
 
 def filter_quality(
@@ -239,16 +328,72 @@ def filter_quality(
 
     logger = logging.getLogger("utils/intelliq")
 
-    logger.debug("Parsing {!r} in {!r}".format(quality_string, streams))
+    portion_map = {}
 
-    for segment, check in parse_quality_string(quality_string):
-        filtered = check(streams)
+    for portion, candidates in iter_fulfilling_streams(streams, quality_string):
+        portion_map[portion] = candidates
 
-        if filtered:
-            logger.debug("{} streams fulfill {!r}.".format(len(filtered), segment))
-            return filtered
+    for portion, candidates in portion_map.items():
+        if len(candidates):
+            return candidates
 
-        logger.debug("No streams fulfill {!r}.".format(segment))
-
-    logger.debug("Quality checks have failed miserably. Returning everything back.")
     return streams
+
+
+if __name__ == "__main__":
+
+    test_quality_strings = {
+        "best": {
+            "values": [
+                {"quality": "1080p"},
+                {"quality": "720p"},
+                {"quality": "480p"},
+            ],
+            "expected": [{"quality": "1080p"}],
+        },
+        "worst": {
+            "values": [
+                {"quality": "1080p"},
+                {"quality": "720p"},
+                {"quality": "480p"},
+            ],
+            "expected": [{"quality": "480p"}],
+        },
+        "=1920x1080p": {
+            "values": [
+                {"quality": "1080p"},
+                {"quality": "720p"},
+                {"quality": "480p"},
+            ],
+            "expected": [{"quality": "1080p"}],
+        },
+        "=1920x1080p+720p": {
+            "values": [
+                {"quality": "1080p"},
+                {"quality": "720p"},
+                {"quality": "480p"},
+            ],
+            "expected": [{"quality": "1080p"}],
+        },
+        "subtitles": {
+            "values": [
+                {"subtitle": [...]},
+            ],
+            "expected": [{"subtitle": [...]}],
+        },
+        "[stream_url=r'\.mp4$']": {
+            "values": [
+                {"stream_url": "abc.mp4"},
+                {"stream_url": "abc.mpd"},
+            ],
+            "expected": [{"stream_url": "abc.mp4"}],
+        },
+    }
+
+    for test, values in test_quality_strings.items():
+
+        results = filter_quality(values["values"], test)
+
+        assert results == values["expected"], f"{test!r} failed with {results}."
+
+    print("All tests passed.")
