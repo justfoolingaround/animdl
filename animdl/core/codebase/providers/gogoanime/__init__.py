@@ -14,7 +14,7 @@ REGEX = construct_site_based_regex(
 ANIME_ID_REGEX = regex.compile(r'<input.+?value="(\d+)" id="movie_id"')
 EPISODE_LOAD_AJAX = "https://ajax.gogo-load.com/ajax/load-list-episode"
 
-TITLES_REGEX = regex.compile(r'<a href="/category/.+?" title=".+?">(.+?)</a>')
+TITLES_REGEX = regex.compile(r"<h1>(.+?)</h1>")
 
 
 def get_episode_list(session, anime_id):
