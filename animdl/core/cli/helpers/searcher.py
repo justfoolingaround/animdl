@@ -2,7 +2,6 @@
 All the search algorithms for all the providers available in AnimDL.
 """
 
-import json
 from urllib.parse import unquote
 
 import lxml.html as htmlparser
