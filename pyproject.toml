@@ -4,7 +4,7 @@ build-backend = "poetry.core.masonry.api"
 
 [tool.poetry]
 name = "animdl"
-version = "1.7.11"
+version = "1.7.12"
 description = "A highly efficient, fast, powerful and light-weight anime downloader and streamer for your favorite anime."
 readme = "readme.txt"
 authors = [ "justfoolingaround <kr.justfoolingaround@gmail.com>",]
