@@ -17,7 +17,7 @@ STREAMS_REGEX = optopt.regexlib.compile(
     r'<a href="(?P<url>.+?)" .+? class="dropdown-item">.+? (?P<resolution>\d+)p.+?</a>'
 )
 
-TITLES_REGEX = optopt.regexlib.compile(r"<h1>(.+?)</h1>")
+TITLES_REGEX = optopt.regexlib.compile(r"<h1>(?:\s*<span>)?(.+?)(?:</span>.*?)?</h1>")
 
 
 def get_streams_from_embed_url(session, embed_uri):
