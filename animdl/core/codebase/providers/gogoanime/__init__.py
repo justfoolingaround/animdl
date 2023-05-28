@@ -51,7 +51,10 @@ def get_quality(url_text):
 
 def get_embed_page(session, episode_url):
     content_parsed = htmlparser.fromstring(session.get(episode_url).text)
-    return "https:{}".format(content_parsed.cssselect("iframe")[0].get("src"))
+    iframe_src_url = content_parsed.cssselect("iframe")[0].get("src")
+    if iframe_src_url.startswith("https:"):
+        return iframe_src_url
+    return "https:{}".format(iframe_src_url)
 
 
 def fetcher(session, url, check, match):
