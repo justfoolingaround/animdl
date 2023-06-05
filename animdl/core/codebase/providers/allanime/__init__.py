@@ -110,6 +110,23 @@ def extract_content(
                     continue
 
                 for stream_data in streams:
+                    if "rawUrls" in stream_data and stream_data["rawUrls"]:
+                        audio_tracks = list(
+                            map(
+                                lambda data: data["url"],
+                                stream_data["rawUrls"].get("audios", []),
+                            )
+                        )
+
+                        for data in stream_data["rawUrls"]["vids"]:
+                            yield {
+                                "quality": data["height"],
+                                "stream_url": data["url"],
+                                "audio_tracks": audio_tracks,
+                            }
+
+                        continue
+
                     if "link" in stream_data and stream_data["link"]:
                         url = stream_data["link"]
                     else:

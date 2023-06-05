@@ -5,7 +5,6 @@ from .base_player import BasePlayer
 
 
 class MPVDefaultPlayer(BasePlayer):
-
     optimisation_args = [
         "--force-window=immediate",
     ]
@@ -20,6 +19,7 @@ class MPVDefaultPlayer(BasePlayer):
         "headers": "--http-header-fields",
         "title": "--title",
         "subtitles": "--sub-files",
+        "audios": "--audio-files",
         "media-title": "--force-media-title",
     }
 
@@ -31,10 +31,15 @@ class MPVDefaultPlayer(BasePlayer):
         title=None,
         opts=None,
         chapters=None,
+        audio_tracks=None,
         **kwargs,
     ):
-
         args = (self.executable, *self.args, stream_url)
+
+        if audio_tracks is not None:
+            args += (
+                f"{self.opts_spec['audios']}={self.path_joiner.join(audio_tracks)}",
+            )
 
         if opts is not None:
             args += tuple(opts)
@@ -56,7 +61,6 @@ class MPVDefaultPlayer(BasePlayer):
             )
 
         if chapters:
-
             # NOTE: This could be achieved with a PIPE.
             # This is not done in this case because you
             # only PIPE one argument at a time, and this
@@ -81,6 +85,7 @@ TITLE={chapter["chapter"]}"""
 
         args += tuple(self.optimisation_args)
 
+        print(args)
         self.spawn(args)
 
 
@@ -90,7 +95,6 @@ class CelluloidPlayer(MPVDefaultPlayer):
     ]
 
     def __new__(cls, *args, **kwargs):
-
         for key, value in cls.opts_spec.items():
             cls.opts_spec[key] = f"--mpv-{value.lstrip('-')}"
 

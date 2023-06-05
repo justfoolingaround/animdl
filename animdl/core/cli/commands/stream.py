@@ -79,7 +79,6 @@ def animdl_stream(
         ),
         name="scraping",
     ):
-
         match, provider_module, _ = providers.get_provider(
             providers.append_protocol(anime.get("anime_url"))
         )
@@ -108,9 +107,7 @@ def animdl_stream(
         with helpers.stream_handlers.context_raiser(
             console, f"Now streaming {content_title!r}", name="streaming"
         ):
-
             for count, (stream_urls_caller, episode_number) in enumerate(streams, 1):
-
                 if episode_number == 0:
                     episode_text = "Special Episode"
                 else:
@@ -124,7 +121,6 @@ def animdl_stream(
                 playing = True
 
                 while playing:
-
                     stream_urls = list(
                         helpers.ensure_extraction(
                             http_client.client, stream_urls_caller
@@ -132,7 +128,6 @@ def animdl_stream(
                     )
 
                     if not stream_urls:
-
                         console.print(
                             Text(
                                 f"Could not find any streams for {episode_text!r} :/."
@@ -214,6 +209,7 @@ def animdl_stream(
                                 headers=headers,
                                 subtitles=selection.get("subtitle", []),
                                 chapters=chapters,
+                                audio_tracks=selection.get("audio_tracks", []),
                             )
 
                             if DISCORD_PRESENCE:

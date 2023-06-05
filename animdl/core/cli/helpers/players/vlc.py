@@ -4,17 +4,24 @@ from .base_player import BasePlayer
 
 
 class VLCPlayer(BasePlayer):
-
     optimisation_args = ("--http-forward-cookies",)
 
     opts_spec = {
         "http_referrer": "--http-referrer",
         "user_agent": "--user-agent",
         "subtitle": "--sub-file",
+        "audio": "--audio-file",
     }
 
     def play(
-        self, stream_url, subtitles=None, headers=None, title=None, opts=None, **kwargs
+        self,
+        stream_url,
+        subtitles=None,
+        headers=None,
+        title=None,
+        opts=None,
+        audio_tracks=None,
+        **kwargs,
     ):
         args = (self.executable, *self.args, stream_url)
 
@@ -49,5 +56,8 @@ class VLCPlayer(BasePlayer):
 
         if subtitles is not None:
             args += tuple(f"--sub-file={subtitles}" for subtitles in subtitles)
+
+        if audio_tracks is not None:
+            args += tuple(f"--audio-file={audio_track}" for audio_track in audio_tracks)
 
         self.spawn(args)
