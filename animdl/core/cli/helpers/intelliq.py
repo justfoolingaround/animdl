@@ -71,12 +71,10 @@ stream_type = TypeVar("stream_type")
 
 
 def remove_parentheses(value, n=None, *, parentheses=PARENTHESES):
-
     removed_count = 0
     has_parenthesis = True
 
     while has_parenthesis and (removed_count < n if n is not None else True):
-
         for start, end in parentheses:
             if value[0:1] == start and value[-1:] == end:
                 value = value[1:-1]
@@ -191,7 +189,6 @@ def iter_portions_by(
         return False
 
     for n, content in enumerate(string):
-
         portion_ended = False
 
         pair, is_initiator = get_pair(content, parenthesis)
@@ -222,7 +219,6 @@ def iter_portions_by(
             if (is_a_splitter or portion_ended) and (
                 has_empty_splitter and is_next_new
             ):
-
                 if portion_ended or has_empty_splitter:
                     current_context += content
 
@@ -250,7 +246,6 @@ def iter_portions_by(
 def get_pair(
     target: "pair_value", pairs: Tuple[pair_value, pair_value]
 ) -> Tuple[Union[Tuple[pair_value, pair_value], Tuple[None, None], bool]]:
-
     for first, last in pairs:
         if target in (first, last):
             return (first, last), target == first
@@ -261,7 +256,6 @@ def get_pair(
 def iter_fulfilling_streams(
     streams: Iterable[stream_type], quality_string: str, *, all=False
 ) -> Generator[stream_type, None, None]:
-
     for segment in iter_portions_by(quality_string):
         """
         Separating "best[subtitles]/best" into "best[subtitles]" and "best"
@@ -296,7 +290,6 @@ def iter_fulfilling_streams(
                         "key", "regex", "value"
                     )
                     if portion_key in stream:
-
                         compiled_regex = None
 
                         if regex is not None:
@@ -312,7 +305,7 @@ def iter_fulfilling_streams(
                             )
                         ]
 
-                if portion in SPECIAL_SELECTORS:
+                if portion in SPECIAL_SELECTORS and candidates:
                     candidates = [SPECIAL_SELECTORS[portion](candidates)]
 
         for _ in candidates:
@@ -325,7 +318,6 @@ def iter_fulfilling_streams(
 def filter_quality(
     streams: Iterable[stream_type], quality_string: str
 ) -> List[stream_type]:
-
     logger = logging.getLogger("utils/intelliq")
 
     portion_map = {}
@@ -341,7 +333,6 @@ def filter_quality(
 
 
 if __name__ == "__main__":
-
     test_quality_strings = {
         "best": {
             "values": [
@@ -391,7 +382,6 @@ if __name__ == "__main__":
     }
 
     for test, values in test_quality_strings.items():
-
         results = filter_quality(values["values"], test)
 
         assert results == values["expected"], f"{test!r} failed with {results}."
