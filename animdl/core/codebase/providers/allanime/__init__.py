@@ -67,7 +67,6 @@ def extract_content(
     api_endpoint: str,
     return_all: bool = SUPERANIME_RETURN_ALL,
 ):
-
     for type_of, episode in content:
         api_response = api.fetch_episode(
             session, show_id, episode, translation_type=type_of
@@ -95,8 +94,12 @@ def extract_content(
             continue
 
         for source in sources:
-            if source["type"] == "iframe":
+            if source["sourceUrl"][0] == "#":
+                source["sourceUrl"] = bytes.fromhex(source["sourceUrl"][1:]).decode(
+                    "utf-8"
+                )
 
+            if source["type"] == "iframe":
                 streams = (
                     session.get(to_clock_json(api_endpoint + source["sourceUrl"]))
                     .json()
@@ -133,7 +136,6 @@ def extract_content(
 
 
 def fetcher(session, url: "str", check, match):
-
     api_endpoint = (
         session.get(ALLANIME + "getVersion").json().get("episodeIframeHead", "")
     )
@@ -144,7 +146,6 @@ def fetcher(session, url: "str", check, match):
     ).get("availableEpisodesDetail", {})
 
     for episode, content in iter_episodes(available_episodes):
-
         if check(episode):
             yield partial(
                 lambda session, content, show_id: list(
@@ -159,7 +160,6 @@ def fetcher(session, url: "str", check, match):
 
 
 def metadata_fetcher(session, url: "str", match):
-
     anime_name = api.fetch_show_info(
         session,
         match.group(1),
