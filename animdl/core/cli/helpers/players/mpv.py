@@ -85,7 +85,6 @@ TITLE={chapter["chapter"]}"""
 
         args += tuple(self.optimisation_args)
 
-        print(args)
         self.spawn(args)
 
 
