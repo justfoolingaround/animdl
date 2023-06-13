@@ -1,1 +1,3 @@
-__core__ = "1.7.14"
+import importlib.metadata
+
+__core__ = importlib.metadata.version("animdl")
