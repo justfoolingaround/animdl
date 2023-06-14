@@ -70,12 +70,12 @@ def __animdl_cli__(ctx: click.Context, disable_update):
 
             from .core.cli.http_client import client
 
-            branch, version_file = constants.VERSION_FILE_PATH
+            branch, pyproject_file = constants.PYPROJECT_FILE_PATH
 
             upstream_version = regexlib.search(
-                r'__core__ = "(.*?)"',
+                r'version = "(.*?)"',
                 client.get(
-                    f"https://raw.githubusercontent.com/{author}/{repository_name}/{branch}/{version_file}"
+                    f"https://raw.githubusercontent.com/{author}/{repository_name}/{branch}/{pyproject_file}"
                 ).text,
             ).group(1)
 

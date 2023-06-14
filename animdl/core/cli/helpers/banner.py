@@ -4,20 +4,20 @@ import click
 import regex
 from anchor.strings import iter_contentaware_segments
 
-from .constants import SOURCE_REPOSITORY, VERSION_FILE_PATH
+from .constants import SOURCE_REPOSITORY, PYPROJECT_FILE_PATH
 from .stream_handlers import get_console
 
-VERSION_REGEX = regex.compile(r'__core__ = "(.*?)"')
+VERSION_REGEX = regex.compile(r'version = "(.*?)"')
 
 
 def fetch_upstream_version(session):
 
     author, repository_name = SOURCE_REPOSITORY
-    branch, version_file = VERSION_FILE_PATH
+    branch, pyproject_file = PYPROJECT_FILE_PATH
 
     upstream_version = VERSION_REGEX.search(
         session.get(
-            f"https://raw.githubusercontent.com/{author}/{repository_name}/{branch}/{version_file}"
+            f"https://raw.githubusercontent.com/{author}/{repository_name}/{branch}/{pyproject_file}"
         ).text
     ).group(1)
 
