@@ -6,4 +6,4 @@ LABELS = {
 
 SOURCE_REPOSITORY = "justfoolingaround", "animdl"
 MODULE_NAME = "animdl"
-VERSION_FILE_PATH = "master", "animdl/core/__version__.py"
+VERSION_FILE_PATH = "master", "pyproject.toml"

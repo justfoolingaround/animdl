@@ -72,11 +72,13 @@ def __animdl_cli__(ctx: click.Context, disable_update):
 
             branch, version_file = constants.VERSION_FILE_PATH
 
+            upstream_response = client.get(
+                f"https://raw.githubusercontent.com/{author}/{repository_name}/{branch}/{version_file}"
+            )
+
             upstream_version = regexlib.search(
-                r'__core__ = "(.*?)"',
-                client.get(
-                    f"https://raw.githubusercontent.com/{author}/{repository_name}/{branch}/{version_file}"
-                ).text,
+                r'name = "animdl"\nversion = "(.+?)"',
+                upstream_response.text,
             ).group(1)
 
             tuplisied_upstream, tuplised_current_version = tuple(
