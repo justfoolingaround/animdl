@@ -4,7 +4,6 @@ on:
     branches:
       - "master"
     paths:
-      - "animdl/core/__version__.py"
       - "pyproject.toml"
 
 jobs:
