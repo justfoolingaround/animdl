@@ -1,7 +1,13 @@
 import importlib.metadata
 
-# Let this be a temporary fix for now as this ensures older versions remain updated.
+try:
+    __core__ = importlib.metadata.version("animdl")
+except importlib.metadata.PackageNotFoundError:
+    import pathlib
 
-__core__ = "1.7.16"
+    from animdl.utils.optopt import regexlib
 
-__core__ = importlib.metadata.version("animdl")
+    __core__ = regexlib.search(
+        r'name = "animdl"\nversion = "(.+?)"',
+        (pathlib.Path(__file__).parent.parent / "pyproject.toml").read_text(),
+    ).group(1)
