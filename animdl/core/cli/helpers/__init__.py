@@ -1,7 +1,13 @@
-import functools
-import json
+import enum
 import logging
 import traceback
+from typing import TYPE_CHECKING
+
+if TYPE_CHECKING:
+    from typing import Any, Dict, Generator, Optional, Tuple
+    import pathlib
+
+    import httpx
 
 from ...codebase import downloader, extractors
 from . import (
@@ -17,45 +23,32 @@ from . import (
 )
 from .processors import process_query, provider_searcher_mapping
 
-fe_logger = logging.getLogger("further-extraction")
+further_extraction_logger = logging.getLogger("further-extraction")
 
 
-def inherit_stream_meta(parent, streams, *, exempt=["headers", "stream_url"]):
-    for stream in streams:
-        stream.update({_: __ for _, __ in parent.items() if _ not in exempt})
-        yield stream
+def further_extraction(session: "httpx.Client", parent_stream: "Dict[str, Any]"):
+    extractor, options = parent_stream.pop("further_extraction", (None, None))
 
-
-def further_extraction(session, stream):
-    extractor, options = stream.pop("further_extraction", (None, None))
     if extractor is None:
-        return [stream]
+        return (yield parent_stream)
 
     for ext_module, ext in extractors.iter_extractors():
-        if getattr(ext_module.extract, "disabled", False):
+        if ext != extractor or getattr(ext_module.extract, "disabled", False):
             continue
 
-        if ext == extractor:
-            try:
-                return functools.reduce(
-                    list.__add__,
-                    list(
-                        further_extraction(session, inherited_stream)
-                        for inherited_stream in inherit_stream_meta(
-                            stream,
-                            ext_module.extract(
-                                session, stream.get("stream_url"), **options
-                            ),
-                        )
-                    ),
-                    [],
-                )
-            except Exception as e:
-                fe_logger.error(
-                    "Extraction from {!r} failed due to: {!r}.".format(ext, e)
-                )
+        try:
+            for stream in ext_module.extract(
+                session, parent_stream.get("stream_url"), **options
+            ):
+                child = parent_stream.copy()
+                child.update(stream)
 
-    return []
+                yield from further_extraction(session, child)
+
+        except Exception as exception:
+            further_extraction_logger.error(
+                f"Extraction from {ext!r} failed due to: {exception!r}."
+            )
 
 
 def ensure_extraction(session, stream_uri_caller):
@@ -66,78 +59,92 @@ def ensure_extraction(session, stream_uri_caller):
             yield stream
 
 
-def download(
-    session, logger, content_dir, outfile_name, stream_urls, quality, **kwargs
-):
+class SafeCaseEnum(enum.Enum):
+    NO_CONTENT_FOUND = enum.auto()
+    DOWNLOADED = enum.auto()
 
-    downloadable_content = intelliq.filter_quality(list(stream_urls), quality)
+    EXTRACTION_ERROR = enum.auto()
+    DOWNLOADER_EXCEPTION = enum.auto()
 
-    if not downloadable_content:
-        return False, "No downloadable content found."
 
-    errors = []
+def safe_download_callback(
+    session: "httpx.Client",
+    logger: "logging.Logger",
+    stream_urls: "Generator[Dict[str, Any], None, None]",
+    quality: str,
+    expected_download_path: "pathlib.Path",
+    use_internet_download_manager: bool = False,
+    retry_timeout: "Optional[int]" = None,
+    log_level: "Optional[int]" = None,
+    **kwargs,
+) -> "Tuple[SafeCaseEnum, Optional[BaseException]]":
+    flattened_streams = list(stream_urls)
 
-    for download_data in iter(downloadable_content):
-        if "further_extraction" in download_data:
-            try:
-                further_status, further_yield = download(
-                    session,
-                    logger,
-                    content_dir,
-                    outfile_name,
-                    further_extraction(session, download_data),
-                    quality,
-                    **kwargs
-                )
-                if further_status:
-                    return further_status, further_yield
-                continue
-            except Exception as e:
-                logger.critical(
-                    "Could not extract from the stream due to {!r}. falling back to other streams.".format(
-                        e
-                    )
-                )
-                continue
+    try:
+        streams = intelliq.filter_quality(flattened_streams, quality)
+    except Exception as exception:
+        return SafeCaseEnum.EXTRACTION_ERROR, exception
 
-        content_url = download_data.get("stream_url")
-        content_headers = download_data.get("headers")
+    if not streams:
+        return SafeCaseEnum.NO_CONTENT_FOUND, None
 
-        try:
-            return True, downloader.handle_download(
+    for stream in streams:
+        needs_further_extraction = "further_extraction" in stream
+
+        if needs_further_extraction:
+            status, potential_error = safe_download_callback(
                 session,
-                content_url,
-                content_headers,
-                content_dir,
-                outfile_name,
-                preferred_quality=quality,
-                subtitles=download_data.get("subtitle", []),
-                **kwargs
+                logger,
+                further_extraction(session, stream),
+                quality,
+                expected_download_path,
+                use_internet_download_manager,
+                retry_timeout,
+                log_level,
+                **kwargs,
             )
-        except Exception as e:
-            logger.critical(
-                "Oops, due to {!r}, this stream has been rendered unable to download.".format(
-                    e
+
+            if status == SafeCaseEnum.DOWNLOADED:
+                return status, potential_error
+
+            if status == SafeCaseEnum.NO_CONTENT_FOUND:
+                logger.debug(f"Could not find streams on further extraction, skipping.")
+                continue
+
+            if status == SafeCaseEnum.EXTRACTION_ERROR:
+                logger.error(
+                    f"Could not extract streams from further extraction due to an error: {potential_error}, skipping."
                 )
-            )
+                continue
 
-            errors.append((download_data, e, traceback.format_exc()))
+            if status == SafeCaseEnum.DOWNLOADER_EXCEPTION:
+                logger.error(
+                    f"Could not download streams from further extraction due to multiple errors, skipping."
+                )
+                continue
 
-    logger.critical(
-        "No downloads were done. Use log level DEBUG or, -ll 0 to get complete tracebacks for the failed downloads."
-    )
+        else:
+            try:
+                downloader.handle_download(
+                    session=session,
+                    url=stream["stream_url"],
+                    expected_download_path=expected_download_path,
+                    use_internet_download_manager=use_internet_download_manager,
+                    headers=stream.get("headers"),
+                    preferred_quality=quality,
+                    subtitles=stream.get("subtitle"),
+                    **kwargs,
+                )
+                return SafeCaseEnum.DOWNLOADED, None
 
-    for count, (download_data, exception, tb) in enumerate(errors, 1):
-        logger.debug(
-            json.dumps(
-                {
-                    "download_count": count,
-                    "data": download_data,
-                    "exception": repr(exception),
-                    "traceback": tb,
-                },
-                indent=4,
-            )
+            except Exception as download_exception:
+                logger.error(
+                    f"Could not download stream due to an error: {download_exception!r}, skipping."
+                )
+                logger.debug(f"Traceback for the above error: {traceback.format_exc()}")
+
+        logger.critical(
+            "Could not download any streams. Use the project with 0 log level to view errors for debugging and bug reporting purposes."
         )
 
-    return False, "All stream links were undownloadable."
+        return SafeCaseEnum.NO_CONTENT_FOUND, None

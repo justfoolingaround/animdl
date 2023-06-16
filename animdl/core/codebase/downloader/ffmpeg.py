@@ -160,11 +160,10 @@ def ffmpeg_to_tqdm(
 def ffmpeg_download(
     url: str,
     headers: dict,
-    outfile_name: str,
-    content_dir,
+    expected_download_path,
     preferred_quality=1080,
     log_level=20,
-    **opts
+    **opts,
 ) -> int:
     """
     Downloads content using ffmpeg and optionally uses tqdm to wrap the progress
@@ -185,15 +184,14 @@ def ffmpeg_download(
 
     """
 
-    logger = logging.getLogger("ffmpeg-hls-download[{}.mkv]".format(outfile_name))
+    expected_download_path = expected_download_path.with_suffix(".mkv")
+
+    logger = logging.getLogger(f"ffmpeg-hls-download[{expected_download_path.name}]")
     logger.debug("Using ffmpeg to download content.")
 
     stream_info = analyze_stream(logger, url, headers)
 
-    file = content_dir / ("{}.mkv".format(outfile_name))
-
-    with contextlib.suppress(FileNotFoundError, OSError):
-        os.remove(file)
+    expected_download_path.unlink(missing_ok=True)
 
     args = [executable, "-hide_banner"]
 
@@ -202,7 +200,7 @@ def ffmpeg_download(
             ("-headers", "\r\n".join("{}:{}".format(k, v) for k, v in headers.items()))
         )
 
-    args.extend(("-i", url, "-c", "copy", file.as_posix()))
+    args.extend(("-i", url, "-c", "copy", expected_download_path.as_posix()))
 
     for video, quality, audio in filter(
         lambda x: x[1] <= preferred_quality,
@@ -228,12 +226,13 @@ def ffmpeg_download(
             logger,
             child,
             duration=stream_info.get("duration"),
-            outfile_name=outfile_name,
+            outfile_name=expected_download_path.name,
         ).returncode
+
+    return 1
 
 
 def merge_subtitles(video_path, out_path, subtitle_paths, log_level=20):
-
     args = [
         executable,
         "-hide_banner",

@@ -47,6 +47,7 @@ def animdl_stream(
     """
     Streamer call for animdl streaming session.
     """
+
     r = kwargs.get("range")
     console = helpers.stream_handlers.get_console()
 

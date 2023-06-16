@@ -119,6 +119,7 @@ DEFAULT_CONFIG = {
         "state": False,
     },
     "download_directory": ".",
+    "threaded_download": False,
     "check_for_updates": True,
     "force_streaming_quality_selection": True,
     "aniskip": False,
@@ -185,6 +186,8 @@ FZF_OPTS = FZF.get("opts", [])
 FZF_STATE = FZF.get("state", False)
 
 DOWNLOAD_DIRECTORY = CONFIG.get("download_directory", ".")
+THREADED_DOWNLOAD = CONFIG.get("threaded_download", False)
+
 CHECK_FOR_UPDATES = CONFIG.get("check_for_updates", True)
 FORCE_STREAMING_QUALITY_SELECTION = CONFIG.get(
     "force_streaming_quality_selection", True

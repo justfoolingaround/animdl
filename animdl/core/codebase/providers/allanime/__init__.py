@@ -110,6 +110,16 @@ def extract_content(
                     continue
 
                 for stream_data in streams:
+                    subtitles = list(
+                        map(
+                            lambda subtitles: subtitles["src"],
+                            stream_data.get("subtitles", []),
+                        )
+                    )
+
+                    attrs.setdefault("subtitle", [])
+                    attrs["subtitle"].extend(subtitles)
+
                     if "rawUrls" in stream_data and stream_data["rawUrls"]:
                         audio_tracks = list(
                             map(
@@ -123,6 +133,7 @@ def extract_content(
                                 "quality": data["height"],
                                 "stream_url": data["url"],
                                 "audio_tracks": audio_tracks,
+                                **attrs,
                             }
 
                         continue

@@ -7,7 +7,6 @@ This is made strictly for Windows.
 import time
 
 IDM_MID = ["{ECF21EAB-3AA8-4355-82BE-F777990001DD}", 1, 0]
-DOWNLOAD_FOLDER = "Downloads"
 
 idmlib, client = None, None
 
@@ -56,11 +55,11 @@ def idm_download(
 
 def wait_until_download(
     url,
+    download_folder,
     headers={},
     form_data="",
     auth=(None, None),
     filename="",
-    download_folder=DOWNLOAD_FOLDER,
 ):
     idm_download(
         url, headers, form_data, auth, filename, download_folder.as_posix(), lflag=5

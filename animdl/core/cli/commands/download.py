@@ -73,7 +73,6 @@ def animdl_download(
         content_name = sanitize_filename(anime["name"])
 
         content_dir = download_directory / content_name
-        content_dir.mkdir(exist_ok=True)
 
         console.print(
             "The project will download to:",
@@ -93,11 +92,11 @@ def animdl_download(
             console, f"Now downloading {content_name!r}", name="downloading"
         ):
             for count, (stream_urls_caller, episode_number) in enumerate(streams, 1):
-
-                content_title = "E{:02d}".format(int(episode_number))
                 stream_urls = helpers.ensure_extraction(
                     http_client.client, stream_urls_caller
                 )
+
+                content_title = f"E{int(episode_number):02d}"
 
                 if not stream_urls:
                     console.print(
@@ -111,21 +110,35 @@ def animdl_download(
                     f"Currently downloading: {content_title!r}. [dim]{total-count:d} episodes in queue.[/]",
                 )
 
-                success, reason = helpers.download(
-                    http_client.client,
-                    logger,
-                    content_dir,
-                    content_title,
-                    stream_urls,
-                    quality,
-                    idm=idm,
+                expected_download_path = content_dir / content_title
+
+                status_enum, exception = helpers.safe_download_callback(
+                    session=http_client.client,
+                    logger=logger,
+                    stream_urls=stream_urls,
+                    quality=quality,
+                    expected_download_path=expected_download_path,
+                    use_internet_download_manager=idm,
                     retry_timeout=AUTO_RETRY,
                     log_level=log_level,
                 )
 
-                if not success:
+                if status_enum == helpers.SafeCaseEnum.NO_CONTENT_FOUND:
+                    console.print(
+                        f"Could not find any streams for {content_title!r}",
+                    )
+                    continue
+
+                if status_enum == helpers.SafeCaseEnum.EXTRACTION_ERROR:
+                    console.print(
+                        f"Could not extract any streams for {content_title!r} due to: {exception!r}",
+                    )
+                    continue
+
+                if status_enum == helpers.SafeCaseEnum.DOWNLOADER_EXCEPTION:
                     console.print(
                         Text(
-                            f"Could not download {content_title!r} because of {reason!r} :/, a good option would be to retry using better providers :/.",
+                            f"Internal downloader error occured for {content_title!r}.",
                         )
                     )
+                    continue
