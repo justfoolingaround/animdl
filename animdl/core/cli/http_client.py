@@ -9,7 +9,7 @@ from .exit_codes import INTERNET_ISSUE
 http_logger = logging.getLogger("http-client")
 
 client = httpx.Client(
-    headers={"user-agent": utils.http_client.get_user_agent()},
+    headers={"user-agent": "animdl/1.0.0"},
     timeout=30,
     follow_redirects=True,
 )
@@ -25,4 +25,8 @@ utils.http_client.setup_global_http_exception_hook(
     logger=http_logger,
 )
 
-setattr(client, "cf_request", utils.http_client.cors_proxify)
+setattr(
+    client,
+    "cf_request",
+    lambda *args, **kwargs: utils.http_client.cors_proxify(client, *args, **kwargs),
+)
