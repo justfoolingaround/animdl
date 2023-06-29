@@ -1,6 +1,6 @@
 from animdl.utils import optopt
 
-ENDPOINT = "https://api.allanime.co/allanimeapi"
+ENDPOINT = "https://api.allanime.day/api"
 
 ALLANIME_SEARCH_GQL = """\
 query(
@@ -74,6 +74,9 @@ class AllAnimeGQLAPI:
             params={
                 "variables": variables,
                 "query": query,
+            },
+            headers={
+                "Referer": "https://allanime.to/",
             },
         ).json()
 
@@ -153,7 +156,6 @@ class AllAnimeGQLAPI:
                 return
 
             for data in edges:
-
                 self.info_table.setdefault(data["_id"], {}).update(data)
 
                 yield data

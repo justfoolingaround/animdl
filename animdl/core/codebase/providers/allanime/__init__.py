@@ -59,6 +59,19 @@ def fetch_legacy(session, episode, type_of, show_id):
     return {}
 
 
+def decrypt_allanime(password: str, target: str):
+    data = bytearray.fromhex(target)
+
+    def genexp():
+        for segment in data:
+            for char in password:
+                segment ^= ord(char)
+
+            yield chr(segment)
+
+    return "".join(genexp())
+
+
 def extract_content(
     session,
     content: "iter_episodes",
@@ -94,10 +107,15 @@ def extract_content(
             continue
 
         for source in sources:
-            if source["sourceUrl"][0] == "#":
-                source["sourceUrl"] = bytes.fromhex(source["sourceUrl"][1:]).decode(
-                    "utf-8"
+            if source["sourceUrl"][:2] == "##":
+                source["sourceUrl"] = decrypt_allanime(
+                    "1234567890123456789", source["sourceUrl"][2:]
                 )
+            else:
+                if source["sourceUrl"][0] == "#":
+                    source["sourceUrl"] = decrypt_allanime(
+                        "allanimenews", source["sourceUrl"][1:]
+                    )
 
             if source["type"] == "iframe":
                 streams = (
