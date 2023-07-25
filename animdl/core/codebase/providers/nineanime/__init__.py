@@ -5,7 +5,7 @@ import regex
 
 from ....config import NINEANIME
 from ...helpers import construct_site_based_regex
-from .decipher import decrypt_url, vrf_gen
+from .decipher import decrypt_url, generate_vrf_from_content_id
 
 CONTENT_ID_REGEX = regex.compile(r'data-id="(.+?)"')
 
@@ -23,26 +23,25 @@ SOURCES = {
     "44": "filemoon",
 }
 
+
 def fetch_episode(session, data_source):
-    episode_ids = data_source.get('data-ids')
+    episode_ids = data_source.get("data-ids")
 
     response = htmlparser.fromstring(
         session.get(
             NINEANIME + f"ajax/server/list/{episode_ids}",
-            params={'vrf': vrf_gen(episode_ids)}
+            params={"vrf": generate_vrf_from_content_id(episode_ids)},
         ).json()["result"]
     )
 
     for content_type_container in response.cssselect("div[data-type]"):
-
         for servers in content_type_container.cssselect("ul > li[data-sv-id]"):
-
             source = SOURCES[servers.get("data-sv-id")]
-            link_id = servers.get('data-link-id')
+            link_id = servers.get("data-link-id")
 
             enc_content_url = session.get(
                 NINEANIME + f"ajax/server/{link_id}",
-                params={'vrf': vrf_gen(link_id)}
+                params={"vrf": generate_vrf_from_content_id(link_id)},
             ).json()["result"]["url"]
 
             content_url = decrypt_url(enc_content_url)
@@ -58,23 +57,26 @@ def fetch_episode(session, data_source):
 
 
 def fetcher(session, url, check, match):
-
     content_id = CONTENT_ID_REGEX.search(session.get(url).text).group(1)
 
     for data_source in htmlparser.fromstring(
         session.get(
             NINEANIME + f"ajax/episode/list/{content_id}",
-            params={'vrf': vrf_gen(content_id)}
+            params={"vrf": generate_vrf_from_content_id(content_id)},
         ).json()["result"]
     ).cssselect("a[data-num]"):
-        yield partial(
-            lambda data_source: list(fetch_episode(session, data_source)),
-            data_source,
-        ), data_source.get("data-num")
+        episode_string: str = data_source.get("data-num")
+
+        episode = int(episode_string) if episode_string.isdigit() else 0
+
+        if check(episode):
+            yield partial(
+                lambda data_source: list(fetch_episode(session, data_source)),
+                data_source,
+            ), episode
 
 
 def metadata_fetcher(session, url, match):
-
     response = session.get(url).text
 
     return {"titles": TITLES_REGEX.findall(response)}
