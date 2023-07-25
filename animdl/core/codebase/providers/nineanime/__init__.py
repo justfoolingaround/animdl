@@ -5,14 +5,14 @@ import regex
 
 from ....config import NINEANIME
 from ...helpers import construct_site_based_regex
-from .decipher import decrypt_url
+from .decipher import decrypt_url, vrf_gen
 
 CONTENT_ID_REGEX = regex.compile(r'data-id="(.+?)"')
 
 REGEX = construct_site_based_regex(
     NINEANIME, extra_regex=r"/watch/[^&?/]+\.(?P<slug>[^&?/]+)"
 )
-TITLES_REGEX = regex.compile(r'<h1 class="title d-title" .+?>(.+?)</h1>')
+TITLES_REGEX = regex.compile(r'<h1 .+? class="title d-title" .+?>(.+?)</h1>')
 
 SOURCES = {
     "41": "vidstream",
@@ -23,14 +23,13 @@ SOURCES = {
     "44": "filemoon",
 }
 
-DECRYPTION_CODE = "hlPeNwkncH0fq9so"
-
-
 def fetch_episode(session, data_source):
+    episode_ids = data_source.get('data-ids')
 
     response = htmlparser.fromstring(
         session.get(
-            NINEANIME + f"ajax/server/list/{data_source.get('data-ids')}"
+            NINEANIME + f"ajax/server/list/{episode_ids}",
+            params={'vrf': vrf_gen(episode_ids)}
         ).json()["result"]
     )
 
@@ -39,13 +38,15 @@ def fetch_episode(session, data_source):
         for servers in content_type_container.cssselect("ul > li[data-sv-id]"):
 
             source = SOURCES[servers.get("data-sv-id")]
+            link_id = servers.get('data-link-id')
 
-            content_url = decrypt_url(
-                session.get(
-                    NINEANIME + f"ajax/server/{servers.get('data-link-id')}/"
-                ).json()["result"]["url"],
-                DECRYPTION_CODE,
-            )
+            enc_content_url = session.get(
+                NINEANIME + f"ajax/server/{link_id}",
+                params={'vrf': vrf_gen(link_id)}
+            ).json()["result"]["url"]
+
+            content_url = decrypt_url(enc_content_url)
+
             yield {
                 "stream_url": content_url,
                 "further_extraction": (
@@ -63,6 +64,7 @@ def fetcher(session, url, check, match):
     for data_source in htmlparser.fromstring(
         session.get(
             NINEANIME + f"ajax/episode/list/{content_id}",
+            params={'vrf': vrf_gen(content_id)}
         ).json()["result"]
     ).cssselect("a[data-num]"):
         yield partial(
