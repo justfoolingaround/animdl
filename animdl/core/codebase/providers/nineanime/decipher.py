@@ -1,62 +1,39 @@
 import base64
-from textwrap import wrap
 from urllib.parse import quote, unquote
 
-NORMAL_TABLE = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/"
+from Cryptodome.Cipher import ARC4
+
+VRF_KEY = b"iECwVsmW38Qe94KN"
+URL_KEY = b"hlPeNwkncH0fq9so"
+CHAR_SUBST_OFFSETS = (-4, -4, 3, 3, 6, -4, 3, -6, -2, -4)
 
 
-def cipher_keyed(key, plaintext):
-    cipher = ""
-    xcrypto = 0
-
-    mapping = {_: _ for _ in range(256)}
-
-    for c in range(256):
-        xcrypto = (xcrypto + mapping[c] + ord(key[c % len(key)])) % 256
-        mapping[c], mapping[xcrypto] = mapping[xcrypto], mapping[c]
-
-    i = j = 0
-    for f in range(0, len(plaintext)):
-        j = (j + 1) % 256  # NOTE: Previously, this was 'j = (j + f) % 256'
-        i = (i + mapping[j]) % 256
-        mapping[i], mapping[j] = mapping[j], mapping[i]
-        cipher += chr(ord(plaintext[f]) ^ mapping[(mapping[i] + mapping[j]) % 256])
-
-    return cipher
+def char_subst(content: bytes, *, offsets=CHAR_SUBST_OFFSETS):
+    for n, value in enumerate(content):
+        yield (value + offsets[n % len(offsets)])
 
 
-def get_salted_code(plaintext):
-    part_1 = encrypt((unquote(plaintext) + "000000")[:6])[0:4][::-1]
-    return part_1 + encrypt(cipher_keyed(part_1, unquote(plaintext)))[0:4].replace(
-        "=", ""
+def generate_vrf_from_content_id(
+    content_id: str,
+    key=VRF_KEY,
+    *,
+    offsets=CHAR_SUBST_OFFSETS,
+    encoding="utf-8",
+    reverse_later=True
+):
+    encoded_id = base64.b64encode(
+        ARC4.new(key).encrypt(quote(content_id).encode(encoding))
     )
 
+    if reverse_later:
+        encoded_id = bytes(char_subst(encoded_id, offsets=offsets))[::-1]
+    else:
+        encoded_id = bytes(char_subst(encoded_id[::-1], offsets=offsets))
 
-def encrypt(data, *, table=NORMAL_TABLE):
-    return "".join(
-        table[int(segment.ljust(6, "0"), 2) if len(segment) < 6 else int(segment, 2)]
-        for segment in wrap(
-            "".join(bin(ord(c)).lstrip("0b").rjust(8, "0") for c in data), 6
-        )
-    )
+    return base64.b64encode(encoded_id).decode(encoding)
 
 
-def decrypt_url(encrypted_url, secret):
-    return unquote(cipher_keyed(secret, decrypt(encrypted_url)))
-
-
-def encrypt_url(url, key):
-    return encrypt(cipher_keyed(key, quote(url)))
-
-
-def decrypt(data, *, table=NORMAL_TABLE):
-    return "".join(
-        map(
-            chr,
-            base64.b64decode(
-                (data + "=" * (len(data) % 4))
-                .translate(str.maketrans(table, NORMAL_TABLE))
-                .encode()
-            ),
-        )
+def decrypt_url(encrypted_url: str, key=URL_KEY, *, encoding="utf-8"):
+    return unquote(
+        ARC4.new(key).decrypt(base64.b64decode(encrypted_url)).decode(encoding)
     )
