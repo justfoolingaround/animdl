@@ -71,7 +71,7 @@ DEFAULT_CONFIG = {
         "marin": "https://marin.moe/",
         "twist": "https://twist.moe/",
         "yugen": "https://yugenanime.ro/",
-        "zoro": "https://zoro.to/",
+        "zoro": "https://aniwatch.to/",
     },
     "quality_string": "best[subtitle]/best",
     "default_player": "mpv",
