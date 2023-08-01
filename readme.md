@@ -1,55 +1,54 @@
 <h1 align="center"><img src="https://capsule-render.vercel.app/api?type=soft&fontColor=703ee5&text=justfoolingaround/animdl&height=150&fontSize=60&desc=Ridiculously%20efficient,%20fast%20and%20light-weight.&descAlignY=75&descAlign=60&color=00000000&animation=twinkling"></h1>
 <p align="center"><sup>A highly efficient, powerful and fast anime scraper.</sup></p>
 
-
 <p align="center">
 <img src="./animdl_demo.gif"></p>
 
--------
+***
 
 ## Overview
 
-- [Installation](#installation)
-    1. [PIP Installation](#installation)
-    2. [Source Code Download](#installation)
-- [Support](#support)
-- [Usage](#usage)
-  - [`stream` / `download` / `grab`](#stream--download--grab)
-  - [`-r` / `--range`](#-r----range-argument)
-  - [`--index`](#--index-argument)
-  - [`-s` / `--special`](#-s----special-argument)
-  - [`-q` / `--quality`](#-q----quality-argument)
-  - [**More** usage](#conclusion)
-- [Providers](#providers)
-- [Configurations](#configurations)
-  - [Setting up providers](#setting-up-providers)
-  - [Quality selection](#quality-selection)
-  - [Player selection](#player-selection)
-  - [`ffmpeg` set-up](#ffmpeg-set-up)
-  - [Discord Rich Presence set-up](#discord-rich-presence-set-up)
-  - [`fzf` set-up](#fzf-set-up)
-  - [Schedule set-up](#schedule-set-up)
-- [Contributing to the project](#contributing-to-the-project)
-- [Project Disclaimer](#project-disclaimer)
-- [In a nutshell](#in-a-nutshell)
-- [Code redistribution](#code-redistribution)
-- [From the author](#from-the-author)
-- [Honourable mentions](#honourable-mentions)
-  - [Similar Projects](#similar-projects)
-  - [Internal Dependencies](#internal-dependencies)
-- [Sponsoring the project](#sponsoring-the-project)
+*   [Installation](#installation)
+    1.  [PIP Installation](#installation)
+    2.  [Source Code Download](#installation)
+*   [Support](#support)
+*   [Usage](#usage)
+    *   [`stream` / `download` / `grab`](#stream--download--grab)
+    *   [`-r` / `--range`](#-r----range-argument)
+    *   [`--index`](#--index-argument)
+    *   [`-s` / `--special`](#-s----special-argument)
+    *   [`-q` / `--quality`](#-q----quality-argument)
+    *   [**More** usage](#conclusion)
+*   [Providers](#providers)
+*   [Configurations](#configurations)
+    *   [Setting up providers](#setting-up-providers)
+    *   [Quality selection](#quality-selection)
+    *   [Player selection](#player-selection)
+    *   [`ffmpeg` set-up](#ffmpeg-set-up)
+    *   [Discord Rich Presence set-up](#discord-rich-presence-set-up)
+    *   [`fzf` set-up](#fzf-set-up)
+    *   [Schedule set-up](#schedule-set-up)
+*   [Contributing to the project](#contributing-to-the-project)
+*   [Project Disclaimer](#project-disclaimer)
+*   [In a nutshell](#in-a-nutshell)
+*   [Code redistribution](#code-redistribution)
+*   [From the author](#from-the-author)
+*   [Honourable mentions](#honourable-mentions)
+    *   [Similar Projects](#similar-projects)
+    *   [Internal Dependencies](#internal-dependencies)
+*   [Sponsoring the project](#sponsoring-the-project)
 
 ## Installation
 
 This project can be installed on to your device via different mechanisms, these mechanisms are listed below in the order of ease.
 
-1. PIP Installs Packages **aka** PIP Installation
+1.  PIP Installs Packages **aka** PIP Installation
 
     ```sh
     pip install animdl
     ```
 
-2. Installation from source
+2.  Installation from source
 
     First ensure [Poetry is installed](https://python-poetry.org/docs/#installation).
 
@@ -97,20 +96,21 @@ The `stream` option is disabled automatically if the project cannot find any of 
 
 These commands are the main set of command in the project. All of them scrape the target site, the only difference is how it is used.
 
-- The `stream` option tosses the stream url to a player so that you can seamlessly binge your anime.
-  - Streaming supports Discord Rich Presence with `pypresence`.
-- The `download` option downloads the anime to your local machine.
-  - Downloading is done in the directory where you run the project.
-  - `-d` flag can be used to specify a download folder as well.
-  - [Internet Download Manager](https://internetdownloadmanager.com/) is supported and can be used via `--idm` flag. This downloader cannot download HLS streams.
-  - The project cannot modify the content type. That means, videos in the `ts` format need to be converted to other formats externally post download.
-  - The downloading process cannot be controlled.
-    - If download speed fluctuates, it is a server-side problem. The project cannot "fix" it.
-    - If the download is slow, it is based on the server's upload speed. The project cannot "fix" it. **Speedtests are not reliable and their results will not correspond to the download speeds obtained through the project.**
-  - The project utilises the fastest and the most straight-forward way to download, there is no further optimisation, period.
+*   The `stream` option tosses the stream url to a player so that you can seamlessly binge your anime.
+    *   Streaming supports Discord Rich Presence with `pypresence`.
 
-- The `grab` option simply streams the stream url to the stdout stream.
-  - This is useful for external usage and testing.
+*   The `download` option downloads the anime to your local machine.
+    *   Downloading is done in the directory where you run the project.
+    *   `-d` flag can be used to specify a download folder as well.
+    *   [Internet Download Manager](https://internetdownloadmanager.com/) is supported and can be used via `--idm` flag. This downloader cannot download HLS streams.
+    *   The project cannot modify the content type. That means, videos in the `ts` format need to be converted to other formats externally post download.
+    *   The downloading process cannot be controlled.
+        *   If download speed fluctuates, it is a server-side problem. The project cannot "fix" it.
+        *   If the download is slow, it is based on the server's upload speed. The project cannot "fix" it. **Speedtests are not reliable and their results will not correspond to the download speeds obtained through the project.**
+    *   The project utilises the fastest and the most straight-forward way to download, there is no further optimisation, period.
+
+*   The `grab` option simply streams the stream url to the stdout stream.
+    *   This is useful for external usage and testing.
 
 ```sh
 animdl stream "One Piece" 
@@ -129,13 +129,13 @@ You can specify direct urls to the provider; the project will automatically dete
 
 This argument is shared by **stream**, **download** and **grab**, it can be used to hand over custom ranges for selecting episodes.
 
-- This argument constructs a check for the episodes, hence, will not throw error if the episode count does not meet the scraping count.
-- This argument can be used in **reverse** order, the constructer will automatically fix the order.
-- Range intersections will not cause issues.
-- `1` will be treated as a singular range from 1 to 1.
-- `1-2` will be treated as a range from 1 to 2.
-- `1-2,230-340` will be treated as two different checks. The first check will be from `1` to `2`, the second from `230` to `340`.
-- You can use any separators, the project will automatically parse your range string.
+*   This argument constructs a check for the episodes, hence, will not throw error if the episode count does not meet the scraping count.
+*   This argument can be used in **reverse** order, the constructer will automatically fix the order.
+*   Range intersections will not cause issues.
+*   `1` will be treated as a singular range from 1 to 1.
+*   `1-2` will be treated as a range from 1 to 2.
+*   `1-2,230-340` will be treated as two different checks. The first check will be from `1` to `2`, the second from `230` to `340`.
+*   You can use any separators, the project will automatically parse your range string.
 
 ### `--index` argument
 
@@ -147,18 +147,18 @@ This argument is shared by **stream**, **download** and **grab**, it can be used
 
 This argument is shared by **stream** and **download**, it can be used to hand over the latest episode of the anime by using `-s latest`. Similarly, the latest 2 episodes can be selected via `latest-2`.
 
-- This argument is compatible with `-r`, you will get the last episode of the range.
+*   This argument is compatible with `-r`, you will get the last episode of the range.
 
 ### `-q` / `--quality` argument
 
 This argument is incredibly powerful and can be used to select streams from their **attributes**.
 
-- `1080` will select the stream with the resolution of 1080.
-- `1080/worst` will do the above but will also select the worst quality stream if that stream is not available.
-- `best[title]` will select the best stream that has the `title` attribute.
-- `best[title=r'^DUB']` will select the stream with the `title` attribute that matches the regular expression. If `r` is not used, the expression will be treated as a literal string.
-- The normal integers can be substituted with `best` and `worst` for special parsing.
-- You need not mention the quality in the argument if you just want an attribute.
+*   `1080` will select the stream with the resolution of 1080.
+*   `1080/worst` will do the above but will also select the worst quality stream if that stream is not available.
+*   `best[title]` will select the best stream that has the `title` attribute.
+*   `best[title=r'^DUB']` will select the stream with the `title` attribute that matches the regular expression. If `r` is not used, the expression will be treated as a literal string.
+*   The normal integers can be substituted with `best` and `worst` for special parsing.
+*   You need not mention the quality in the argument if you just want an attribute.
 
 You can find out what attributes are available for each stream by using the `grab` command.
 
@@ -213,10 +213,10 @@ Else, a file with the name `animdl_config.yml` in the working directory will be 
 
 Futhermore, the configuration files can be globally placed at:
 
-- Windows:
-  - `%USERPROFILE%/.animdl/config.yml`
-- Anything else:
-  - `$HOME/.config/animdl/config.yml`
+*   Windows:
+    *   `%USERPROFILE%/.animdl/config.yml`
+*   Anything else:
+    *   `$HOME/.config/animdl/config.yml`
 
 Only a singular configuration file in the above priority order is used, configurations aren't merged.
 
@@ -266,12 +266,12 @@ If the executable is found, the player will be eligible for use.
 
 Currently supported players are:
 
-- [`mpv`](https://mpv.io/)
-- [`vlc`](https://www.videolan.org/vlc/)
-- [`iina`](https://iina.io/)
-- [`celluloid`](https://celluloid-player.github.io)
-- [`ffplay`](https://www.ffmpeg.org/ffplay.html)
-- `android` (Android Player, only available **when** there aren't any headers for the stream)
+*   [`mpv`](https://mpv.io/)
+*   [`vlc`](https://www.videolan.org/vlc/)
+*   [`iina`](https://iina.io/)
+*   [`celluloid`](https://celluloid-player.github.io)
+*   [`ffplay`](https://www.ffmpeg.org/ffplay.html)
+*   `android` (Android Player, only available **when** there aren't any headers for the stream)
 
 ### ffmpeg set-up
 
@@ -343,12 +343,12 @@ The disclaimer of the project can be found [here](./disclaimer.md).
 
 ## In a nutshell
 
-- Abuses the developer's braincells in scraping to give about the fastest and most efficient toolset.
-- Brings about a highly powerful codebase which is just about appropriate for scraping.
-- Does not use any heavy dependencies by default.
-- Does not use `selenium` **or** JavaScript evaluators for scraping.
-- Integrates powerful internal tools such as a HLS downloader.
-- Is maintained, **heavily** as far as possible.
+*   Abuses the developer's braincells in scraping to give about the fastest and most efficient toolset.
+*   Brings about a highly powerful codebase which is just about appropriate for scraping.
+*   Does not use any heavy dependencies by default.
+*   Does not use `selenium` **or** JavaScript evaluators for scraping.
+*   Integrates powerful internal tools such as a HLS downloader.
+*   Is maintained, **heavily** as far as possible.
 
 ## Code redistribution
 
@@ -364,25 +364,25 @@ I'm glad you're here!
 
 ### Similar Projects
 
-- Shell
-  - [ani-cli](https://github.com/pystardust/ani-cli)
-- Kotlin
-  - [Cloudstream-3](https://github.com/Lagradost/cloudstream-3)
-  - [Saikou](https://github.com/saikou-app/saikou)
+*   Shell
+    *   [ani-cli](https://github.com/pystardust/ani-cli)
+*   Kotlin
+    *   [Cloudstream-3](https://github.com/Lagradost/cloudstream-3)
+    *   [Saikou](https://github.com/saikou-app/saikou)
 
 These are actively maintained projects, each of which has its own unique features and functionality.
 
 ### Internal Dependencies
 
-- Core
-  - [encode/httpx](https://github.com/encode/httpx)
-  - [Legrandin/pycryptodome](https://github.com/Legrandin/pycryptodome)
-  - [pallets/click](https://github.com/pallets/click)
-  - [tqdm/tqdm](https://github.com/tqdm/tqdm)
-  - [lxml/lxml](https://github.com/lxml/lxml)
-- Optional
-  - [junegunn/fzf](https://github.com/junegunn/fzf)
-  - [qwertyquerty/pypresence](https://github.com/qwertyquerty/pypresence)
+*   Core
+    *   [encode/httpx](https://github.com/encode/httpx)
+    *   [Legrandin/pycryptodome](https://github.com/Legrandin/pycryptodome)
+    *   [pallets/click](https://github.com/pallets/click)
+    *   [tqdm/tqdm](https://github.com/tqdm/tqdm)
+    *   [lxml/lxml](https://github.com/lxml/lxml)
+*   Optional
+    *   [junegunn/fzf](https://github.com/junegunn/fzf)
+    *   [qwertyquerty/pypresence](https://github.com/qwertyquerty/pypresence)
 
 The project would definitely not be complete or even in a working state if it weren't for these dependencies.
 
