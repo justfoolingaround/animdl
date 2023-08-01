@@ -2,8 +2,6 @@ from base64 import b64decode
 from hashlib import md5
 
 from Cryptodome.Cipher import AES
-from Cryptodome.Hash import MD5
-from Cryptodome.Protocol.KDF import PBKDF2
 from Cryptodome.Util.Padding import unpad
 
 
