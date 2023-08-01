@@ -38,7 +38,6 @@ def match_version(version_expression: str, version_string: str) -> bool:
         return True
 
     def single_matcher(single_expression: str):
-
         target_version = single_expression.lstrip("=<>~")
         expr = single_expression[: -len(target_version)]
 
@@ -77,7 +76,6 @@ def get_packages_page(session):
 def iter_packages(
     session, package_name, version_expression: str = None, pc_arch: str = PC_ARCH
 ):
-
     WHEELS_REGEX = re.compile(rf"]'>({package_name}.+?{pc_arch}&#46;whl)<")
 
     for _ in WHEELS_REGEX.finditer(get_packages_page(session)):
@@ -101,7 +99,6 @@ def resolve(packages, *, prefix="[animdl/utils/win32-build-inquirer]"):
     session = httpx.Client()
 
     for package, version_expr in packages:
-
         pkg = pkginfo.get_metadata(package)
 
         if pkg is not None and match_version(version_expr, pkg.version):

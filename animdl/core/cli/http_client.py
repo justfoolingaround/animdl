@@ -28,5 +28,5 @@ utils.http_client.setup_global_http_exception_hook(
 setattr(
     client,
     "cf_request",
-    lambda *args, **kwargs: utils.http_client.cors_proxify(client, *args, **kwargs),
+    lambda *args, **kwargs: utils.http_client.cors_proxify(*args, **kwargs),
 )

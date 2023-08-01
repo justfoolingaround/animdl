@@ -13,37 +13,34 @@ SALT_SECRET_ENDPOINT = "https://github.com/enimax-anime/key/raw/e6/key.txt"
 
 @lru_cache()
 def get_associative_key(session, endpoint):
-    return session.get(endpoint).text
+    return session.get(endpoint).json()
 
 
 def extract(session, url, **opts):
-
     url = yarl.URL(url)
 
     ajax_response = session.get(
-        f"https://{url.host}/ajax/embed-6/getSources",
+        f"https://{url.host}/embed-2/ajax/e-1/getSources",
         params={"id": url.name},
     )
 
     sources = ajax_response.json()
 
-    salt_secret = None
-    encrypted = sources["encrypted"]
+    key_finders = None
+    encrypted: bool = sources["encrypted"]
 
     if encrypted:
-        salt_secret = get_associative_key(session, SALT_SECRET_ENDPOINT).encode("utf-8")
+        key_finders = get_associative_key(session, SALT_SECRET_ENDPOINT)
 
     subtitles = [
         _.get("file") for _ in sources.get("tracks") if _.get("kind") == "captions"
     ]
 
     if encrypted:
-        retval = json.loads(
-            decipher_salted_aes(sources["sources"], salt_secret)
-        ) + json.loads(decipher_salted_aes(sources["sourcesBackup"], salt_secret))
+        retval = json.loads(decipher_salted_aes(sources["sources"], key_finders))
 
     else:
-        retval = sources["sources"] + sources["sourcesBackup"]
+        retval = sources["sources"]
 
     def yielder():
         for _ in retval:
@@ -53,3 +50,10 @@ def extract(session, url, **opts):
             }
 
     return list(yielder())
+
+
+import httpx
+
+session = httpx.Client(follow_redirects=True)
+
+print(extract(session, "https://megacloud.tv//e/ZyLIYujUiswJ"))
