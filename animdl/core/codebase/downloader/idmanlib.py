@@ -4,50 +4,55 @@ Internet Download Manager Support.
 This is made strictly for Windows.
 """
 
+import pathlib
 import time
+import typing
+from collections import namedtuple
 
-IDM_MID = ["{ECF21EAB-3AA8-4355-82BE-F777990001DD}", 1, 0]
+import rich
 
-idmlib, client = None, None
+authentication = namedtuple(
+    "authentication", "username password", defaults=(None, None)
+)
+
+
+idmlib, idmlib_object = None, None
+
+
+try:
+    from comtypes import client
+
+    idmlib = client.GetModule(["{ECF21EAB-3AA8-4355-82BE-F777990001DD}", 1, 0])
+
+    idmlib_object = client.CreateObject(
+        idmlib.CIDMLinkTransmitter, None, None, idmlib.ICIDMLinkTransmitter2
+    )
+except Exception:
+    pass
 
 
 def supported():
     return bool(idmlib)
 
 
-try:
-    import comtypes.client as cc
-
-    idmlib = cc.GetModule(IDM_MID)
-
-    client = cc.CreateObject(
-        idmlib.CIDMLinkTransmitter, None, None, idmlib.ICIDMLinkTransmitter2
-    )
-except BaseException:
-    pass
-
-
-def within_range(t, t1, t2):
-    return t1 <= t <= t2
-
-
 def idm_download(
-    url,
-    headers={},
-    form_data="",
-    auth=(None, None),
-    filename="",
-    download_folder=DOWNLOAD_FOLDER,
-    lflag=5,
+    url: str,
+    *,
+    headers: typing.Optional[typing.Dict[str, str]] = None,
+    form_data: typing.Optional[str] = None,
+    auth: authentication = authentication(),
+    filename: typing.Optional[str] = None,
+    download_folder: pathlib.Path = pathlib.Path("."),
+    lflag: int = 5,
 ):
-    return client.SendLinkToIDM(
+    return idmlib_object.SendLinkToIDM(
         url,
-        headers.get("referer", ""),
-        headers.get("cookie", ""),
+        headers.get("referer"),
+        headers.get("cookie"),
         form_data,
-        auth[0] or "",
-        auth[1] or "",
-        download_folder,
+        auth.username,
+        auth.password,
+        download_folder.resolve(strict=True).as_posix(),
         filename,
         lflag,
     )
@@ -55,19 +60,36 @@ def idm_download(
 
 def wait_until_download(
     url,
-    download_folder,
-    headers={},
-    form_data="",
-    auth=(None, None),
-    filename="",
+    download_folder: pathlib.Path,
+    headers=None,
+    form_data=None,
+    auth=authentication(),
+    filename=None,
 ):
     idm_download(
-        url, headers, form_data, auth, filename, download_folder.as_posix(), lflag=5
+        url,
+        headers=headers,
+        form_data=form_data,
+        auth=auth,
+        filename=filename,
+        download_folder=download_folder,
+        lflag=5,
     )
+
+    if filename is None:
+        return
+
     while not (download_folder / filename).exists():
         try:
             time.sleep(0.5)
         except KeyboardInterrupt:
-            return print(
-                "[IDM] Interrupted the wait for current download completion. Continuing with the next in queue."
+            console = rich.get_console()
+
+            console.print(
+                "[bold red]Detected KeyboardInterrupt[/], continue or terminate?",
             )
+
+            if console.input("[C/t]: ").lower() == "t":
+                raise
+
+            return
