@@ -53,7 +53,7 @@ CONFIGURATION_FILE_PATH = get_existent_path(
 DEFAULT_CONFIG = {
     "default_provider": "allanime",
     "site_urls": {
-        "9anime": "https://9anime.pl/",
+        "9anime": "https://aniwave.to/",
         "allanime": "https://allanime.to/",
         "animekaizoku": "https://animekaizoku.com/",
         "animeout": "https://www.animeout.xyz/",

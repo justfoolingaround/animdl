@@ -5,7 +5,7 @@ import regex
 
 from ....config import NINEANIME
 from ...helpers import construct_site_based_regex
-from .decipher import decrypt_url, generate_vrf_from_content_id
+from .decipher import vrf_api
 
 CONTENT_ID_REGEX = regex.compile(r'data-id="(.+?)"')
 
@@ -30,7 +30,7 @@ def fetch_episode(session, data_source):
     response = htmlparser.fromstring(
         session.get(
             NINEANIME + f"ajax/server/list/{episode_ids}",
-            params={"vrf": generate_vrf_from_content_id(episode_ids)},
+            params={"vrf": vrf_api(session, episode_ids)},
         ).json()["result"]
     )
 
@@ -41,10 +41,10 @@ def fetch_episode(session, data_source):
 
             enc_content_url = session.get(
                 NINEANIME + f"ajax/server/{link_id}",
-                params={"vrf": generate_vrf_from_content_id(link_id)},
+                params={"vrf": vrf_api(session, link_id)},
             ).json()["result"]["url"]
 
-            content_url = decrypt_url(enc_content_url)
+            content_url = vrf_api(session, enc_content_url, endpoint="decrypt")
 
             yield {
                 "stream_url": content_url,
@@ -62,7 +62,7 @@ def fetcher(session, url, check, match):
     for data_source in htmlparser.fromstring(
         session.get(
             NINEANIME + f"ajax/episode/list/{content_id}",
-            params={"vrf": generate_vrf_from_content_id(content_id)},
+            params={"vrf": vrf_api(session, content_id)},
         ).json()["result"]
     ).cssselect("a[data-num]"):
         episode_string: str = data_source.get("data-num")

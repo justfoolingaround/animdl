@@ -50,10 +50,3 @@ def extract(session, url, **opts):
             }
 
     return list(yielder())
-
-
-import httpx
-
-session = httpx.Client(follow_redirects=True)
-
-print(extract(session, "https://megacloud.tv//e/ZyLIYujUiswJ"))
