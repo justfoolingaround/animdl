@@ -1,6 +1,5 @@
 import functools
-
-import regex
+from math import ceil
 
 from animdl.utils import optopt
 
@@ -40,8 +39,7 @@ def iter_stream_url_from_stream_session(session, release_id, stream_session):
 
 
 def iter_episode_streams(session, release_id, per_page, episode_number):
-
-    current_page = episode_number // per_page + 1
+    current_page = ceil(episode_number / per_page)
 
     episode = fetch_session(session, release_id, page=current_page)["data"][
         episode_number % per_page - 1
@@ -61,7 +59,6 @@ def fetch_session(session, release_id, *, page=None):
 
 
 def fetcher(session, url, check, match):
-
     if match.group(1) == "play":
         url = ANIMEPAHE + f"anime/{match.group(2)}"
 
