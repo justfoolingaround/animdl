@@ -34,7 +34,8 @@ def iter_episodes(
 
 
 def to_clock_json(url: str):
-    return optopt.regexlib.sub(r"(?<=/clock)(?=[?&#])", ".json", url, count=1)
+    parsed = yarl.URL(url)
+    return parsed.with_name("clock.json").with_query(parsed.query).human_repr()
 
 
 def fetch_legacy(session, episode, type_of, show_id):
@@ -59,17 +60,12 @@ def fetch_legacy(session, episode, type_of, show_id):
     return {}
 
 
-def decrypt_allanime(password: str, target: str):
-    data = bytearray.fromhex(target)
-
+def one_digit_symmetric_xor(password: int, target: str):
     def genexp():
-        for segment in data:
-            for char in password:
-                segment ^= ord(char)
+        for segment in bytearray.fromhex(target):
+            yield segment ^ password
 
-            yield chr(segment)
-
-    return "".join(genexp())
+    return bytes(genexp()).decode("utf-8")
 
 
 def extract_content(
@@ -107,22 +103,20 @@ def extract_content(
             continue
 
         for source in sources:
-            if source["sourceUrl"][:2] == "##":
-                source["sourceUrl"] = decrypt_allanime(
-                    "1234567890123456789", source["sourceUrl"][2:]
+            if source["sourceUrl"][:2] == "--":
+                source["sourceUrl"] = one_digit_symmetric_xor(
+                    56, source["sourceUrl"][2:]
                 )
-            else:
-                if source["sourceUrl"][0] == "#":
-                    source["sourceUrl"] = decrypt_allanime(
-                        "allanimenews", source["sourceUrl"][1:]
-                    )
 
-            if source["type"] == "iframe":
-                streams = (
-                    session.get(to_clock_json(api_endpoint + source["sourceUrl"]))
-                    .json()
-                    .get("links")
+            if source["sourceUrl"][0] == "/":
+                response = session.get(
+                    to_clock_json(api_endpoint + source["sourceUrl"])
                 )
+
+                if response.text in ("error", "error no result"):
+                    continue
+
+                streams = response.json().get("links")
 
                 if not streams:
                     continue
