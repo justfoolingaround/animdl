@@ -109,7 +109,7 @@ DEFAULT_CONFIG = {
     "download_auto_retry": 300,
     "ffmpeg": {
         "executable": "ffmpeg",
-        "hls_download": False,
+        "use_for_downloads": False,
         "submerge": True,
     },
     "discord_presence": False,
@@ -175,7 +175,7 @@ AUTO_RETRY = CONFIG.get("download_auto_retry", 300) / 1000
 FFMPEG_SETTINGS = CONFIG.get("ffmpeg", {})
 
 FFMPEG_EXECUTABLE = FFMPEG_SETTINGS.get("executable", "ffmpeg")
-FFMPEG_HLS = FFMPEG_SETTINGS.get("hls_download", False)
+FFMPEG_USE_FOR_DOWNLOADS = FFMPEG_SETTINGS.get("use_for_downloads", False)
 FFMPEG_SUBMERGE = FFMPEG_SETTINGS.get("submerge", True)
 
 DISCORD_PRESENCE = CONFIG.get("discord_presence", False)

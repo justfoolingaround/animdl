@@ -150,97 +150,42 @@ def iter_portions_by(
     escape: str = ESCAPE,
     quoters: Tuple[str] = QUOTES,
     parenthesis: Tuple[Tuple[str, str]] = PARENTHESES,
-) -> Generator[str, None, None]:
-    """
-    Separate a string into portions by a list of splitters
-    while ignoring the splitters inside quotes and parenthesis.
-
-    When there is a "" in the splitters list, it will return every
-    unparenthesized and unquoted portion of the string.
-    """
-
-    multiquote_context = dict.fromkeys(quoters, False)
-    parenthesis_context = dict.fromkeys(parenthesis, 0)
-
+):
+    haystack = dict(parenthesis)
+    haystack.update({_: _ for _ in quoters})
     escaping = False
-    current_context = ""
-    yield_this_loop = False
+    stack = []
 
-    has_empty_splitter = "" in splitters
+    previous = None
 
-    def is_start_of_portion(target: str) -> bool:
-        if not target:
-            return True
+    null_splitter = "" in splitters
 
-        if any(multiquote_context.values()):
-            return False
+    while string and string != previous:
+        previous = string
+        for n, content in enumerate(string):
+            if not escaping:
+                if content in haystack and not stack:
+                    if null_splitter:
+                        yts = string[:n]
 
-        if any(parenthesis_context.values()):
-            return False
+                        if yts:
+                            yield yts
 
-        if target in quoters:
-            return True
+                        string = string[n:]
 
-        pair, is_initiator = get_pair(target, parenthesis)
+                    if stack and stack[-1] == content:
+                        stack.pop()
+                    else:
+                        stack.append(content)
 
-        if pair in parenthesis_context and is_initiator:
-            return True
+            escaping = content in escape
 
-        return False
+            if not stack and content in splitters:
+                yield string[:n]
+                string = string[n + 1 :]
 
-    for n, content in enumerate(string):
-        portion_ended = False
-
-        pair, is_initiator = get_pair(content, parenthesis)
-
-        if not escaping:
-            if content in quoters:
-                multiquote_context[content] = not multiquote_context[content]
-
-            if pair in parenthesis_context:
-                if is_initiator:
-                    parenthesis_context[pair] += 1
-                else:
-                    parenthesis_context[pair] -= 1
-
-            portion_ended = not (
-                any(multiquote_context.values()) or any(parenthesis_context.values())
-            )
-
-            is_a_splitter = (
-                content in splitters
-                and not any(multiquote_context.values())
-                and not any(parenthesis_context.values())
-            )
-
-            next_character = string[n + 1 : n + 2]
-            is_next_new = is_start_of_portion(next_character)
-
-            if (is_a_splitter or portion_ended) and (
-                has_empty_splitter and is_next_new
-            ):
-                if portion_ended or has_empty_splitter:
-                    current_context += content
-
-                value = current_context.strip()
-
-                if value:
-                    yield value
-
-                yield_this_loop = True
-
-        if yield_this_loop:
-            current_context = ""
-        else:
-            current_context += content
-
-        escaping = content in escape
-        yield_this_loop = False
-
-    value = current_context.strip()
-
-    if value:
-        yield value
+    if string:
+        yield string
 
 
 def get_pair(
@@ -256,6 +201,8 @@ def get_pair(
 def iter_fulfilling_streams(
     streams: Iterable[stream_type], quality_string: str, *, all=False
 ) -> Generator[stream_type, None, None]:
+    streams = list(streams)
+
     for segment in iter_portions_by(quality_string):
         """
         Separating "best[subtitles]/best" into "best[subtitles]" and "best"
@@ -267,6 +214,10 @@ def iter_fulfilling_streams(
             Separating "best[subtitles]" into "best" and "[subtitles]"
             """
             for portion in iter_portions_by(single_portion, splitters=("+",)):
+                for stream in candidates:
+                    if stream in streams:
+                        streams.remove(stream)
+
                 case_insensitive_portion = portion.lower()
 
                 quality_checker = evaluate_quality_to_number_check(
@@ -284,7 +235,6 @@ def iter_fulfilling_streams(
                     candidates = SPECIAL_FILTERS[case_insensitive_portion](candidates)
 
                 portion_match = PORTION_PARSER.search(remove_parentheses(portion))
-
                 if portion_match is not None:
                     portion_key, regex, value = portion_match.group(
                         "key", "regex", "value"
@@ -307,6 +257,9 @@ def iter_fulfilling_streams(
 
                 if portion in SPECIAL_SELECTORS and candidates:
                     candidates = [SPECIAL_SELECTORS[portion](candidates)]
+
+                if candidates:
+                    break
 
         for _ in candidates:
             yield single_portion, candidates

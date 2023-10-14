@@ -36,7 +36,7 @@ def guess_from_content_type(filename, content_type):
 
     guessed_extension = mimetypes.guess_extension(content_type)
 
-    if guessed_extension is None:
+    if guessed_extension is None or guessed_extension == ".bin":
         return filename
 
-    return filename + guessed_extension
+    return (filename or "file") + guessed_extension

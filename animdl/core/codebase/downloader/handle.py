@@ -9,7 +9,12 @@ from tqdm import tqdm
 
 from animdl.utils import media_downloader, serverfiles
 
-from ...config import FFMPEG_EXECUTABLE, FFMPEG_HLS, FFMPEG_SUBMERGE, THREADED_DOWNLOAD
+from ...config import (
+    FFMPEG_EXECUTABLE,
+    FFMPEG_SUBMERGE,
+    FFMPEG_USE_FOR_DOWNLOADS,
+    THREADED_DOWNLOAD,
+)
 from .ffmpeg import FFMPEG_EXTENSIONS, ffmpeg_download, has_ffmpeg, merge_subtitles
 from .hls import HLS_STREAM_EXTENSIONS, hls_yield
 
@@ -42,12 +47,8 @@ POSSIBLE_VIDEO_EXTENSIONS = (
     "mpd",
     "ism",
     "ismv",
-    "dash",
     "av1",
 )
-
-
-EXEMPT_EXTENSIONS = ["mpd"]
 
 
 def sanitize_filename(f):
@@ -216,14 +217,14 @@ def subautomatic(f: "handle_download"):
             **opts,
         )  # type: pathlib.Path
 
-        if not subtitles or not FFMPEG_SUBMERGE:
+        if not subtitles:
             return content_path
 
         locations = []
 
         for n, subtitle in enumerate(subtitles):
             prefetch_response = media_downloader.prefetch(
-                session, subtitle, opts.get("method", "GET"), headers=headers
+                session, opts.get("method", "GET"), subtitle, headers=headers
             )
 
             content_disposition = prefetch_response.headers.get("Content-Disposition")
@@ -235,9 +236,9 @@ def subautomatic(f: "handle_download"):
             else:
                 content_type = prefetch_response.headers.get("Content-Type")
 
-                if content_type:
+                if content_type and content_type != "application/octet-stream":
                     server_filename = serverfiles.guess_from_content_type(
-                        "file", content_type
+                        None, content_type
                     )
 
                 else:
@@ -251,7 +252,7 @@ def subautomatic(f: "handle_download"):
 
             standard_download(
                 session,
-                url,
+                subtitle,
                 download_location,
                 headers=headers,
                 log_level=opts.get("log_level", 20),
@@ -261,7 +262,9 @@ def subautomatic(f: "handle_download"):
             locations.append(download_location.resolve().as_posix())
 
         if (not has_ffmpeg()) or not FFMPEG_SUBMERGE:
-            logger.info("ffmpeg is unavailable, skipping subtitle merging.")
+            logger.info(
+                f"ffmpeg is unavailable, subtitle is downloaded to {download_location.as_posix()}."
+            )
             return content_path
 
         out_path = content_path.with_name(
@@ -322,7 +325,7 @@ def handle_download(
     content_type = prefetch_response.headers.get("Content-Type")
 
     if server_filename is None and content_type:
-        server_filename = serverfiles.guess_from_content_type("file", content_type)
+        server_filename = serverfiles.guess_from_content_type(None, content_type)
 
     if server_filename is None:
         server_filename = serverfiles.guess_from_path(prefetch_response.url.path)
@@ -351,7 +354,10 @@ def handle_download(
         )
         extension = DEFAULT_MEDIA_EXTENSION
 
-    expected_download_path = expected_download_path.with_suffix(f".{extension}")
+    if extension == "mpd":
+        expected_download_path = expected_download_path.with_suffix(f".mkv")
+    else:
+        expected_download_path = expected_download_path.with_suffix(f".{extension}")
 
     download_handling_logger.info(
         f"Server filename: {server_filename!r}, project inferred: {expected_download_path.name!r}",
@@ -359,7 +365,7 @@ def handle_download(
 
     expected_download_path.parent.mkdir(parents=True, exist_ok=True)
 
-    if FFMPEG_HLS and (extension in FFMPEG_EXTENSIONS and has_ffmpeg()):
+    if FFMPEG_USE_FOR_DOWNLOADS and (extension in FFMPEG_EXTENSIONS and has_ffmpeg()):
         return_code = ffmpeg_download(url, headers, expected_download_path, **opts)
 
         if return_code:
@@ -367,13 +373,11 @@ def handle_download(
                 f"ffmpeg exited with non-zero return code {return_code}, download failed."
             )
 
-        return expected_download_path.with_suffix(".mkv")
+        return expected_download_path
 
-    if extension in EXEMPT_EXTENSIONS:
-        raise Exception(
-            "Download extension {!r} requires custom downloading which is not supported yet.".format(
-                extension
-            )
+    if extension in ("mpd",):
+        raise NotImplementedError(
+            "ffmpeg is currently disabled or not in PATH, DASH streams cannot be downloaded."
         )
 
     if extension in HLS_STREAM_EXTENSIONS:
