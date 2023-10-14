@@ -46,10 +46,10 @@ def fetcher(session, url, check, match):
         },
     ).json()
 
-    resolutions = ("1080", "720")
+    resolutions = (1080, 720)
 
     if data["resolution"] == "4k":
-        resolutions = ("2160",) + resolutions
+        resolutions = (2160,) + resolutions
 
     yield partial(
         lambda _: _,
@@ -63,6 +63,7 @@ def fetcher(session, url, check, match):
                 "subtitle": [
                     data["stream_domains"][-1] + "/" + data["stream_url"] + f"/eng.ass",
                 ],
+                "quality": resolution,
             }
             for resolution in resolutions
         ],
