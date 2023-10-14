@@ -107,10 +107,10 @@ def evaluate_quality_to_number_check(quality: Optional[Union[str, int]]):
         return None
 
     if isinstance(quality, int):
-        return quality_operator(quality, ge)
+        return quality_operator(quality, le)
 
     if quality.isdigit():
-        return quality_operator(int(quality), ge)
+        return quality_operator(int(quality), le)
 
     match = QUALITY_REGEX.search(quality)
     if match is None:
@@ -118,7 +118,7 @@ def evaluate_quality_to_number_check(quality: Optional[Union[str, int]]):
 
     return quality_operator(
         int(match.group("quality")),
-        EXPRESSION_MAPPING.get(match.group("expression"), ge),
+        EXPRESSION_MAPPING.get(match.group("expression"), le),
     )
 
 
@@ -275,8 +275,6 @@ def iter_fulfilling_streams(
 def filter_quality(
     streams: Iterable[stream_type], quality_string: str
 ) -> List[stream_type]:
-    logger = logging.getLogger("utils/intelliq")
-
     portion_map = {}
 
     for portion, candidates in iter_fulfilling_streams(streams, quality_string):
