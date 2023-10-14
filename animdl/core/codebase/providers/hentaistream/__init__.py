@@ -10,21 +10,17 @@ EPISODE_REGEX = regex.compile(r"/\d+/[^&?/]+")
 TITLES_REGEX = regex.compile(r'<h1 class="entry-title" itemprop="name">(.+?)</h1>')
 
 
-REGEX = construct_site_based_regex(
-    HENTAISTREAM, extra_regex=r"/hentai/([^?&/]+)(?:/\d+)?"
-)
+REGEX = construct_site_based_regex(HENTAISTREAM, extra_regex=r"/hentai/([^?&/]+)")
 
 EXTRACTOR_REGEX = regex.compile(r"src: '(.+?)',\s+type: '.+?',\s+size: (\d+),")
 SUBTITLE_URL_REGEX = regex.compile(r"subUrl: '(.+?)'")
 
 
 def fetch_streams(session, episode_url, **opts):
-
     episode_page = session.get(HENTAISTREAM + episode_url[1:]).text
     subtitles = SUBTITLE_URL_REGEX.findall(episode_page)
 
     for url, size in EXTRACTOR_REGEX.findall(episode_page):
-
         yield {
             "stream_url": url,
             "quality": int(size),
@@ -34,28 +30,45 @@ def fetch_streams(session, episode_url, **opts):
 
 
 def fetcher(session, url, check, match):
+    response = session.get(match.group(0))
+    episode_page = htmlparser.fromstring(response.text)
 
-    episodes_page = htmlparser.fromstring(
-        session.get(HENTAISTREAM + f"hentai/" + match.group(1)).text
-    )
+    episode_id = episode_page.cssselect("input#e_id")[0].get("value")
+    csrf = response.cookies.get("XSRF-TOKEN")
 
-    for urls in episodes_page.cssselect("div.eplister a"):
-        number, title, date = map(
-            htmlparser.HtmlElement.text_content, urls.cssselect('div[class^="epl"]')
-        )
+    data = session.post(
+        HENTAISTREAM + "player/api",
+        json={
+            "episode_id": episode_id,
+        },
+        headers={
+            "x-xsrf-token": csrf.replace("%3D", "="),
+        },
+    ).json()
 
-        episode_number = int(number) if number.isdigit() else 0
+    resolutions = ("1080", "720")
 
-        if check(episode_number):
-            yield partial(
-                lambda url, **opts: list(fetch_streams(session, url, **opts)),
-                urls.get("href"),
-                title=f"{title} ({date})",
-            ), episode_number
+    if data["resolution"] == "4k":
+        resolutions = ("2160",) + resolutions
+
+    yield partial(
+        lambda _: _,
+        [
+            {
+                "title": data["title"],
+                "stream_url": data["stream_domains"][-1]
+                + "/"
+                + data["stream_url"]
+                + f"/{resolution}/manifest.mpd",
+                "subtitle": [
+                    data["stream_domains"][-1] + "/" + data["stream_url"] + f"/eng.ass",
+                ],
+            }
+            for resolution in resolutions
+        ],
+    ), 1
 
 
 def metadata_fetcher(session, url, match):
-
-    episode_url = HENTAISTREAM + f"hentai/" + match.group(1)
-
-    return {"titles": TITLES_REGEX.findall(session.get(episode_url).text)}
+    page = htmlparser.fromstring(session.get(match.group(0)).text)
+    return {"titles": page.cssselect("h1.leading-tight")[0].text_content().strip()}

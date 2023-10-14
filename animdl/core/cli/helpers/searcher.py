@@ -53,7 +53,6 @@ def search_animekaizoku(session, query):
 
 
 def search_allanime(session, query):
-
     for result in allanime_gql_api.api.iter_search_results(session, query):
         yield {
             "anime_url": ALLANIME + f"anime/{result['_id']}",
@@ -62,7 +61,6 @@ def search_allanime(session, query):
 
 
 def search_animepahe(session, query):
-
     animepahe_results = session.get(
         ANIMEPAHE + "api", params={"q": query, "m": "search"}
     )
@@ -142,7 +140,6 @@ def search_crunchyroll(session, query, *, scheme="http"):
 
 
 def search_marin(session, query, *, domain=MARIN):
-
     session.get(domain, headers={"range": "bytes=0-0"})
 
     response = session.post(
@@ -193,11 +190,12 @@ def search_zoro(session, query):
 
 def search_h_ntai_stream(session, query):
     for result in htmlparser.fromstring(
-        session.get(HENTAISTREAM + "search/", params={"s": query}).text
-    ).cssselect("article > .bsx > a"):
+        session.get(HENTAISTREAM + "search", params={"s": query}).text
+    ).cssselect("a p.text-center"):
+        anchor = result.getparent().getparent()
         yield {
-            "name": result.get("title") or result.get("oldtitle"),
-            "anime_url": HENTAISTREAM + result.get("href")[1:],
+            "name": result.text_content(),
+            "anime_url": anchor.get("href"),
         }
 
 
