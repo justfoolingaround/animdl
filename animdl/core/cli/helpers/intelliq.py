@@ -21,7 +21,6 @@ PARENTHESES = (
     ("(", ")"),
     ("[", "]"),
     ("{", "}"),
-    ("<", ">"),
     ("«", "»"),
     ("‹", "›"),
     ("『", "』"),
@@ -49,7 +48,7 @@ PORTION_PARSER = regexlib.compile(
 SEGMENT_PARSER = regexlib.compile(r"(?i)(best|worst|\d+)?(.*)")
 
 QUALITY_REGEX = regexlib.compile(
-    r"(?i)\b(?P<expression>[<>=]=?)?(?:\d+x)?(?P<quality>\d+)p?\b"
+    r"(?i)(?:^|\b)(?P<expression>[<>=]=?)?(?:\d+x)?(?P<quality>\d+)p?\b"
 )
 
 EXPRESSION_MAPPING = {
@@ -105,7 +104,7 @@ def evaluate_quality_to_number(quality: Optional[Union[str, int]]):
 
 def evaluate_quality_to_number_check(quality: Optional[Union[str, int]]):
     if quality is None:
-        return quality_operator()
+        return None
 
     if isinstance(quality, int):
         return quality_operator(quality, ge)
@@ -114,9 +113,8 @@ def evaluate_quality_to_number_check(quality: Optional[Union[str, int]]):
         return quality_operator(int(quality), ge)
 
     match = QUALITY_REGEX.search(quality)
-
     if match is None:
-        return quality_operator()
+        return None
 
     return quality_operator(
         int(match.group("quality")),
@@ -224,39 +222,45 @@ def iter_fulfilling_streams(
                     case_insensitive_portion
                 )
 
-                for stream in streams:
-                    if quality_checker.operator(
-                        evaluate_quality_to_number(stream.get("quality")),
-                        quality_checker.quality,
-                    ):
-                        candidates.append(stream)
-
-                if case_insensitive_portion in SPECIAL_FILTERS:
-                    candidates = SPECIAL_FILTERS[case_insensitive_portion](candidates)
+                if quality_checker is not None:
+                    for stream in streams:
+                        if quality_checker.operator(
+                            evaluate_quality_to_number(stream.get("quality")),
+                            quality_checker.quality,
+                        ):
+                            candidates.append(stream)
+                else:
+                    candidates = streams[:]
 
                 portion_match = PORTION_PARSER.search(remove_parentheses(portion))
+
                 if portion_match is not None:
                     portion_key, regex, value = portion_match.group(
                         "key", "regex", "value"
                     )
-                    if portion_key in stream:
-                        compiled_regex = None
-
-                        if regex is not None:
-                            compiled_regex = regexlib.compile(value)
+                    if regex is not None:
+                        compiled_regex = regexlib.compile(value)
 
                         candidates = [
                             stream
                             for stream in candidates
-                            if (
-                                stream[portion_key] == value
-                                if compiled_regex is None
-                                else compiled_regex.search(stream[portion_key])
-                            )
+                            if portion_key in stream
+                            and compiled_regex.search(stream[portion_key])
+                        ]
+                    else:
+                        candidates = [
+                            stream
+                            for stream in candidates
+                            if portion_key in stream and stream[portion_key] == value
                         ]
 
-                if portion in SPECIAL_SELECTORS and candidates:
-                    candidates = [SPECIAL_SELECTORS[portion](candidates)]
+                if case_insensitive_portion in SPECIAL_FILTERS:
+                    candidates = SPECIAL_FILTERS[case_insensitive_portion](candidates)
+
+                if case_insensitive_portion in SPECIAL_SELECTORS:
+                    candidates = [
+                        SPECIAL_SELECTORS[case_insensitive_portion](candidates)
+                    ]
 
                 if candidates:
                     break
@@ -318,6 +322,14 @@ if __name__ == "__main__":
                 {"quality": "480p"},
             ],
             "expected": [{"quality": "1080p"}],
+        },
+        "=720p": {
+            "values": [
+                {"quality": "1080p"},
+                {"quality": "720p"},
+                {"quality": "480p"},
+            ],
+            "expected": [{"quality": "720p"}],
         },
         "subtitles": {
             "values": [
