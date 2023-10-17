@@ -162,7 +162,7 @@ def iter_portions_by(
         previous = string
         for n, content in enumerate(string):
             if not escaping:
-                if content in haystack and not stack:
+                if content in haystack and stack:
                     if null_splitter:
                         yts = string[:n]
 
@@ -276,12 +276,12 @@ def filter_quality(
     streams: Iterable[stream_type], quality_string: str
 ) -> List[stream_type]:
     portion_map = {}
-
     for portion, candidates in iter_fulfilling_streams(streams, quality_string):
         portion_map[portion] = candidates
 
     for portion, candidates in portion_map.items():
         if len(candidates):
+            print(portion, candidates)
             return candidates
 
     return streams
@@ -291,11 +291,12 @@ if __name__ == "__main__":
     test_quality_strings = {
         "best": {
             "values": [
+                {"quality": "2160p"},
                 {"quality": "1080p"},
                 {"quality": "720p"},
                 {"quality": "480p"},
             ],
-            "expected": [{"quality": "1080p"}],
+            "expected": [{"quality": "2160p"}],
         },
         "worst": {
             "values": [

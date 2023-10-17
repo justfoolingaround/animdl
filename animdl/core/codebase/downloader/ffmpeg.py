@@ -47,7 +47,9 @@ def iter_audio(stderr):
         """
         A generator, that is made for sorting and sending to another generator.
         """
-        for match in regex.finditer(b"Stream #(\d+):(\d+): Audio:.+ (\d+) Hz", stderr):
+        for match in regex.finditer(
+            rb"Stream #(\d+):([\d()]+): Audio:.+ (\d+) Hz", stderr
+        ):
             program, stream_id, freq = (_.decode() for _ in match.groups())
             yield f"{program}:a:{stream_id}", int(freq)
 
@@ -223,8 +225,18 @@ def ffmpeg_download(
         reverse=True,
     )[0]
 
+    ffmpeg_args = args.copy()
+
+    if ffmpeg_video["video"]:
+        ffmpeg_args.extend(("-map", ffmpeg_video["video"]))
+
+    if ffmpeg_video["audio"]:
+        ffmpeg_args.extend(("-map", ffmpeg_video["audio"]))
+
+    logger.debug(f"Calling PIPE child process for ffmpeg: {ffmpeg_args}")
+
     child = subprocess.Popen(
-        args + ["-map", ffmpeg_video["video"], "-map", ffmpeg_video["audio"]],
+        ffmpeg_args,
         stderr=subprocess.PIPE,
     )
 
