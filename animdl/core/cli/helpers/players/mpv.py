@@ -56,8 +56,11 @@ class MPVDefaultPlayer(BasePlayer):
             )
 
         if subtitles is not None:
+            subtitles_result = map(
+                lambda subtitle: subtitle.replace("https:", "https\:"), subtitles
+            )
             args += (
-                f"{self.opts_spec['subtitles']}={self.path_joiner.join(subtitles)}",
+                f"{self.opts_spec['subtitles']}={self.path_joiner.join(subtitles_result)}",
             )
 
         if chapters:
