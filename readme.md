@@ -188,7 +188,7 @@ You can find out what attributes are available for each stream by using the `gra
 
 This is the prettified output of `animdl grab "9anime:one piece"`, and the stream has `headers` and `stream_url` attributes.
 
-If you feel that a particular stream is fast enough for you, `-q ==[stream_url=r'.+mcloud\.to.+']`<sub>(or equivalent, this is just for testing)</sub> will select that stream.
+If you feel that a particular stream is fast enough for you, `-q [stream_url=r'.+mcloud\.to.+']`<sub>(or equivalent, this is just for testing)</sub> will select that stream.
 
 ### Conclusion
 
