@@ -159,6 +159,7 @@ This argument is incredibly powerful and can be used to select streams from thei
 *   `best[title=r'^DUB']` will select the stream with the `title` attribute that matches the regular expression. If `r` is not used, the expression will be treated as a literal string.
 *   The normal integers can be substituted with `best` and `worst` for special parsing.
 *   You need not mention the quality in the argument if you just want an attribute.
+*   you should use it like `-q ==1080`
 
 You can find out what attributes are available for each stream by using the `grab` command.
 

@@ -4,7 +4,7 @@ KWIK_PARAMS_RE = regex.compile(r'\("(\w+)",\d+,"(\w+)",(\d+),(\d+),\d+\)')
 KWIK_D_URL = regex.compile(r'action="(.+?)"')
 KWIK_D_TOKEN = regex.compile(r'value="(.+?)"')
 
-KWIK_REDIRECTION_RE = regex.compile(r'<a href="(.+?)" .+?>Redirect me</a>')
+KWIK_REDIRECTION_RE = regex.compile(r';\$\("a\.redirect"\)\.attr\("href","(.+?)"\)\.html\("Continue"\);')
 
 CHARACTER_MAP = "0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ+/"
 
