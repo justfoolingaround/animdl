@@ -159,6 +159,7 @@ This argument is incredibly powerful and can be used to select streams from thei
 *   `best[title=r'^DUB']` will select the stream with the `title` attribute that matches the regular expression. If `r` is not used, the expression will be treated as a literal string.
 *   The normal integers can be substituted with `best` and `worst` for special parsing.
 *   You need not mention the quality in the argument if you just want an attribute.
+*   you should use it like `-q ==1080`
 
 You can find out what attributes are available for each stream by using the `grab` command.
 
@@ -187,7 +188,7 @@ You can find out what attributes are available for each stream by using the `gra
 
 This is the prettified output of `animdl grab "9anime:one piece"`, and the stream has `headers` and `stream_url` attributes.
 
-If you feel that a particular stream is fast enough for you, `-q [stream_url=r'.+mcloud\.to.+']`<sub>(or equivalent, this is just for testing)</sub> will select that stream.
+If you feel that a particular stream is fast enough for you, `-q ==[stream_url=r'.+mcloud\.to.+']`<sub>(or equivalent, this is just for testing)</sub> will select that stream.
 
 ### Conclusion
 
