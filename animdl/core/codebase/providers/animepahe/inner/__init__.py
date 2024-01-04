@@ -4,7 +4,7 @@ KWIK_PARAMS_RE = regex.compile(r'\("(\w+)",\d+,"(\w+)",(\d+),(\d+),\d+\)')
 KWIK_D_URL = regex.compile(r'action="(.+?)"')
 KWIK_D_TOKEN = regex.compile(r'value="(.+?)"')
 
-KWIK_REDIRECTION_RE = regex.compile(r'<a href="(.+?)" .+?>Redirect me</a>')
+KWIK_REDIRECTION_RE = regex.compile(r'https://kwik\.cx.+?"')
 
 CHARACTER_MAP = "0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ+/"
 
@@ -47,8 +47,8 @@ def get_animepahe_url(session, pahe_win_url):
 
     response = session.get(pahe_win_url)
     response.raise_for_status()
-
-    url = KWIK_REDIRECTION_RE.search(response.text).group(1)
+    
+    url = KWIK_REDIRECTION_RE.search(response.text).group()[:-1]
 
     download_page = session.get(url)
 
