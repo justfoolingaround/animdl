@@ -37,6 +37,11 @@ class MPVDefaultPlayer(BasePlayer):
         args = (self.executable, *self.args, stream_url)
 
         if audio_tracks is not None:
+            audio_tracks = map(
+                lambda audio_track: audio_track.replace(self.path_joiner, f"\{self.path_joiner}"),
+                audio_tracks
+            )
+
             args += (
                 f"{self.opts_spec['audios']}={self.path_joiner.join(audio_tracks)}",
             )
@@ -56,6 +61,11 @@ class MPVDefaultPlayer(BasePlayer):
             )
 
         if subtitles is not None:
+            subtitles = map(
+                lambda subtitle: subtitle.replace(self.path_joiner, f"\{self.path_joiner}"),
+                subtitles
+            )
+
             args += (
                 f"{self.opts_spec['subtitles']}={self.path_joiner.join(subtitles)}",
             )
